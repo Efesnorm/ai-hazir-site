@@ -20,7 +20,7 @@ jobs:
         wp: [ '6.9', 'latest' ]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -28,7 +28,7 @@ jobs:
           tools: composer:v2
           coverage: none
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 20
           cache: npm
@@ -63,4 +63,15 @@ jobs:
           npx wp-env run cli wp core version
 
       - name: Entegrasyon testleri
-        run: composer test:integration
+        shell: bash
+        run: |
+          set -o pipefail
+          composer test:integration 2>&1 | tee integration.log
+
+      - name: Entegrasyon hata özeti
+        if: failure()
+        shell: bash
+        run: |
+          [ -f integration.log ] || exit 0
+          summary=$(tail -n 60 integration.log | tr -d '\r' | sed -e 's/%/%25/g' | awk 'BEGIN{ORS="%0A"} {print}')
+          echo "::error title=Entegrasyon testleri::${summary}"
