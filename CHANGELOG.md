@@ -3,6 +3,27 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [0.2.1] - 2026-09-27
+
+Kullanıcı açısından değişiklik yok; iç yapı çoklu platforma hazırlandı
+([ADR-001](docs/mimari/ADR-001-coklu-platform.md)).
+
+### Değişti
+- Çekirdek (`src/Core`) platformdan bağımsız: WordPress'e yalnızca `src/Core/Contracts` arayüzleri
+  (`Settings`, `Cache`, `HttpClient`, `Clock`, `Secret`, `HitRepository`) üzerinden erişir.
+- WordPress'e özgü kod `src/WordPress` altına taşındı (`Plugin`, `Lifecycle`, `Uninstaller`,
+  `Requirements`, geçişler, yönetim sayfası, WP-CLI). `HitStore` → `WpdbHitRepository`.
+- Ölçüm sayacı artık `$_SERVER` okumaz; WordPress adaptörü bir `Request` nesnesi üretir ve yönetici
+  paneli / cron / AJAX filtresini uygular.
+
+### Eklendi
+- `CoreIsPlatformNeutralTest`: çekirdeğe platform kodu girerse test kırılır.
+- WordPress'siz uçtan uca ölçüm testi (bellek içi adaptörlerle) ve 0.2.0'dan güncelleme testi.
+
+### Geriye uyumluluk
+Seçenek adları, `{prefix}aihs_hits` tablosu, cron kancaları, yönetim sayfası adresi, CSV biçimi ve
+WP-CLI komutu aynen korunur; veritabanı geçişi yoktur.
+
 ## [0.2.0] - 2026-09-27
 
 ### Eklendi

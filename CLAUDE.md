@@ -22,14 +22,22 @@ Yeni artım, mevcut çalışan sistemi bozmadan eklenir.
 - Lisans: GPL-2.0-or-later
 
 ## Mimari
-- Çekirdek + adaptörler. Veri `src/Core` içinde; her AI kanalı `src/Adapters/<Ad>` altında.
+Ayrıntı: `docs/mimari/ADR-001-coklu-platform.md`. Hedef: WordPress dışındaki platformlarda da çalışmak.
+- Üç katman: `src/Core` (platformdan bağımsız iş kuralları ve `src/Core/Contracts` arayüzleri),
+  platform adaptörleri (`src/WordPress`, ileride `src/<Platform>`), AI kanalları (`src/Adapters/<Ad>`).
+- `src/Core` hiçbir platformun fonksiyonunu, sınıfını veya sabitini kullanmaz; platforma yalnızca
+  `Contracts` arayüzleriyle erişir. `CoreIsPlatformNeutralTest` bunu denetler.
+- Bağımlılık yönü platform → çekirdek. Yeni iş kuralı önce çekirdeğe, platform bağlantısı adaptöre yazılır.
 - Adaptörler çekirdeği sadece okur, birbirini çağırmaz.
-- Yazma işlemleri tek bir çekirdek servisinden geçer.
-- Her yeni özellik `src/Core/Features.php` içinde bir anahtara bağlıdır ve varsayılan KAPALI gelir.
+- Yazma işlemleri tek bir çekirdek arayüzünden geçer (ölçüm: `HitRepository`; WordPress'te tek yazan
+  `WpdbHitRepository`).
+- Her yeni özellik `src/Core/Features.php` içinde bir anahtara bağlıdır ve varsayılan KAPALI gelir
+  (onaylı istisnalar `Features::DEFAULT_ON` ve CHANGELOG'da gerekçeli).
 
 ## Veritabanı
 - Şema değişiklikleri sadece eklemedir: yeni tablo veya yeni sütun. Silme ve yeniden adlandırma yok.
-- Her geçiş `src/Core/Migrations/` altında sürümlü bir sınıftır ve `down()` metodu vardır.
+- Her geçiş `MigrationInterface`'i uygulayan sürümlü bir sınıftır ve `down()` metodu vardır
+  (WordPress: `src/WordPress/Migrations/`).
 - Kişisel veri (ham IP, e-posta vb.) saklanmaz. Gerekirse tuzlu hash kullan.
 
 ## Kod standartları

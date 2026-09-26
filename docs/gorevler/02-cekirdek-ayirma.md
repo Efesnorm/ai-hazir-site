@@ -32,15 +32,15 @@ adresi, CSV biçimi, WP-CLI komutu ve `data/` dosyaları aynen kalır. Veritaban
 Yeni platform adaptörü, yeni kullanıcı özelliği, merkezi servis, performans iyileştirmesi.
 
 ## Kabul testleri
-- [ ] Görev 00 ve 01'in tüm testleri davranış değişikliği olmadan geçiyor (yalnızca sınıf adları/yolları
+- [x] Görev 00 ve 01'in tüm testleri davranış değişikliği olmadan geçiyor (yalnızca sınıf adları/yolları
       güncellenebilir; hiçbir doğrulama gevşetilmez).
-- [ ] Koruma testi: `src/Core` içinde WordPress fonksiyonu veya sınıfı kullanımı yok; bilerek eklenen bir
+- [x] Koruma testi: `src/Core` içinde WordPress fonksiyonu veya sınıfı kullanımı yok; bilerek eklenen bir
       `get_option()` çağrısı testi kırmızıya düşürüyor (birim).
-- [ ] Ölçüm akışı (sınıflandır → doğrula → say → rapor → CSV) WordPress yüklenmeden, bellek içi
+- [x] Ölçüm akışı (sınıflandır → doğrula → say → rapor → CSV) WordPress yüklenmeden, bellek içi
       adaptörlerle uçtan uca çalışıyor (birim).
-- [ ] 0.2.0 kurulu bir site 0.2.1'e güncellenince veriler, ayarlar ve cron görevleri aynen korunuyor
+- [x] 0.2.0 kurulu bir site 0.2.1'e güncellenince veriler, ayarlar ve cron görevleri aynen korunuyor
       (entegrasyon).
-- [ ] Sayaç ek süresi hâlâ ortalama 5 ms'nin altında (entegrasyon).
+- [x] Sayaç ek süresi hâlâ ortalama 5 ms'nin altında (entegrasyon).
 - [ ] `composer check` temiz, GitHub Actions yeşil.
 
 ## Çalışma şekli

@@ -3,7 +3,7 @@
 Sitenin "ne satıyorum, ne arıyorum, ne tedarik edebilirim" bilgisini AI agentların okuyup
 kullanabileceği biçimde yayınlayan WordPress eklentisi.
 
-> Sürüm 0.2.0: AI bot ve AI yönlendirme ölçümü (A0). Ayrıntılar: [CHANGELOG.md](CHANGELOG.md).
+> Sürüm 0.2.1: AI bot ve AI yönlendirme ölçümü (A0); çekirdek platformdan bağımsız. Ayrıntılar: [CHANGELOG.md](CHANGELOG.md).
 
 - En düşük sürümler: PHP 8.1, WordPress 6.9
 - Lisans: GPL-2.0-or-later
@@ -56,15 +56,24 @@ buradan kapatılabilir.
 ## Klasör yapısı
 
 ```
-ai-hazir-site.php     Eklenti başlığı, sürüm kontrolü, açılış
-uninstall.php         Silmede veri temizliği (yalnızca seçenek açıksa)
-src/Core/             Çekirdek: Plugin, Features, Requirements, Lifecycle, Uninstaller
-src/Core/Migrations/  Sürümlü veritabanı geçişleri
-src/Core/Storage/     HitStore: aihs_hits tablosuna yazan tek sınıf
-src/Modules/Measurement/  A0 ölçümü: Tracker, Classifier, Verifier, IpRanges, Report, Admin, Cli
-data/                 Düzenlenebilir bot ve yönlendirme listeleri
-tests/Unit/           Birim testleri (Brain Monkey)
-tests/Integration/    Entegrasyon testleri (WordPress test paketi)
+ai-hazir-site.php          Eklenti başlığı, sürüm kontrolü, açılış
+uninstall.php              Silmede veri temizliği (yalnızca seçenek açıksa)
+src/Core/                  Platformdan bağımsız çekirdek (WordPress fonksiyonu kullanmaz)
+  Contracts/               Arayüzler: Settings, Cache, HttpClient, Clock, Secret, HitRepository
+  Features.php             Özellik anahtarları
+  Migrations/              MigrationInterface, Migrator
+  Measurement/             A0 iş kuralları: Classifier, Verifier, IpRanges, Tracker, Report, CsvExport
+src/WordPress/             WordPress adaptörü
+  Plugin, Lifecycle, Uninstaller, Requirements, Module
+  Platform/                Arayüz uygulamaları: WpSettings, WpCache, WpHttpClient, WpClock, WpSecret
+  Storage/                 WpdbHitRepository: aihs_hits tablosuna yazan tek sınıf
+  Migrations/              Migration_0_2_0
+  Measurement/             Kancalar (RequestListener, MeasurementModule), yönetim sayfası, WP-CLI
+data/                      Düzenlenebilir bot ve yönlendirme listeleri
+docs/                      PRD, görevler, mimari kararlar (ADR)
+tests/Unit/                Birim testleri (WordPress'siz; bellek içi adaptörler)
+tests/Integration/         Entegrasyon testleri (WordPress test paketi)
+tests/Support/             Bellek içi test adaptörleri
 ```
 
 ## Seçenekler
