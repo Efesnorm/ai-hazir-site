@@ -1,0 +1,10 @@
+{
+	"$comment": "AI platformu yönlendirme kaynakları. Referer ana makinesi domain'e eşit veya onun alt alan adıysa, ya da utm_source domain'e eşitse sayılır.",
+	"referrers": [
+		{ "id": "chatgpt", "name": "ChatGPT", "domain": "chatgpt.com" },
+		{ "id": "perplexity", "name": "Perplexity", "domain": "perplexity.ai" },
+		{ "id": "claude", "name": "Claude", "domain": "claude.ai" },
+		{ "id": "gemini", "name": "Gemini", "domain": "gemini.google.com" },
+		{ "id": "copilot", "name": "Microsoft Copilot", "domain": "copilot.microsoft.com" }
+	]
+}

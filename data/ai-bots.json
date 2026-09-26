@@ -1,0 +1,125 @@
+{
+	"$comment": "AI bot listesi. ua_pattern: büyük/küçük harf duyarsız düzenli ifade parçası (ayraçsız). category: training | search | user_agent. verify: none | ip_ranges | rdns. ip_ranges için verify_source bir URL; rdns için virgülle ayrılmış ana makine son ekleri. Kaynaklar docs_url alanında; son kontrol 2026-09-27.",
+	"bots": [
+		{
+			"id": "gptbot",
+			"name": "GPTBot",
+			"operator": "OpenAI",
+			"ua_pattern": "\\bGPTBot\\b",
+			"category": "training",
+			"verify": "ip_ranges",
+			"verify_source": "https://openai.com/gptbot.json",
+			"docs_url": "https://developers.openai.com/api/docs/bots"
+		},
+		{
+			"id": "oai-searchbot",
+			"name": "OAI-SearchBot",
+			"operator": "OpenAI",
+			"ua_pattern": "\\bOAI-SearchBot\\b",
+			"category": "search",
+			"verify": "ip_ranges",
+			"verify_source": "https://openai.com/searchbot.json",
+			"docs_url": "https://developers.openai.com/api/docs/bots"
+		},
+		{
+			"id": "chatgpt-user",
+			"name": "ChatGPT-User",
+			"operator": "OpenAI",
+			"ua_pattern": "\\bChatGPT-User\\b",
+			"category": "user_agent",
+			"verify": "ip_ranges",
+			"verify_source": "https://openai.com/chatgpt-user.json",
+			"docs_url": "https://developers.openai.com/api/docs/bots"
+		},
+		{
+			"id": "claudebot",
+			"name": "ClaudeBot",
+			"operator": "Anthropic",
+			"ua_pattern": "\\bClaudeBot\\b",
+			"category": "training",
+			"verify": "ip_ranges",
+			"verify_source": "https://claude.com/crawling/bots.json",
+			"docs_url": "https://support.claude.com/en/articles/8896518"
+		},
+		{
+			"id": "claude-user",
+			"name": "Claude-User",
+			"operator": "Anthropic",
+			"ua_pattern": "\\bClaude-User\\b",
+			"category": "user_agent",
+			"verify": "ip_ranges",
+			"verify_source": "https://claude.com/crawling/bots.json",
+			"docs_url": "https://support.claude.com/en/articles/8896518"
+		},
+		{
+			"id": "claude-searchbot",
+			"name": "Claude-SearchBot",
+			"operator": "Anthropic",
+			"ua_pattern": "\\bClaude-SearchBot\\b",
+			"category": "search",
+			"verify": "ip_ranges",
+			"verify_source": "https://claude.com/crawling/bots.json",
+			"docs_url": "https://support.claude.com/en/articles/8896518"
+		},
+		{
+			"id": "perplexitybot",
+			"name": "PerplexityBot",
+			"operator": "Perplexity",
+			"ua_pattern": "\\bPerplexityBot\\b",
+			"category": "search",
+			"verify": "ip_ranges",
+			"verify_source": "https://www.perplexity.com/perplexitybot.json",
+			"docs_url": "https://docs.perplexity.ai/guides/bots"
+		},
+		{
+			"id": "perplexity-user",
+			"name": "Perplexity-User",
+			"operator": "Perplexity",
+			"ua_pattern": "\\bPerplexity-User\\b",
+			"category": "user_agent",
+			"verify": "ip_ranges",
+			"verify_source": "https://www.perplexity.com/perplexity-user.json",
+			"docs_url": "https://docs.perplexity.ai/guides/bots"
+		},
+		{
+			"id": "ccbot",
+			"name": "CCBot",
+			"operator": "Common Crawl",
+			"ua_pattern": "\\bCCBot\\b",
+			"category": "training",
+			"verify": "ip_ranges",
+			"verify_source": "https://index.commoncrawl.org/ccbot.json",
+			"docs_url": "https://commoncrawl.org/ccbot"
+		},
+		{
+			"id": "amazonbot",
+			"name": "Amazonbot",
+			"operator": "Amazon",
+			"ua_pattern": "\\bAmazonbot\\b",
+			"category": "training",
+			"verify": "ip_ranges",
+			"verify_source": "https://developer.amazon.com/amazonbot/ip-addresses/",
+			"docs_url": "https://developer.amazon.com/amazonbot"
+		},
+		{
+			"id": "bytespider",
+			"name": "Bytespider",
+			"operator": "ByteDance",
+			"ua_pattern": "\\bBytespider\\b",
+			"category": "training",
+			"verify": "none",
+			"verify_source": "",
+			"docs_url": ""
+		},
+		{
+			"id": "meta-externalagent",
+			"name": "meta-externalagent",
+			"operator": "Meta",
+			"ua_pattern": "\\bmeta-externalagent\\b",
+			"category": "training",
+			"verify": "none",
+			"verify_source": "",
+			"docs_url": "https://developers.facebook.com/docs/sharing/webmasters/web-crawlers/"
+		}
+	]
+}
