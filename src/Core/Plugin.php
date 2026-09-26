@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace AIHazirSite\Core;
 
 use AIHazirSite\Core\Migrations\MigrationInterface;
+use AIHazirSite\Core\Migrations\Migration_0_2_0;
 
 /**
  * Single entry point: registers modules and exposes the migration list.
@@ -32,6 +33,8 @@ final class Plugin {
 		}
 		self::$booted = true;
 
+		add_action( 'plugins_loaded', array( Lifecycle::class, 'maybe_upgrade' ) );
+
 		foreach ( self::modules() as $module ) {
 			$module->register();
 		}
@@ -47,11 +50,13 @@ final class Plugin {
 	}
 
 	/**
-	 * Database migrations, in any order. Empty in 0.1.0.
+	 * Database migrations, in any order.
 	 *
 	 * @return list<MigrationInterface>
 	 */
 	public static function migrations(): array {
-		return array();
+		return array(
+			new Migration_0_2_0(),
+		);
 	}
 }

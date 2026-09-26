@@ -13,7 +13,7 @@ use InvalidArgumentException;
 
 /**
  * Applies migrations in version order and remembers the last applied version
- * in the `aihs_db_version` option.
+ * in the `aihs_db_version` option (autoloaded: it is checked on every request).
  */
 final class Migrator {
 
@@ -63,6 +63,21 @@ final class Migrator {
 	}
 
 	/**
+	 * Highest known migration version (0 when there are none).
+	 */
+	public function latest_version(): int {
+		$last = end( $this->migrations );
+		return false === $last ? 0 : $last->version();
+	}
+
+	/**
+	 * Whether every known migration has been applied.
+	 */
+	public function is_up_to_date(): bool {
+		return $this->current_version() >= $this->latest_version();
+	}
+
+	/**
 	 * Applies every migration newer than the current version.
 	 *
 	 * The version is saved after each migration, so a failure leaves the
@@ -81,7 +96,7 @@ final class Migrator {
 			}
 
 			$migration->up();
-			update_option( self::OPTION, $version, false );
+			update_option( self::OPTION, $version, true );
 			$applied[] = $version;
 		}
 
@@ -109,7 +124,7 @@ final class Migrator {
 
 			$this->migrations[ $i ]->down();
 			$previous = $i > 0 ? $this->migrations[ $i - 1 ]->version() : 0;
-			update_option( self::OPTION, $previous, false );
+			update_option( self::OPTION, $previous, true );
 			$reverted[] = $version;
 		}
 

@@ -34,6 +34,16 @@ final class Lifecycle {
 	}
 
 	/**
+	 * Runs pending migrations after a plugin update (activation hooks do not fire on update).
+	 */
+	public static function maybe_upgrade(): void {
+		$migrator = new Migrator( Plugin::migrations() );
+		if ( ! $migrator->is_up_to_date() ) {
+			$migrator->migrate();
+		}
+	}
+
+	/**
 	 * Deactivation keeps all data; removal only happens in uninstall.php.
 	 */
 	public static function deactivate(): void {
