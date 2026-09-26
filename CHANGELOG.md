@@ -3,6 +3,43 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [0.2.0] - 2026-09-27
+
+### Eklendi
+- **A0 ölçümü** (`measurement` anahtarı): AI botlarının ziyaretleri ve AI platformlarından gelen insan ziyaretleri sayılır.
+  - Bot listesi `data/ai-bots.json` (12 bot; UA ve doğrulama kaynağı sağlayıcıların resmi belgelerinden, 2026-09-27),
+    yönlendirme listesi `data/ai-referrers.json` (5 platform). Referer yoksa `utm_source` da eşleşir.
+  - Sayaç ön yüz, REST, `robots.txt` ve WordPress'e düşen `llms.txt` isteklerinde çalışır; yönetici paneli,
+    AJAX ve cron istekleri sayılmaz. İstek başına en fazla bir veritabanı yazması.
+  - Doğrulama: yayınlanmış IP listeleri günlük cron ile indirilir (`aihs_ip_ranges`); rDNS sonucu IP'nin tuzlu
+    hash'i anahtarıyla 24 saat önbellekte. Doğrulanamayan ziyaret `verified = 0` ile yine sayılır.
+  - Araçlar → AI Ölçüm: son 7 / 28 gün, bota göre ziyaret, en çok okunan 10 sayfa, yönlendirmeler, CSV dışa
+    aktarma ve ölçümü aç/kapat.
+  - WP-CLI: `wp aihs hits report --days=28 --format=table|csv`.
+  - 400 günden eski kayıtlar haftalık cron ile silinir.
+- Geçiş `Migration_0_2_0`: `{prefix}aihs_hits` tablosu.
+- Eklenti güncellendiğinde bekleyen geçişler otomatik çalışır (etkinleştirme kancası güncellemede çalışmaz).
+- `Features::set()` ve `Module::deactivate()` (devre dışı bırakınca cron görevleri silinir).
+
+### Neden `measurement` varsayılan AÇIK?
+Tüm özellikler varsayılan kapalı gelir; bu tek istisnadır. A0'ın amacı eklenti kurulduğu andan itibaren
+"önceki" durumu ölçmektir; kapalı gelseydi temel (baseline) veri kaybolurdu. Ölçüm yalnızca toplu sayaç
+tutar: ham IP, tam user-agent, sorgu dizesi veya başka kişisel veri saklanmaz. Araçlar → AI Ölçüm
+sayfasından tek tıkla kapatılabilir; kapatılınca sayaç tamamen durur.
+
+### Değişti
+- `aihs_db_version` artık her istekte okunduğu için otomatik yüklenir.
+- Varsayılan-kapalı testi, onaylı istisnaları (`Features::DEFAULT_ON`) birebir denetleyecek şekilde sıkılaştırıldı.
+
+### Bilinen sınırlar
+- Sayfa önbelleğinden sunulan istekler ve sunucuda gerçek dosya olarak duran `llms.txt` sayılamaz; sonuçlar alt sınırdır.
+- Doğrulama `REMOTE_ADDR` kullanır; CDN veya ters vekil arkasındaki sitelerde botlar `verified = 0` görünür.
+- Bytespider ve meta-externalagent için resmi doğrulama yöntemi yok (`verify: none`); Bytespider'ın UA
+  bilgisi yalnızca üçüncü taraf kaynaklardan doğrulanabildi.
+- Amazonbot IP listesi bir HTML sayfasının içinden ayıklanır; sayfa yapısı değişirse doğrulama 0'a düşer.
+- `aihs_hits` benzersiz anahtarı InnoDB DYNAMIC satır biçimi gerektirir (MySQL 5.7+ / MariaDB 10.2+).
+- rDNS önbelleği ıskalandığında o istekte hit yazmasına ek olarak bir önbellek yazması olur (başlangıç listesinde rDNS kullanan bot yok).
+
 ## [0.1.0] - 2026-09-27
 
 ### Eklendi

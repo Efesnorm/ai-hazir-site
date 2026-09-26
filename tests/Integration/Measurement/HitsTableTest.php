@@ -13,6 +13,8 @@ use AIHazirSite\Core\Lifecycle;
 use AIHazirSite\Core\Migrations\Migration_0_2_0;
 use AIHazirSite\Core\Migrations\Migrator;
 use AIHazirSite\Core\Storage\HitStore;
+use AIHazirSite\Core\Uninstaller;
+use AIHazirSite\Modules\Measurement\IpRanges;
 use WP_UnitTestCase;
 
 /**
@@ -95,6 +97,26 @@ final class HitsTableTest extends WP_UnitTestCase {
 
 		$this->assertTrue( $this->table_exists() );
 		$this->assertSame( 200, (int) get_option( Migrator::OPTION ) );
+	}
+
+	/**
+	 * With the opt-in on, uninstall drops the table and removes every plugin option.
+	 */
+	public function test_uninstall_with_opt_in_drops_table(): void {
+		$this->allow_real_ddl();
+		update_option( Migrator::OPTION, 200 );
+		update_option( IpRanges::OPTION, array( 'x' => array() ) );
+		update_option( Uninstaller::DELETE_OPTION, '1' );
+
+		$this->assertTrue( Uninstaller::run() );
+
+		$this->assertFalse( $this->table_exists() );
+		foreach ( Uninstaller::options() as $option ) {
+			$this->assertFalse( get_option( $option ), $option );
+		}
+
+		( new Migration_0_2_0() )->up();
+		update_option( Migrator::OPTION, 200 );
 	}
 
 	/**
