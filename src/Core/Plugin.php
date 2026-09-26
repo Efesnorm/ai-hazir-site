@@ -11,6 +11,7 @@ namespace AIHazirSite\Core;
 
 use AIHazirSite\Core\Migrations\MigrationInterface;
 use AIHazirSite\Core\Migrations\Migration_0_2_0;
+use AIHazirSite\Modules\Measurement\MeasurementModule;
 
 /**
  * Single entry point: registers modules and exposes the migration list.
@@ -41,12 +42,14 @@ final class Plugin {
 	}
 
 	/**
-	 * Modules to register. Empty in 0.1.0.
+	 * Modules to register.
 	 *
 	 * @return list<Module>
 	 */
 	public static function modules(): array {
-		return array();
+		return array(
+			new MeasurementModule(),
+		);
 	}
 
 	/**

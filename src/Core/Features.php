@@ -10,7 +10,8 @@ declare(strict_types=1);
 namespace AIHazirSite\Core;
 
 /**
- * Every user-facing feature is tied to a key here and ships disabled by default.
+ * Every user-facing feature is tied to a key here and ships disabled by default,
+ * except the keys listed in {@see Features::DEFAULT_ON}.
  *
  * Stored values live in the `aihs_features` option as `array<string, bool>`.
  * Keys that are not declared in {@see Features::defaults()} are always disabled,
@@ -24,12 +25,27 @@ final class Features {
 	public const OPTION = 'aihs_features';
 
 	/**
-	 * Declared feature keys and their default state. All defaults must be false.
+	 * AI bot and referral measurement (0.2.0).
+	 */
+	public const MEASUREMENT = 'measurement';
+
+	/**
+	 * Approved exceptions to "disabled by default", each with a CHANGELOG rationale.
+	 *
+	 * - measurement: the "before" baseline must be collected from the moment the
+	 *   plugin is installed; it stores only aggregated, non-personal counters.
+	 */
+	public const DEFAULT_ON = array( self::MEASUREMENT );
+
+	/**
+	 * Declared feature keys and their default state.
 	 *
 	 * @return array<string, bool>
 	 */
 	public static function defaults(): array {
-		return array();
+		return array(
+			self::MEASUREMENT => true,
+		);
 	}
 
 	/**
@@ -49,5 +65,25 @@ final class Features {
 		}
 
 		return $defaults[ $key ];
+	}
+
+	/**
+	 * Turns a declared feature on or off.
+	 *
+	 * @param string $key     Feature key.
+	 * @param bool   $enabled New state.
+	 * @return bool False when the key is not declared.
+	 */
+	public static function set( string $key, bool $enabled ): bool {
+		if ( ! array_key_exists( $key, self::defaults() ) ) {
+			return false;
+		}
+
+		$stored         = get_option( self::OPTION, array() );
+		$stored         = is_array( $stored ) ? $stored : array();
+		$stored[ $key ] = $enabled;
+		update_option( self::OPTION, $stored, true );
+
+		return true;
 	}
 }
