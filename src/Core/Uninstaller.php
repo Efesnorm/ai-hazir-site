@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace AIHazirSite\Core;
 
 use AIHazirSite\Core\Migrations\Migrator;
+use AIHazirSite\Modules\Measurement\IpRanges;
 
 /**
  * Deletes plugin data ONLY when the site owner opted in via `aihs_delete_data_on_uninstall`.
@@ -31,6 +32,7 @@ final class Uninstaller {
 			Features::OPTION,
 			Migrator::OPTION,
 			self::DELETE_OPTION,
+			IpRanges::OPTION,
 		);
 	}
 

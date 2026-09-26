@@ -47,6 +47,8 @@ final class Lifecycle {
 	 * Deactivation keeps all data; removal only happens in uninstall.php.
 	 */
 	public static function deactivate(): void {
-		// Nothing to clean up in 0.1.0.
+		foreach ( Plugin::modules() as $module ) {
+			$module->deactivate();
+		}
 	}
 }
