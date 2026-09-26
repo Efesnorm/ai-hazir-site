@@ -1,0 +1,6 @@
+parameters:
+	level: 6
+	paths:
+		- ai-hazir-site.php
+		- uninstall.php
+		- src
