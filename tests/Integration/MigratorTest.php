@@ -11,6 +11,7 @@ namespace AIHazirSite\Tests\Integration;
 
 use AIHazirSite\Core\Migrations\Migrator;
 use AIHazirSite\Tests\Fixtures\OptionMigration;
+use AIHazirSite\WordPress\Platform\WpSettings;
 use WP_UnitTestCase;
 
 /**
@@ -35,7 +36,7 @@ final class MigratorTest extends WP_UnitTestCase {
 	public function test_applies_in_order_once_and_rolls_back(): void {
 		$first    = new OptionMigration( 1 );
 		$second   = new OptionMigration( 2 );
-		$migrator = new Migrator( array( $second, $first ) );
+		$migrator = new Migrator( array( $second, $first ), new WpSettings() );
 
 		// First run applies both, in version order.
 		$this->assertSame( array( 1, 2 ), $migrator->migrate() );
@@ -45,7 +46,7 @@ final class MigratorTest extends WP_UnitTestCase {
 		$this->assertSame( 'applied', get_option( $second->option_name() ) );
 
 		// Second run applies nothing.
-		$this->assertSame( array(), ( new Migrator( array( $first, $second ) ) )->migrate() );
+		$this->assertSame( array(), ( new Migrator( array( $first, $second ), new WpSettings() ) )->migrate() );
 		$this->assertCount( 2, OptionMigration::$log );
 
 		// Rollback reverts newest first and removes the side effects.

@@ -9,6 +9,9 @@ declare(strict_types=1);
 
 namespace AIHazirSite\Core;
 
+use AIHazirSite\Core\Contracts\Settings;
+use LogicException;
+
 /**
  * Every user-facing feature is tied to a key here and ships disabled by default,
  * except the keys listed in {@see Features::DEFAULT_ON}.
@@ -38,6 +41,22 @@ final class Features {
 	public const DEFAULT_ON = array( self::MEASUREMENT );
 
 	/**
+	 * Storage, set once by the platform at boot.
+	 *
+	 * @var Settings|null
+	 */
+	private static ?Settings $settings = null;
+
+	/**
+	 * Sets where feature states are stored (called by the platform adapter at boot).
+	 *
+	 * @param Settings $settings Settings.
+	 */
+	public static function use_settings( Settings $settings ): void {
+		self::$settings = $settings;
+	}
+
+	/**
 	 * Declared feature keys and their default state.
 	 *
 	 * @return array<string, bool>
@@ -59,7 +78,7 @@ final class Features {
 			return false;
 		}
 
-		$stored = get_option( self::OPTION, array() );
+		$stored = self::settings()->get( self::OPTION, array() );
 		if ( is_array( $stored ) && array_key_exists( $key, $stored ) ) {
 			return (bool) $stored[ $key ];
 		}
@@ -79,11 +98,23 @@ final class Features {
 			return false;
 		}
 
-		$stored         = get_option( self::OPTION, array() );
+		$stored         = self::settings()->get( self::OPTION, array() );
 		$stored         = is_array( $stored ) ? $stored : array();
 		$stored[ $key ] = $enabled;
-		update_option( self::OPTION, $stored, true );
+		self::settings()->set( self::OPTION, $stored, true );
 
 		return true;
+	}
+
+	/**
+	 * Configured storage.
+	 *
+	 * @throws LogicException When use_settings() was not called.
+	 */
+	private static function settings(): Settings {
+		if ( null === self::$settings ) {
+			throw new LogicException( 'Features::use_settings() must be called before use.' );
+		}
+		return self::$settings;
 	}
 }

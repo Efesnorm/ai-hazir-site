@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace AIHazirSite\Core;
 
 use AIHazirSite\Core\Migrations\Migrator;
+use AIHazirSite\WordPress\Platform\WpSettings;
 
 /**
  * Handles plugin activation and deactivation.
@@ -30,14 +31,14 @@ final class Lifecycle {
 	 * Runs pending migrations.
 	 */
 	public static function activate(): void {
-		( new Migrator( Plugin::migrations() ) )->migrate();
+		( new Migrator( Plugin::migrations(), new WpSettings() ) )->migrate();
 	}
 
 	/**
 	 * Runs pending migrations after a plugin update (activation hooks do not fire on update).
 	 */
 	public static function maybe_upgrade(): void {
-		$migrator = new Migrator( Plugin::migrations() );
+		$migrator = new Migrator( Plugin::migrations(), new WpSettings() );
 		if ( ! $migrator->is_up_to_date() ) {
 			$migrator->migrate();
 		}

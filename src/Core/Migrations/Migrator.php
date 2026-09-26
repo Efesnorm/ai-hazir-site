@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace AIHazirSite\Core\Migrations;
 
+use AIHazirSite\Core\Contracts\Settings;
 use InvalidArgumentException;
 
 /**
@@ -33,9 +34,10 @@ final class Migrator {
 	 * Constructor.
 	 *
 	 * @param MigrationInterface[] $migrations Migrations, in any order.
+	 * @param Settings             $settings   Where the applied version is stored.
 	 * @throws InvalidArgumentException When a version is not positive or is duplicated.
 	 */
-	public function __construct( array $migrations ) {
+	public function __construct( array $migrations, private readonly Settings $settings ) {
 		$seen = array();
 		foreach ( $migrations as $migration ) {
 			$version = $migration->version();
@@ -59,7 +61,7 @@ final class Migrator {
 	 * Last applied migration version (0 when none).
 	 */
 	public function current_version(): int {
-		return (int) get_option( self::OPTION, 0 );
+		return (int) $this->settings->get( self::OPTION, 0 );
 	}
 
 	/**
@@ -96,7 +98,7 @@ final class Migrator {
 			}
 
 			$migration->up();
-			update_option( self::OPTION, $version, true );
+			$this->settings->set( self::OPTION, $version, true );
 			$applied[] = $version;
 		}
 
@@ -124,7 +126,7 @@ final class Migrator {
 
 			$this->migrations[ $i ]->down();
 			$previous = $i > 0 ? $this->migrations[ $i - 1 ]->version() : 0;
-			update_option( self::OPTION, $previous, true );
+			$this->settings->set( self::OPTION, $previous, true );
 			$reverted[] = $version;
 		}
 

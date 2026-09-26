@@ -15,6 +15,7 @@ use AIHazirSite\Core\Migrations\Migrator;
 use AIHazirSite\Core\Storage\HitStore;
 use AIHazirSite\Core\Uninstaller;
 use AIHazirSite\Modules\Measurement\IpRanges;
+use AIHazirSite\WordPress\Platform\WpSettings;
 use WP_UnitTestCase;
 
 /**
@@ -64,7 +65,7 @@ final class HitsTableTest extends WP_UnitTestCase {
 	 */
 	public function test_table_is_created_on_load(): void {
 		$this->assertTrue( $this->table_exists() );
-		$this->assertSame( 200, ( new Migrator( array( new Migration_0_2_0() ) ) )->current_version() );
+		$this->assertSame( 200, ( new Migrator( array( new Migration_0_2_0() ), new WpSettings() ) )->current_version() );
 	}
 
 	/**

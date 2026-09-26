@@ -12,6 +12,7 @@ namespace AIHazirSite\Core;
 use AIHazirSite\Core\Migrations\MigrationInterface;
 use AIHazirSite\Core\Migrations\Migration_0_2_0;
 use AIHazirSite\Modules\Measurement\MeasurementModule;
+use AIHazirSite\WordPress\Platform\WpSettings;
 
 /**
  * Single entry point: registers modules and exposes the migration list.
@@ -33,6 +34,8 @@ final class Plugin {
 			return;
 		}
 		self::$booted = true;
+
+		Features::use_settings( new WpSettings() );
 
 		add_action( 'plugins_loaded', array( Lifecycle::class, 'maybe_upgrade' ) );
 

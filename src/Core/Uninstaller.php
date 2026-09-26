@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace AIHazirSite\Core;
 
 use AIHazirSite\Core\Migrations\Migrator;
+use AIHazirSite\WordPress\Platform\WpSettings;
 use AIHazirSite\Modules\Measurement\IpRanges;
 
 /**
@@ -53,7 +54,7 @@ final class Uninstaller {
 			return false;
 		}
 
-		( new Migrator( Plugin::migrations() ) )->rollback( 0 );
+		( new Migrator( Plugin::migrations(), new WpSettings() ) )->rollback( 0 );
 
 		foreach ( self::options() as $option ) {
 			delete_option( $option );

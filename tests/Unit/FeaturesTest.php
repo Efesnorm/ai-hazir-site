@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace AIHazirSite\Tests\Unit;
 
 use AIHazirSite\Core\Features;
-use Brain\Monkey\Functions;
+use AIHazirSite\Tests\Support\MemorySettings;
 
 /**
  * Features unit tests.
@@ -20,11 +20,25 @@ use Brain\Monkey\Functions;
 final class FeaturesTest extends UnitTestCase {
 
 	/**
+	 * Settings behind Features.
+	 *
+	 * @var MemorySettings
+	 */
+	private MemorySettings $settings;
+
+	/**
+	 * Fresh in-memory settings.
+	 */
+	protected function setUp(): void {
+		parent::setUp();
+		$this->settings = new MemorySettings();
+		Features::use_settings( $this->settings );
+	}
+
+	/**
 	 * Unknown keys are disabled.
 	 */
 	public function test_unknown_key_is_disabled(): void {
-		Functions\when( 'get_option' )->justReturn( array() );
-
 		$this->assertFalse( Features::is_enabled( 'olmayan' ) );
 	}
 
@@ -32,7 +46,7 @@ final class FeaturesTest extends UnitTestCase {
 	 * Unknown keys stay disabled even if the option contains them.
 	 */
 	public function test_unknown_key_is_disabled_even_if_stored(): void {
-		Functions\when( 'get_option' )->justReturn( array( 'olmayan' => true ) );
+		$this->settings->set( Features::OPTION, array( 'olmayan' => true ) );
 
 		$this->assertFalse( Features::is_enabled( 'olmayan' ) );
 	}
@@ -59,23 +73,28 @@ final class FeaturesTest extends UnitTestCase {
 	 * Measurement is on until the site owner turns it off.
 	 */
 	public function test_measurement_defaults_on_and_can_be_turned_off(): void {
-		Functions\when( 'get_option' )->justReturn( array() );
 		$this->assertTrue( Features::is_enabled( Features::MEASUREMENT ) );
 
-		Functions\when( 'get_option' )->justReturn( array( 'measurement' => false ) );
+		$this->settings->set( Features::OPTION, array( 'measurement' => false ) );
 		$this->assertFalse( Features::is_enabled( Features::MEASUREMENT ) );
 	}
 
 	/**
-	 * Only declared keys can be stored.
+	 * Only declared keys can be stored; other stored keys are kept; the option is autoloaded.
 	 */
 	public function test_set_only_accepts_declared_keys(): void {
-		Functions\when( 'get_option' )->justReturn( array( 'other' => true ) );
-		Functions\expect( 'update_option' )
-			->once()
-			->with( Features::OPTION, array( 'other' => true, 'measurement' => false ), true ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
+		$this->settings->set( Features::OPTION, array( 'other' => true ) );
 
 		$this->assertTrue( Features::set( Features::MEASUREMENT, false ) );
 		$this->assertFalse( Features::set( 'olmayan', true ) );
+
+		$this->assertSame(
+			array(
+				'other'       => true,
+				'measurement' => false,
+			),
+			$this->settings->get( Features::OPTION )
+		);
+		$this->assertTrue( $this->settings->autoload[ Features::OPTION ] );
 	}
 }
