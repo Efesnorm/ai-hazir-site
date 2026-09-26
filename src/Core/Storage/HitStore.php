@@ -9,10 +9,12 @@ declare(strict_types=1);
 
 namespace AIHazirSite\Core\Storage;
 
+use AIHazirSite\Core\Contracts\HitRepository;
+
 /**
  * Aggregated hit counters. Stores no IP address, user agent or query string.
  */
-final class HitStore {
+final class HitStore implements HitRepository {
 
 	public const TABLE         = 'aihs_hits';
 	public const KIND_BOT      = 'bot';
@@ -69,6 +71,42 @@ final class HitStore {
 		);
 
 		return false === $result ? 0 : (int) $result;
+	}
+
+	/**
+	 * Sums per source or per path since a day, largest total first (ties by key).
+	 *
+	 * @param string $kind     Hit kind.
+	 * @param string $since    First day included (Y-m-d).
+	 * @param string $group_by self::GROUP_SOURCE or self::GROUP_PATH.
+	 * @param int    $limit    Maximum rows; 0 = no limit.
+	 * @return array[]
+	 *
+	 * @phpstan-return list<array{key: string, verified: int, unverified: int, total: int}>
+	 */
+	public function totals( string $kind, string $since, string $group_by, int $limit = 0 ): array {
+		global $wpdb;
+
+		$column = self::GROUP_PATH === $group_by ? 'path' : 'source_id';
+		$sql    = 'SELECT %i AS `key`, SUM(CASE WHEN verified = 1 THEN hits ELSE 0 END) AS verified, SUM(CASE WHEN verified = 1 THEN 0 ELSE hits END) AS unverified, SUM(hits) AS total FROM %i WHERE kind = %s AND day >= %s GROUP BY %i ORDER BY total DESC, %i ASC';
+		$args   = array( $column, self::table(), $kind, $since, $column, $column );
+		if ( $limit > 0 ) {
+			$sql   .= ' LIMIT %d';
+			$args[] = $limit;
+		}
+
+		$rows = $wpdb->get_results( $wpdb->prepare( $sql, $args ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- $sql is built from constants only.
+
+		$totals = array();
+		foreach ( is_array( $rows ) ? $rows : array() as $row ) {
+			$totals[] = array(
+				'key'        => (string) $row['key'],
+				'verified'   => (int) $row['verified'],
+				'unverified' => (int) $row['unverified'],
+				'total'      => (int) $row['total'],
+			);
+		}
+		return $totals;
 	}
 
 	/**
