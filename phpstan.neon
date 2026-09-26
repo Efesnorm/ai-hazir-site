@@ -4,3 +4,5 @@ parameters:
 		- ai-hazir-site.php
 		- uninstall.php
 		- src
+	scanFiles:
+		- tests/stubs/wp-cli.php

@@ -68,6 +68,11 @@ jobs:
           set -o pipefail
           composer test:integration 2>&1 | tee integration.log
 
+      - name: WP-CLI komutu
+        run: |
+          npx wp-env run cli wp aihs hits report --days=28 --format=table
+          npx wp-env run cli wp aihs hits report --days=7 --format=csv
+
       - name: Entegrasyon hata özeti
         if: failure()
         shell: bash
