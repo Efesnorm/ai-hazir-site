@@ -41,7 +41,7 @@ Yeni platform adaptörü, yeni kullanıcı özelliği, merkezi servis, performan
 - [x] 0.2.0 kurulu bir site 0.2.1'e güncellenince veriler, ayarlar ve cron görevleri aynen korunuyor
       (entegrasyon).
 - [x] Sayaç ek süresi hâlâ ortalama 5 ms'nin altında (entegrasyon).
-- [ ] `composer check` temiz, GitHub Actions yeşil.
+- [x] `composer check` temiz, GitHub Actions yeşil.
 
 ## Çalışma şekli
 Önce plan ve dosya ağacı, onayımı bekle. Sonra küçük adımlarla ilerle; her adım sonunda tüm testler
