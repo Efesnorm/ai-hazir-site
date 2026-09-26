@@ -27,14 +27,17 @@ final class UninstallTest extends WP_UnitTestCase {
 	public function set_up(): void {
 		parent::set_up();
 		update_option( Features::OPTION, array( 'x' => false ) );
-		update_option( Migrator::OPTION, 0 );
+		update_option( Migrator::OPTION, 3 );
 	}
 
 	/**
 	 * With the opt-in off, uninstall.php deletes nothing.
+	 *
+	 * The option is stored as '0', the way a settings form saves an unchecked box.
+	 * (update_option() with `false` on a missing option stores nothing at all.)
 	 */
 	public function test_uninstall_file_keeps_data_when_opt_in_is_off(): void {
-		update_option( Uninstaller::DELETE_OPTION, false );
+		update_option( Uninstaller::DELETE_OPTION, '0' );
 
 		if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 			define( 'WP_UNINSTALL_PLUGIN', 'ai-hazir-site/ai-hazir-site.php' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- WordPress core constant.
@@ -42,8 +45,8 @@ final class UninstallTest extends WP_UnitTestCase {
 		require dirname( __DIR__, 2 ) . '/uninstall.php';
 
 		$this->assertSame( array( 'x' => false ), get_option( Features::OPTION ) );
-		$this->assertNotFalse( get_option( Migrator::OPTION ) );
-		$this->assertNotFalse( get_option( Uninstaller::DELETE_OPTION ) );
+		$this->assertSame( 3, (int) get_option( Migrator::OPTION ) );
+		$this->assertSame( '0', get_option( Uninstaller::DELETE_OPTION ) );
 	}
 
 	/**
