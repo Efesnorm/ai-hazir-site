@@ -11,19 +11,20 @@ namespace AIHazirSite\Tests\Integration\Measurement;
 
 use AIHazirSite\Core\Lifecycle;
 use AIHazirSite\Core\Storage\HitStore;
-use AIHazirSite\Modules\Measurement\IpRanges;
-use AIHazirSite\Modules\Measurement\MeasurementModule;
-use AIHazirSite\Modules\Measurement\Tracker;
-use AIHazirSite\Modules\Measurement\Verifier;
+use AIHazirSite\Core\Measurement\IpRanges;
+use AIHazirSite\Core\Measurement\Tracker;
+use AIHazirSite\WordPress\Measurement\MeasurementModule;
+use AIHazirSite\WordPress\Measurement\RequestListener;
+use AIHazirSite\WordPress\Platform\WpClock;
 use WP_Error;
 use WP_UnitTestCase;
 
 /**
  * Verification integration tests. HTTP is mocked with `pre_http_request`.
  *
- * @covers \AIHazirSite\Modules\Measurement\MeasurementModule
- * @covers \AIHazirSite\Modules\Measurement\IpRanges
- * @covers \AIHazirSite\Modules\Measurement\Verifier
+ * @covers \AIHazirSite\WordPress\Measurement\MeasurementModule
+ * @covers \AIHazirSite\Core\Measurement\IpRanges
+ * @covers \AIHazirSite\Core\Measurement\Verifier
  */
 final class VerificationTest extends WP_UnitTestCase {
 
@@ -92,22 +93,19 @@ final class VerificationTest extends WP_UnitTestCase {
 		$this->assertCount( 8, $requested );
 		$this->assertFalse( wp_load_alloptions()[ IpRanges::OPTION ] ?? false, 'IP lists are not autoloaded.' );
 
-		$tracker = new Tracker( new HitStore(), null, new Verifier( new IpRanges() ) );
+		$tracker = MeasurementModule::tracker();
 		$ua      = 'Mozilla/5.0 (compatible; GPTBot/1.4; +https://openai.com/gptbot)';
-		$tracker->handle(
-			array(
-				'HTTP_USER_AGENT' => $ua,
-				'REQUEST_URI'     => '/',
-				'REMOTE_ADDR'     => '20.125.66.81',
-			)
-		);
-		$tracker->handle(
-			array(
-				'HTTP_USER_AGENT' => $ua,
-				'REQUEST_URI'     => '/',
-				'REMOTE_ADDR'     => '198.51.100.7',
-			)
-		);
+		foreach ( array( '20.125.66.81', '198.51.100.7' ) as $ip ) {
+			$tracker->handle(
+				RequestListener::request_from(
+					array(
+						'HTTP_USER_AGENT' => $ua,
+						'REQUEST_URI'     => '/',
+						'REMOTE_ADDR'     => $ip,
+					)
+				)
+			);
+		}
 
 		global $wpdb;
 		$this->assertSame(
@@ -125,13 +123,15 @@ final class VerificationTest extends WP_UnitTestCase {
 		$result = ( new MeasurementModule() )->refresh_ip_ranges();
 		$this->assertSame( array( 0 ), array_values( array_unique( $result ) ) );
 
-		$tracker = new Tracker( new HitStore(), null, new Verifier( new IpRanges() ) );
+		$tracker = MeasurementModule::tracker();
 		$this->assertTrue(
 			$tracker->handle(
-				array(
-					'HTTP_USER_AGENT' => 'GPTBot/1.4',
-					'REQUEST_URI'     => '/',
-					'REMOTE_ADDR'     => '20.125.66.81',
+				RequestListener::request_from(
+					array(
+						'HTTP_USER_AGENT' => 'GPTBot/1.4',
+						'REQUEST_URI'     => '/',
+						'REMOTE_ADDR'     => '20.125.66.81',
+					)
 				)
 			)
 		);

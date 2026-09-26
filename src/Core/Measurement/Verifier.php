@@ -7,8 +7,10 @@
 
 declare(strict_types=1);
 
-namespace AIHazirSite\Modules\Measurement;
+namespace AIHazirSite\Core\Measurement;
 
+use AIHazirSite\Core\Contracts\Cache;
+use AIHazirSite\Core\Contracts\Secret;
 use Throwable;
 
 /**
@@ -19,9 +21,9 @@ use Throwable;
 final class Verifier {
 
 	/**
-	 * Reverse DNS results are cached this long, keyed by a salted hash of the IP.
+	 * Reverse DNS results are cached this long (seconds), keyed by a salted hash of the IP.
 	 */
-	public const RDNS_TTL = DAY_IN_SECONDS;
+	public const RDNS_TTL = 86400;
 
 	/**
 	 * Reverse lookup: fn( string $ip ): string|false.
@@ -41,6 +43,8 @@ final class Verifier {
 	 * Constructor.
 	 *
 	 * @param IpRanges      $ranges  Published IP lists.
+	 * @param Cache         $cache   Reverse DNS result cache.
+	 * @param Secret        $secret  Hashes IPs for cache keys.
 	 * @param callable|null $reverse fn( string $ip ): string|false; defaults to gethostbyaddr().
 	 * @param callable|null $forward fn( string $host ): list<string>; defaults to A/AAAA lookup.
 	 *
@@ -49,6 +53,8 @@ final class Verifier {
 	 */
 	public function __construct(
 		private readonly IpRanges $ranges,
+		private readonly Cache $cache,
+		private readonly Secret $secret,
 		?callable $reverse = null,
 		?callable $forward = null
 	) {
@@ -95,14 +101,14 @@ final class Verifier {
 	 * @param string $ip       Client IP.
 	 */
 	private function rdns( string $suffixes, string $ip ): bool {
-		$key    = 'aihs_rdns_' . substr( hash_hmac( 'sha256', $ip . '|' . $suffixes, wp_salt( 'auth' ) ), 0, 32 );
-		$cached = get_transient( $key );
+		$key    = 'aihs_rdns_' . substr( $this->secret->hmac( $ip . '|' . $suffixes ), 0, 32 );
+		$cached = $this->cache->get( $key );
 		if ( '1' === $cached || '0' === $cached ) {
 			return '1' === $cached;
 		}
 
 		$verified = $this->lookup( $suffixes, $ip );
-		set_transient( $key, $verified ? '1' : '0', self::RDNS_TTL );
+		$this->cache->set( $key, $verified ? '1' : '0', self::RDNS_TTL );
 
 		return $verified;
 	}

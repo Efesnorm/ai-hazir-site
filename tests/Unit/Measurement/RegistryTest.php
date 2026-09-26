@@ -9,16 +9,16 @@ declare(strict_types=1);
 
 namespace AIHazirSite\Tests\Unit\Measurement;
 
-use AIHazirSite\Modules\Measurement\Bot;
-use AIHazirSite\Modules\Measurement\Registry;
+use AIHazirSite\Core\Measurement\Bot;
+use AIHazirSite\Core\Measurement\Registry;
 use AIHazirSite\Tests\Unit\UnitTestCase;
 
 /**
  * Registry unit tests.
  *
- * @covers \AIHazirSite\Modules\Measurement\Registry
- * @covers \AIHazirSite\Modules\Measurement\Bot
- * @covers \AIHazirSite\Modules\Measurement\Referrer
+ * @covers \AIHazirSite\Core\Measurement\Registry
+ * @covers \AIHazirSite\Core\Measurement\Bot
+ * @covers \AIHazirSite\Core\Measurement\Referrer
  */
 final class RegistryTest extends UnitTestCase {
 

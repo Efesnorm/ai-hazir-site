@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace AIHazirSite\Modules\Measurement;
+namespace AIHazirSite\Core\Measurement;
 
 /**
  * Matching is a single compiled regex for bots and a host comparison for referrers,
@@ -82,7 +82,7 @@ final class Classifier {
 	 * @param string $utm_source Value of the utm_source query parameter.
 	 */
 	public function match_referrer( string $referer, string $utm_source ): ?Referrer {
-		$host = '' === $referer ? '' : (string) wp_parse_url( $referer, PHP_URL_HOST );
+		$host = '' === $referer ? '' : (string) parse_url( $referer, PHP_URL_HOST ); // phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url -- Platform-neutral core; PHP 8.1 parse_url is reliable.
 		$utm  = strtolower( trim( $utm_source ) );
 
 		foreach ( $this->referrers as $referrer ) {

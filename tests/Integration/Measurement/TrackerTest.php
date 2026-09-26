@@ -1,6 +1,6 @@
 <?php
 /**
- * Tracker inside WordPress.
+ * Tracker inside WordPress (through the request listener).
  *
  * @package AIHazirSite
  */
@@ -10,16 +10,18 @@ declare(strict_types=1);
 namespace AIHazirSite\Tests\Integration\Measurement;
 
 use AIHazirSite\Core\Features;
+use AIHazirSite\Core\Measurement\Tracker;
 use AIHazirSite\Core\Storage\HitStore;
-use AIHazirSite\Modules\Measurement\Bot;
-use AIHazirSite\Modules\Measurement\Tracker;
+use AIHazirSite\WordPress\Measurement\RequestListener;
+use AIHazirSite\WordPress\Platform\WpClock;
 use WP_UnitTestCase;
 
 /**
  * Tracker integration tests.
  *
- * @covers \AIHazirSite\Modules\Measurement\Tracker
- * @covers \AIHazirSite\Modules\Measurement\MeasurementModule
+ * @covers \AIHazirSite\Core\Measurement\Tracker
+ * @covers \AIHazirSite\WordPress\Measurement\RequestListener
+ * @covers \AIHazirSite\WordPress\Measurement\MeasurementModule
  */
 final class TrackerTest extends WP_UnitTestCase {
 
@@ -35,6 +37,13 @@ final class TrackerTest extends WP_UnitTestCase {
 	private Tracker $tracker;
 
 	/**
+	 * $_SERVER and $_GET before the test.
+	 *
+	 * @var array{0: array<mixed>, 1: array<mixed>}
+	 */
+	private array $globals;
+
+	/**
 	 * Fresh tracker and empty table; measurement at its default (on).
 	 */
 	public function set_up(): void {
@@ -42,13 +51,15 @@ final class TrackerTest extends WP_UnitTestCase {
 		global $wpdb;
 		$wpdb->query( $wpdb->prepare( 'DELETE FROM %i', HitStore::table() ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		delete_option( Features::OPTION );
-		$this->tracker = new Tracker( new HitStore() );
+		$this->tracker = new Tracker( new HitStore(), new WpClock() );
+		$this->globals = array( $_SERVER, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Saved to restore after the test.
 	}
 
 	/**
 	 * Restores the front-end context.
 	 */
 	public function tear_down(): void {
+		[ $_SERVER, $_GET ] = $this->globals;
 		set_current_screen( 'front' );
 		remove_all_filters( 'wp_doing_cron' );
 		parent::tear_down();
@@ -66,6 +77,26 @@ final class TrackerTest extends WP_UnitTestCase {
 			'REQUEST_URI'     => $uri,
 			'REMOTE_ADDR'     => self::IP,
 		);
+	}
+
+	/**
+	 * Runs one WordPress request through the listener (parse_request + shutdown).
+	 *
+	 * @param array<string, string> $server  Request headers ($_SERVER keys).
+	 * @param array<string, string> $query   Query parameters ($_GET).
+	 * @param Tracker|null          $tracker Tracker; defaults to the test tracker.
+	 * @return bool True when a row was written.
+	 */
+	private function handle( array $server, array $query = array(), ?Tracker $tracker = null ): bool {
+		$tracker = $tracker ?? $this->tracker;
+		foreach ( array( 'HTTP_USER_AGENT', 'REQUEST_URI', 'REMOTE_ADDR', 'HTTP_REFERER' ) as $key ) {
+			unset( $_SERVER[ $key ] );
+		}
+		$_SERVER = array_merge( $_SERVER, $server );
+		$_GET    = $query;
+
+		( new RequestListener( $tracker ) )->on_parse_request();
+		return $tracker->flush();
 	}
 
 	/**
@@ -90,8 +121,8 @@ final class TrackerTest extends WP_UnitTestCase {
 	 * Same bot, same page, same day twice → one row with hits = 2.
 	 */
 	public function test_same_bot_same_page_twice_is_one_row(): void {
-		$this->assertTrue( $this->tracker->handle( $this->bot_request() ) );
-		$this->assertTrue( $this->tracker->handle( $this->bot_request() ) );
+		$this->assertTrue( $this->handle( $this->bot_request() ) );
+		$this->assertTrue( $this->handle( $this->bot_request() ) );
 
 		$this->assertSame(
 			array(
@@ -112,7 +143,7 @@ final class TrackerTest extends WP_UnitTestCase {
 	 * A human coming from ChatGPT is counted as a referral; plain visits are not counted.
 	 */
 	public function test_referral_counted_and_plain_visit_ignored(): void {
-		$this->tracker->handle(
+		$this->handle(
 			array(
 				'HTTP_USER_AGENT' => self::BROWSER_UA,
 				'HTTP_REFERER'    => 'https://chatgpt.com/',
@@ -120,7 +151,7 @@ final class TrackerTest extends WP_UnitTestCase {
 			)
 		);
 		$this->assertFalse(
-			$this->tracker->handle(
+			$this->handle(
 				array(
 					'HTTP_USER_AGENT' => self::BROWSER_UA,
 					'HTTP_REFERER'    => 'https://www.google.com/',
@@ -128,7 +159,7 @@ final class TrackerTest extends WP_UnitTestCase {
 				)
 			)
 		);
-		$this->tracker->handle( array( 'HTTP_USER_AGENT' => self::BROWSER_UA, 'REQUEST_URI' => '/?utm_source=chatgpt.com' ), array( 'utm_source' => 'chatgpt.com' ) ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
+		$this->handle( array( 'HTTP_USER_AGENT' => self::BROWSER_UA, 'REQUEST_URI' => '/?utm_source=chatgpt.com' ), array( 'utm_source' => 'chatgpt.com' ) ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
 
 		$rows = $this->rows();
 		$this->assertCount( 2, $rows );
@@ -142,11 +173,11 @@ final class TrackerTest extends WP_UnitTestCase {
 	public function test_admin_and_cron_requests_are_not_counted(): void {
 		set_current_screen( 'dashboard' );
 		$this->assertTrue( is_admin() );
-		$this->assertFalse( $this->tracker->handle( $this->bot_request() ) );
+		$this->assertFalse( $this->handle( $this->bot_request() ) );
 
 		set_current_screen( 'front' );
 		add_filter( 'wp_doing_cron', '__return_true' );
-		$this->assertFalse( $this->tracker->handle( $this->bot_request() ) );
+		$this->assertFalse( $this->handle( $this->bot_request() ) );
 
 		$this->assertSame( array(), $this->rows() );
 	}
@@ -157,8 +188,8 @@ final class TrackerTest extends WP_UnitTestCase {
 	public function test_no_raw_ip_or_user_agent_is_stored(): void {
 		global $wpdb;
 
-		$tracker = new Tracker( new HitStore(), null, static fn(): bool => true );
-		$this->assertTrue( $tracker->handle( $this->bot_request() ) );
+		$tracker = new Tracker( new HitStore(), new WpClock(), null, static fn(): bool => true );
+		$this->assertTrue( $this->handle( $this->bot_request(), array(), $tracker ) );
 
 		foreach ( array( self::IP, 'marker-7f3a9c', 'utm_source' ) as $needle ) {
 			$like = '%' . $wpdb->esc_like( $needle ) . '%';
@@ -173,8 +204,8 @@ final class TrackerTest extends WP_UnitTestCase {
 	public function test_nothing_is_written_when_feature_is_off(): void {
 		Features::set( Features::MEASUREMENT, false );
 
-		$this->assertFalse( $this->tracker->handle( $this->bot_request() ) );
-		$this->assertFalse( $this->tracker->handle( array( 'HTTP_REFERER' => 'https://claude.ai/' ) ) );
+		$this->assertFalse( $this->handle( $this->bot_request() ) );
+		$this->assertFalse( $this->handle( array( 'HTTP_REFERER' => 'https://claude.ai/' ) ) );
 
 		$this->assertSame( array(), $this->rows() );
 	}
@@ -185,26 +216,27 @@ final class TrackerTest extends WP_UnitTestCase {
 	public function test_failing_verifier_counts_unverified(): void {
 		$tracker = new Tracker(
 			new HitStore(),
+			new WpClock(),
 			null,
 			static function (): bool {
 				throw new \RuntimeException( 'source unreachable' );
 			}
 		);
 
-		$this->assertTrue( $tracker->handle( $this->bot_request() ) );
+		$this->assertTrue( $this->handle( $this->bot_request(), array(), $tracker ) );
 		$this->assertSame( '0', $this->rows()[0]['verified'] );
 	}
 
 	/**
-	 * The tracker adds on average less than 5 ms per counted request.
+	 * The full WordPress path (listener + tracker + one write) adds on average less than 5 ms.
 	 */
 	public function test_average_overhead_is_below_5ms(): void {
 		$runs = 200;
-		$this->tracker->handle( $this->bot_request() ); // Warm-up: loads data files.
+		$this->handle( $this->bot_request() ); // Warm-up: loads data files.
 
 		$start = hrtime( true );
 		for ( $i = 0; $i < $runs; $i++ ) {
-			$this->tracker->handle( $this->bot_request( '/sayfa-' . ( $i % 20 ) . '/' ) );
+			$this->handle( $this->bot_request( '/sayfa-' . ( $i % 20 ) . '/' ) );
 		}
 		$average_ms = ( hrtime( true ) - $start ) / 1e6 / $runs;
 

@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace AIHazirSite\Modules\Measurement;
+namespace AIHazirSite\Core\Measurement;
 
 /**
  * One entry of data/ai-bots.json.

@@ -12,13 +12,13 @@ namespace AIHazirSite\Tests\Integration\Measurement;
 use AIHazirSite\Core\Features;
 use AIHazirSite\Core\Lifecycle;
 use AIHazirSite\Core\Storage\HitStore;
-use AIHazirSite\Modules\Measurement\MeasurementModule;
+use AIHazirSite\WordPress\Measurement\MeasurementModule;
 use WP_UnitTestCase;
 
 /**
  * Retention integration tests.
  *
- * @covers \AIHazirSite\Modules\Measurement\MeasurementModule
+ * @covers \AIHazirSite\WordPress\Measurement\MeasurementModule
  */
 final class RetentionTest extends WP_UnitTestCase {
 

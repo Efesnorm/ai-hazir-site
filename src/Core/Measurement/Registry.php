@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace AIHazirSite\Modules\Measurement;
+namespace AIHazirSite\Core\Measurement;
 
 /**
  * Reads data/ai-bots.json and data/ai-referrers.json. Invalid records are skipped

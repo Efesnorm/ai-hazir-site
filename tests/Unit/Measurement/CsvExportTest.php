@@ -9,15 +9,14 @@ declare(strict_types=1);
 
 namespace AIHazirSite\Tests\Unit\Measurement;
 
-use AIHazirSite\Modules\Measurement\Admin\CsvExport;
-use AIHazirSite\Modules\Measurement\Report;
+use AIHazirSite\Core\Measurement\CsvExport;
+use AIHazirSite\Core\Measurement\Report;
 use AIHazirSite\Tests\Unit\UnitTestCase;
-use Brain\Monkey\Functions;
 
 /**
  * CSV unit tests.
  *
- * @covers \AIHazirSite\Modules\Measurement\Admin\CsvExport
+ * @covers \AIHazirSite\Core\Measurement\CsvExport
  */
 final class CsvExportTest extends UnitTestCase {
 
@@ -25,8 +24,6 @@ final class CsvExportTest extends UnitTestCase {
 	 * Header, BOM, quoting and formula neutralization.
 	 */
 	public function test_csv_format(): void {
-		Functions\stubTranslationFunctions();
-
 		$csv = CsvExport::to_csv(
 			array(
 				array(

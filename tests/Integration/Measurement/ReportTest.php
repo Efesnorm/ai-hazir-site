@@ -11,9 +11,10 @@ namespace AIHazirSite\Tests\Integration\Measurement;
 
 use AIHazirSite\Core\Features;
 use AIHazirSite\Core\Storage\HitStore;
-use AIHazirSite\Modules\Measurement\Admin\CsvExport;
-use AIHazirSite\Modules\Measurement\Admin\ReportPage;
-use AIHazirSite\Modules\Measurement\Report;
+use AIHazirSite\Core\Measurement\CsvExport;
+use AIHazirSite\Core\Measurement\Report;
+use AIHazirSite\WordPress\Measurement\Admin\ReportPage;
+use AIHazirSite\Tests\Support\FixedClock;
 use DOMDocument;
 use DOMXPath;
 use WP_UnitTestCase;
@@ -22,9 +23,9 @@ use WPDieException;
 /**
  * Report integration tests.
  *
- * @covers \AIHazirSite\Modules\Measurement\Report
- * @covers \AIHazirSite\Modules\Measurement\Admin\ReportPage
- * @covers \AIHazirSite\Modules\Measurement\Admin\CsvExport
+ * @covers \AIHazirSite\Core\Measurement\Report
+ * @covers \AIHazirSite\WordPress\Measurement\Admin\ReportPage
+ * @covers \AIHazirSite\Core\Measurement\CsvExport
  */
 final class ReportTest extends WP_UnitTestCase {
 
@@ -71,7 +72,7 @@ final class ReportTest extends WP_UnitTestCase {
 	 * The 7-day report aggregates per bot, limits pages to 10 and groups referrals.
 	 */
 	public function test_seven_day_rows(): void {
-		$rows = ( new Report( 7, null, $this->today ) )->rows();
+		$rows = ( new Report( new HitStore(), new FixedClock( $this->today ), 7 ) )->rows();
 
 		$this->assertSame(
 			array(
@@ -95,7 +96,7 @@ final class ReportTest extends WP_UnitTestCase {
 	 * The 28-day report includes older rows but not rows from 28 days ago.
 	 */
 	public function test_twenty_eight_day_window(): void {
-		$bots = Report::section( ( new Report( 28, null, $this->today ) )->rows(), Report::SECTION_BOTS );
+		$bots = Report::section( ( new Report( new HitStore(), new FixedClock( $this->today ), 28 ) )->rows(), Report::SECTION_BOTS );
 
 		$this->assertSame( array( 'ClaudeBot', 'GPTBot', 'CCBot' ), array_column( $bots, 'source' ) );
 		$this->assertSame( 3, $bots[1]['total'], 'The row from 28 days ago is outside the window.' );
@@ -106,10 +107,10 @@ final class ReportTest extends WP_UnitTestCase {
 	 */
 	public function test_csv_matches_admin_page(): void {
 		foreach ( Report::PERIODS as $days ) {
-			$rows = ( new Report( $days, null, $this->today ) )->rows();
+			$rows = ( new Report( new HitStore(), new FixedClock( $this->today ), $days ) )->rows();
 
 			$page = $this->page_cells( ReportPage::render_tables( $rows ) );
-			$csv  = $this->csv_cells( CsvExport::to_csv( $rows ) );
+			$csv  = $this->csv_cells( CsvExport::to_csv( $rows, ReportPage::csv_headers(), ReportPage::section_labels() ) );
 
 			$this->assertSame( $page['bots'], $csv['bots'], "Bots, {$days} days" );
 			$this->assertSame( $page['pages'], $csv['pages'], "Pages, {$days} days" );
@@ -191,7 +192,7 @@ final class ReportTest extends WP_UnitTestCase {
 	private function csv_cells( string $csv ): array {
 		$this->assertStringStartsWith( CsvExport::BOM, $csv );
 		$lines  = array_map( 'str_getcsv', explode( "\n", trim( substr( $csv, strlen( CsvExport::BOM ) ) ) ) );
-		$labels = array_flip( CsvExport::section_labels() );
+		$labels = array_flip( ReportPage::section_labels() );
 
 		$cells = array(
 			'bots'      => array(),

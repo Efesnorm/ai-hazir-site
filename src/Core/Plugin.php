@@ -11,7 +11,7 @@ namespace AIHazirSite\Core;
 
 use AIHazirSite\Core\Migrations\MigrationInterface;
 use AIHazirSite\Core\Migrations\Migration_0_2_0;
-use AIHazirSite\Modules\Measurement\MeasurementModule;
+use AIHazirSite\WordPress\Measurement\MeasurementModule;
 use AIHazirSite\WordPress\Platform\WpSettings;
 
 /**

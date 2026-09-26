@@ -7,9 +7,9 @@
 
 declare(strict_types=1);
 
-namespace AIHazirSite\Modules\Measurement\Cli;
+namespace AIHazirSite\WordPress\Measurement\Cli;
 
-use AIHazirSite\Modules\Measurement\Report;
+use AIHazirSite\WordPress\Measurement\Admin\ReportPage;
 use WP_CLI;
 
 /**
@@ -59,6 +59,6 @@ final class HitsCommand {
 			WP_CLI::error( '--format table veya csv olmalı.' );
 		}
 
-		WP_CLI\Utils\format_items( $format, ( new Report( $days ) )->rows(), self::FIELDS );
+		WP_CLI\Utils\format_items( $format, ReportPage::report( $days )->rows(), self::FIELDS );
 	}
 }

@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace AIHazirSite\Core\Storage;
 
 use AIHazirSite\Core\Contracts\HitRepository;
+use AIHazirSite\Core\Measurement\Hit;
 
 /**
  * Aggregated hit counters. Stores no IP address, user agent or query string.
@@ -17,9 +18,9 @@ use AIHazirSite\Core\Contracts\HitRepository;
 final class HitStore implements HitRepository {
 
 	public const TABLE         = 'aihs_hits';
-	public const KIND_BOT      = 'bot';
-	public const KIND_REFERRAL = 'referral';
-	public const PATH_MAX      = 191;
+	public const KIND_BOT      = Hit::KIND_BOT;
+	public const KIND_REFERRAL = Hit::KIND_REFERRAL;
+	public const PATH_MAX      = Hit::PATH_MAX;
 
 	/**
 	 * Full table name with the site prefix.
@@ -110,16 +111,11 @@ final class HitStore implements HitRepository {
 	}
 
 	/**
-	 * Path without query string or fragment, starting with "/", at most 191 characters.
+	 * Path normalization (see {@see Hit::normalize_path()}).
 	 *
 	 * @param string $path Raw path or request URI.
 	 */
 	public static function normalize_path( string $path ): string {
-		$path = (string) preg_replace( '/[?#].*$/s', '', $path );
-		$path = (string) preg_replace( '/[\x00-\x1F\x7F]/', '', $path );
-		if ( '' === $path || '/' !== $path[0] ) {
-			$path = '/' . $path;
-		}
-		return mb_substr( $path, 0, self::PATH_MAX );
+		return Hit::normalize_path( $path );
 	}
 }

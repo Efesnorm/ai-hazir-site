@@ -1,23 +1,32 @@
 <?php
 /**
- * AI bot and referral measurement (A0).
+ * AI bot and referral measurement (A0) – WordPress wiring.
  *
  * @package AIHazirSite
  */
 
 declare(strict_types=1);
 
-namespace AIHazirSite\Modules\Measurement;
+namespace AIHazirSite\WordPress\Measurement;
 
 use AIHazirSite\Core\Features;
+use AIHazirSite\Core\Measurement\IpRanges;
+use AIHazirSite\Core\Measurement\Registry;
+use AIHazirSite\Core\Measurement\Tracker;
+use AIHazirSite\Core\Measurement\Verifier;
 use AIHazirSite\Core\Module;
 use AIHazirSite\Core\Storage\HitStore;
-use AIHazirSite\Modules\Measurement\Admin\ReportPage;
-use AIHazirSite\Modules\Measurement\Cli\HitsCommand;
+use AIHazirSite\WordPress\Measurement\Admin\ReportPage;
+use AIHazirSite\WordPress\Measurement\Cli\HitsCommand;
+use AIHazirSite\WordPress\Platform\WpCache;
+use AIHazirSite\WordPress\Platform\WpClock;
+use AIHazirSite\WordPress\Platform\WpHttpClient;
+use AIHazirSite\WordPress\Platform\WpSecret;
+use AIHazirSite\WordPress\Platform\WpSettings;
 use WP_CLI;
 
 /**
- * Wires the tracker into WordPress. When the `measurement` feature is off,
+ * Wires the core tracker into WordPress. When the `measurement` feature is off,
  * no counting hooks are registered and the IP list refresh does nothing.
  * The 400-day retention cleanup always runs, so old data never lingers.
  */
@@ -48,9 +57,28 @@ final class MeasurementModule implements Module {
 			return;
 		}
 
-		$tracker = new Tracker( new HitStore(), null, new Verifier( new IpRanges() ) );
-		add_action( 'parse_request', array( $tracker, 'capture_current_request' ), 0 );
-		add_action( 'shutdown', array( $tracker, 'on_shutdown' ) );
+		$listener = new RequestListener( self::tracker() );
+		add_action( 'parse_request', array( $listener, 'on_parse_request' ), 0 );
+		add_action( 'shutdown', array( $listener, 'on_shutdown' ) );
+	}
+
+	/**
+	 * Core tracker with the WordPress adapters.
+	 */
+	public static function tracker(): Tracker {
+		return new Tracker(
+			new HitStore(),
+			new WpClock(),
+			null,
+			new Verifier( self::ip_ranges(), new WpCache(), new WpSecret() )
+		);
+	}
+
+	/**
+	 * IP list store with the WordPress adapters.
+	 */
+	public static function ip_ranges(): IpRanges {
+		return new IpRanges( new WpSettings(), new WpHttpClient(), new WpClock() );
 	}
 
 	/**
@@ -80,7 +108,7 @@ final class MeasurementModule implements Module {
 	 * @return int Deleted rows.
 	 */
 	public function prune( ?string $today = null ): int {
-		$today  = $today ?? current_time( 'Y-m-d' );
+		$today  = $today ?? ( new WpClock() )->today();
 		$cutoff = gmdate( 'Y-m-d', (int) strtotime( $today . ' 00:00:00 UTC' ) - self::RETENTION_DAYS * DAY_IN_SECONDS );
 
 		return ( new HitStore() )->prune( $cutoff );
@@ -110,7 +138,7 @@ final class MeasurementModule implements Module {
 			}
 		}
 
-		return ( new IpRanges() )->refresh( $urls );
+		return self::ip_ranges()->refresh( $urls );
 	}
 
 	/**

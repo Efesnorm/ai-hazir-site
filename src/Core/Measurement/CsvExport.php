@@ -7,12 +7,12 @@
 
 declare(strict_types=1);
 
-namespace AIHazirSite\Modules\Measurement\Admin;
-
-use AIHazirSite\Modules\Measurement\Report;
+namespace AIHazirSite\Core\Measurement;
 
 /**
  * Turns report rows into CSV (UTF-8 with BOM so spreadsheet apps show Turkish characters).
+ *
+ * Labels default to Turkish; platform adapters may pass translated labels.
  *
  * @phpstan-import-type ReportRow from Report
  */
@@ -20,38 +20,26 @@ final class CsvExport {
 
 	public const BOM = "\xEF\xBB\xBF";
 
-	/**
-	 * Section labels.
-	 *
-	 * @return array<string, string>
-	 */
-	public static function section_labels(): array {
-		return array(
-			Report::SECTION_BOTS      => __( 'Bot', 'ai-hazir-site' ),
-			Report::SECTION_PAGES     => __( 'Sayfa', 'ai-hazir-site' ),
-			Report::SECTION_REFERRALS => __( 'Yönlendirme', 'ai-hazir-site' ),
-		);
-	}
+	public const HEADERS = array( 'Bölüm', 'Kaynak', 'Sayfa', 'Doğrulanmış', 'Doğrulanmamış', 'Toplam' );
+
+	public const SECTION_LABELS = array(
+		Report::SECTION_BOTS      => 'Bot',
+		Report::SECTION_PAGES     => 'Sayfa',
+		Report::SECTION_REFERRALS => 'Yönlendirme',
+	);
 
 	/**
 	 * CSV document.
 	 *
-	 * @param array[] $rows Report rows.
+	 * @param array[]                    $rows    Report rows.
+	 * @param string[]|null              $headers Six column headers; defaults to self::HEADERS.
+	 * @param array<string, string>|null $labels  Section labels; defaults to self::SECTION_LABELS.
 	 *
 	 * @phpstan-param list<ReportRow> $rows
 	 */
-	public static function to_csv( array $rows ): string {
-		$labels = self::section_labels();
-		$lines  = array(
-			array(
-				__( 'Bölüm', 'ai-hazir-site' ),
-				__( 'Kaynak', 'ai-hazir-site' ),
-				__( 'Sayfa', 'ai-hazir-site' ),
-				__( 'Doğrulanmış', 'ai-hazir-site' ),
-				__( 'Doğrulanmamış', 'ai-hazir-site' ),
-				__( 'Toplam', 'ai-hazir-site' ),
-			),
-		);
+	public static function to_csv( array $rows, ?array $headers = null, ?array $labels = null ): string {
+		$labels = $labels ?? self::SECTION_LABELS;
+		$lines  = array( array_values( $headers ?? self::HEADERS ) );
 		foreach ( $rows as $row ) {
 			$lines[] = array(
 				$labels[ $row['section'] ] ?? $row['section'],

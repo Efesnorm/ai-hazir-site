@@ -7,10 +7,13 @@
 
 declare(strict_types=1);
 
-namespace AIHazirSite\Modules\Measurement\Admin;
+namespace AIHazirSite\WordPress\Measurement\Admin;
 
 use AIHazirSite\Core\Features;
-use AIHazirSite\Modules\Measurement\Report;
+use AIHazirSite\Core\Measurement\CsvExport;
+use AIHazirSite\Core\Measurement\Report;
+use AIHazirSite\Core\Storage\HitStore;
+use AIHazirSite\WordPress\Platform\WpClock;
 
 /**
  * Shows the last 7 / 28 days, exports CSV and turns measurement on or off.
@@ -66,7 +69,7 @@ final class ReportPage {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only view parameter, whitelisted.
 		$days    = Report::sanitize_period( isset( $_GET['days'] ) ? sanitize_text_field( wp_unslash( $_GET['days'] ) ) : 0 );
 		$enabled = Features::is_enabled( Features::MEASUREMENT );
-		$rows    = ( new Report( $days ) )->rows();
+		$rows    = self::report( $days )->rows();
 
 		echo '<div class="wrap">';
 		echo '<h1>' . esc_html__( 'AI Ölçüm', 'ai-hazir-site' ) . '</h1>';
@@ -161,7 +164,7 @@ final class ReportPage {
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce checked in authorize().
 		$days = Report::sanitize_period( isset( $_GET['days'] ) ? sanitize_text_field( wp_unslash( $_GET['days'] ) ) : 0 );
-		$csv  = CsvExport::to_csv( ( new Report( $days ) )->rows() );
+		$csv  = CsvExport::to_csv( self::report( $days )->rows(), self::csv_headers(), self::section_labels() );
 
 		nocache_headers();
 		header( 'Content-Type: text/csv; charset=utf-8' );
@@ -180,6 +183,44 @@ final class ReportPage {
 
 		wp_safe_redirect( self::url( array( 'updated' => 1 ) ) );
 		exit;
+	}
+
+	/**
+	 * Report with the WordPress adapters.
+	 *
+	 * @param int $days Days.
+	 */
+	public static function report( int $days ): Report {
+		return new Report( new HitStore(), new WpClock(), $days );
+	}
+
+	/**
+	 * Translated CSV column headers.
+	 *
+	 * @return list<string>
+	 */
+	public static function csv_headers(): array {
+		return array(
+			__( 'Bölüm', 'ai-hazir-site' ),
+			__( 'Kaynak', 'ai-hazir-site' ),
+			__( 'Sayfa', 'ai-hazir-site' ),
+			__( 'Doğrulanmış', 'ai-hazir-site' ),
+			__( 'Doğrulanmamış', 'ai-hazir-site' ),
+			__( 'Toplam', 'ai-hazir-site' ),
+		);
+	}
+
+	/**
+	 * Translated section labels.
+	 *
+	 * @return array<string, string>
+	 */
+	public static function section_labels(): array {
+		return array(
+			Report::SECTION_BOTS      => __( 'Bot', 'ai-hazir-site' ),
+			Report::SECTION_PAGES     => __( 'Sayfa', 'ai-hazir-site' ),
+			Report::SECTION_REFERRALS => __( 'Yönlendirme', 'ai-hazir-site' ),
+		);
 	}
 
 	/**

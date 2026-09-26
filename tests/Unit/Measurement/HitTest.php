@@ -1,6 +1,6 @@
 <?php
 /**
- * Tests for HitStore path normalization.
+ * Tests for Hit path normalization.
  *
  * @package AIHazirSite
  */
@@ -9,15 +9,15 @@ declare(strict_types=1);
 
 namespace AIHazirSite\Tests\Unit\Measurement;
 
-use AIHazirSite\Core\Storage\HitStore;
+use AIHazirSite\Core\Measurement\Hit;
 use AIHazirSite\Tests\Unit\UnitTestCase;
 
 /**
- * HitStore unit tests.
+ * Hit unit tests.
  *
- * @covers \AIHazirSite\Core\Storage\HitStore::normalize_path
+ * @covers \AIHazirSite\Core\Measurement\Hit::normalize_path
  */
-final class HitStoreTest extends UnitTestCase {
+final class HitTest extends UnitTestCase {
 
 	/**
 	 * Paths and their stored form.
@@ -33,6 +33,7 @@ final class HitStoreTest extends UnitTestCase {
 			'empty'        => array( '', '/' ),
 			'control char' => array( "/a\nb", '/ab' ),
 			'multibyte'    => array( '/' . str_repeat( 'ş', 300 ), '/' . str_repeat( 'ş', 190 ) ),
+			'invalid utf8' => array( "/a\xC3(b", '/' ),
 		);
 	}
 
@@ -45,6 +46,6 @@ final class HitStoreTest extends UnitTestCase {
 	 * @param string $expected Stored path.
 	 */
 	public function test_normalize_path( string $input, string $expected ): void {
-		$this->assertSame( $expected, HitStore::normalize_path( $input ) );
+		$this->assertSame( $expected, Hit::normalize_path( $input ) );
 	}
 }

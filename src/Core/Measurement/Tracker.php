@@ -7,15 +7,17 @@
 
 declare(strict_types=1);
 
-namespace AIHazirSite\Modules\Measurement;
+namespace AIHazirSite\Core\Measurement;
 
+use AIHazirSite\Core\Contracts\Clock;
+use AIHazirSite\Core\Contracts\HitRepository;
 use AIHazirSite\Core\Features;
-use AIHazirSite\Core\Storage\HitStore;
 use Throwable;
 
 /**
- * Classifies the request early (`parse_request`, which covers front-end, REST and
- * robots.txt) and writes at most one row at `shutdown`.
+ * Classifies a request early ({@see Tracker::capture()}) and writes at most one
+ * row later ({@see Tracker::flush()}). The platform adapter decides which
+ * requests reach capture() (e.g. never admin, cron or AJAX requests).
  *
  * Nothing about the visitor is stored except the bot/referrer id, the path and
  * the day: no IP address, no user agent, no query string.
@@ -39,14 +41,16 @@ final class Tracker {
 	/**
 	 * Constructor.
 	 *
-	 * @param HitStore        $store      Counter storage.
+	 * @param HitRepository   $hits       Counter storage.
+	 * @param Clock           $clock      Provides the day.
 	 * @param Classifier|null $classifier Classifier; loaded from data/ on first use when null.
 	 * @param callable|null   $verifier   fn( Bot, string $ip ): bool. Null means "not verified".
 	 *
 	 * @phpstan-param (callable(Bot, string): bool)|null $verifier
 	 */
 	public function __construct(
-		private readonly HitStore $store,
+		private readonly HitRepository $hits,
+		private readonly Clock $clock,
 		private ?Classifier $classifier = null,
 		?callable $verifier = null
 	) {
@@ -54,63 +58,40 @@ final class Tracker {
 	}
 
 	/**
-	 * `parse_request` callback.
-	 */
-	public function capture_current_request(): void {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only analytics; only utm_source is read and never stored.
-		$this->capture( $_SERVER, $_GET );
-	}
-
-	/**
 	 * Classifies a request and remembers the hit (nothing is written yet).
+	 * Only the first countable request is kept until flush().
 	 *
-	 * @param array<mixed> $server $_SERVER-like array.
-	 * @param array<mixed> $query  $_GET-like array.
+	 * @param Request $request Request.
 	 */
-	public function capture( array $server, array $query ): void {
-		if ( null !== $this->pending
-			|| ! Features::is_enabled( Features::MEASUREMENT )
-			|| is_admin()
-			|| wp_doing_cron()
-			|| wp_doing_ajax()
-		) {
+	public function capture( Request $request ): void {
+		if ( null !== $this->pending || ! Features::is_enabled( Features::MEASUREMENT ) ) {
 			return;
 		}
 
-		$path = HitStore::normalize_path( wp_check_invalid_utf8( self::header( $server, 'REQUEST_URI' ) ) );
-		$bot  = $this->classifier()->match_bot( self::header( $server, 'HTTP_USER_AGENT' ) );
+		$path = Hit::normalize_path( $request->uri );
+		$bot  = $this->classifier()->match_bot( $request->user_agent );
 
 		if ( null !== $bot ) {
-			$ip            = self::header( $server, 'REMOTE_ADDR' );
 			$this->pending = array(
-				'kind'      => HitStore::KIND_BOT,
+				'kind'      => Hit::KIND_BOT,
 				'source_id' => $bot->id,
 				'path'      => $path,
 				'bot'       => $bot,
-				'ip'        => false === filter_var( $ip, FILTER_VALIDATE_IP ) ? '' : $ip,
+				'ip'        => false === filter_var( $request->ip, FILTER_VALIDATE_IP ) ? '' : $request->ip,
 			);
 			return;
 		}
 
-		$utm      = isset( $query['utm_source'] ) && is_string( $query['utm_source'] ) ? sanitize_text_field( wp_unslash( $query['utm_source'] ) ) : '';
-		$referrer = $this->classifier()->match_referrer( self::header( $server, 'HTTP_REFERER' ), $utm );
-
+		$referrer = $this->classifier()->match_referrer( $request->referer, $request->utm_source );
 		if ( null !== $referrer ) {
 			$this->pending = array(
-				'kind'      => HitStore::KIND_REFERRAL,
+				'kind'      => Hit::KIND_REFERRAL,
 				'source_id' => $referrer->id,
 				'path'      => $path,
 				'bot'       => null,
 				'ip'        => '',
 			);
 		}
-	}
-
-	/**
-	 * `shutdown` callback.
-	 */
-	public function on_shutdown(): void {
-		$this->flush();
 	}
 
 	/**
@@ -126,8 +107,8 @@ final class Tracker {
 		$hit           = $this->pending;
 		$this->pending = null;
 
-		return $this->store->increment(
-			current_time( 'Y-m-d' ),
+		return $this->hits->increment(
+			$this->clock->today(),
 			$hit['kind'],
 			$hit['source_id'],
 			$hit['path'],
@@ -136,13 +117,12 @@ final class Tracker {
 	}
 
 	/**
-	 * Captures and writes in one step (used by tests and benchmarks).
+	 * Captures and writes in one step.
 	 *
-	 * @param array<mixed> $server $_SERVER-like array.
-	 * @param array<mixed> $query  $_GET-like array.
+	 * @param Request $request Request.
 	 */
-	public function handle( array $server, array $query = array() ): bool {
-		$this->capture( $server, $query );
+	public function handle( Request $request ): bool {
+		$this->capture( $request );
 		return $this->flush();
 	}
 
@@ -171,15 +151,5 @@ final class Tracker {
 			$this->classifier = Classifier::from_data();
 		}
 		return $this->classifier;
-	}
-
-	/**
-	 * Unslashed string value from a $_SERVER-like array.
-	 *
-	 * @param array<mixed> $server $_SERVER-like array.
-	 * @param string       $key    Key.
-	 */
-	private static function header( array $server, string $key ): string {
-		return isset( $server[ $key ] ) && is_string( $server[ $key ] ) ? (string) wp_unslash( $server[ $key ] ) : '';
 	}
 }

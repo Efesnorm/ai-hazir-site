@@ -7,15 +7,18 @@
 
 declare(strict_types=1);
 
-namespace AIHazirSite\Modules\Measurement;
+namespace AIHazirSite\Core\Measurement;
 
+use AIHazirSite\Core\Contracts\Clock;
+use AIHazirSite\Core\Contracts\HttpClient;
+use AIHazirSite\Core\Contracts\Settings;
 use Throwable;
 
 /**
- * Downloads the operators' IP lists (daily cron) and answers "is this IP in the list?"
+ * Downloads the operators' IP lists (daily job) and answers "is this IP in the list?"
  * on requests without any network access.
  *
- * Stored in the `aihs_ip_ranges` option (not autoloaded):
+ * Stored under the `aihs_ip_ranges` setting (not autoloaded):
  * `array<string url, array{fetched: int, prefixes: list<string>}>`.
  */
 final class IpRanges {
@@ -23,28 +26,24 @@ final class IpRanges {
 	public const OPTION = 'aihs_ip_ranges';
 
 	/**
-	 * Cached option value for this request.
+	 * Cached setting value for this request.
 	 *
 	 * @var array<string, array{fetched: int, prefixes: list<string>}>|null
 	 */
 	private ?array $store = null;
 
 	/**
-	 * Downloads a URL: fn( string $url ): ?string.
-	 *
-	 * @var (callable(string): ?string)|null
-	 */
-	private $fetcher;
-
-	/**
 	 * Constructor.
 	 *
-	 * @param callable|null $fetcher fn( string $url ): ?string; defaults to wp_remote_get().
-	 *
-	 * @phpstan-param (callable(string): ?string)|null $fetcher
+	 * @param Settings   $settings Where the lists are stored.
+	 * @param HttpClient $http     Downloads the lists.
+	 * @param Clock      $clock    Timestamps the downloads.
 	 */
-	public function __construct( ?callable $fetcher = null ) {
-		$this->fetcher = $fetcher;
+	public function __construct(
+		private readonly Settings $settings,
+		private readonly HttpClient $http,
+		private readonly Clock $clock
+	) {
 	}
 
 	/**
@@ -58,9 +57,8 @@ final class IpRanges {
 		$result = array();
 
 		foreach ( array_unique( $urls ) as $url ) {
-			$prefixes = array();
 			try {
-				$body     = $this->fetch( $url );
+				$body     = $this->http->get( $url );
 				$prefixes = null === $body ? array() : self::parse( $body );
 			} catch ( Throwable ) {
 				$prefixes = array();
@@ -69,14 +67,14 @@ final class IpRanges {
 			$result[ $url ] = count( $prefixes );
 			if ( array() !== $prefixes ) {
 				$store[ $url ] = array(
-					'fetched'  => time(),
+					'fetched'  => $this->clock->now(),
 					'prefixes' => $prefixes,
 				);
 			}
 		}
 
 		$this->store = $store;
-		update_option( self::OPTION, $store, false );
+		$this->settings->set( self::OPTION, $store, false );
 
 		return $result;
 	}
@@ -165,33 +163,9 @@ final class IpRanges {
 	 */
 	private function load(): array {
 		if ( null === $this->store ) {
-			$value       = get_option( self::OPTION, array() );
+			$value       = $this->settings->get( self::OPTION, array() );
 			$this->store = is_array( $value ) ? $value : array();
 		}
 		return $this->store;
-	}
-
-	/**
-	 * Downloads a URL.
-	 *
-	 * @param string $url URL.
-	 */
-	private function fetch( string $url ): ?string {
-		if ( null !== $this->fetcher ) {
-			return ( $this->fetcher )( $url );
-		}
-
-		$response = wp_remote_get(
-			$url,
-			array(
-				'timeout'    => 10,
-				'user-agent' => 'AI Hazir Site/' . ( defined( 'AIHS_VERSION' ) ? AIHS_VERSION : '0' ) . '; ' . home_url( '/' ),
-			)
-		);
-		if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
-			return null;
-		}
-
-		return wp_remote_retrieve_body( $response );
 	}
 }

@@ -11,7 +11,7 @@ namespace AIHazirSite\Core;
 
 use AIHazirSite\Core\Migrations\Migrator;
 use AIHazirSite\WordPress\Platform\WpSettings;
-use AIHazirSite\Modules\Measurement\IpRanges;
+use AIHazirSite\Core\Measurement\IpRanges;
 
 /**
  * Deletes plugin data ONLY when the site owner opted in via `aihs_delete_data_on_uninstall`.

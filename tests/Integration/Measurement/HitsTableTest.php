@@ -14,7 +14,7 @@ use AIHazirSite\Core\Migrations\Migration_0_2_0;
 use AIHazirSite\Core\Migrations\Migrator;
 use AIHazirSite\Core\Storage\HitStore;
 use AIHazirSite\Core\Uninstaller;
-use AIHazirSite\Modules\Measurement\IpRanges;
+use AIHazirSite\Core\Measurement\IpRanges;
 use AIHazirSite\WordPress\Platform\WpSettings;
 use WP_UnitTestCase;
 

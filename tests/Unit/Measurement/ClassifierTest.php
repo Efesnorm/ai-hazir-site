@@ -9,15 +9,14 @@ declare(strict_types=1);
 
 namespace AIHazirSite\Tests\Unit\Measurement;
 
-use AIHazirSite\Modules\Measurement\Classifier;
+use AIHazirSite\Core\Measurement\Classifier;
 use AIHazirSite\Tests\Unit\UnitTestCase;
-use Brain\Monkey\Functions;
 
 /**
  * Classifier unit tests with the bundled data files.
  *
- * @covers \AIHazirSite\Modules\Measurement\Classifier
- * @covers \AIHazirSite\Modules\Measurement\Referrer
+ * @covers \AIHazirSite\Core\Measurement\Classifier
+ * @covers \AIHazirSite\Core\Measurement\Referrer
  */
 final class ClassifierTest extends UnitTestCase {
 
@@ -33,7 +32,6 @@ final class ClassifierTest extends UnitTestCase {
 	 */
 	protected function setUp(): void {
 		parent::setUp();
-		Functions\when( 'wp_parse_url' )->alias( 'parse_url' );
 		$this->classifier = Classifier::from_data();
 	}
 

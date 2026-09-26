@@ -9,52 +9,70 @@ declare(strict_types=1);
 
 namespace AIHazirSite\Tests\Unit\Measurement;
 
-use AIHazirSite\Modules\Measurement\Bot;
-use AIHazirSite\Modules\Measurement\IpRanges;
-use AIHazirSite\Modules\Measurement\Verifier;
+use AIHazirSite\Core\Contracts\HttpClient;
+use AIHazirSite\Core\Contracts\Settings;
+use AIHazirSite\Core\Measurement\Bot;
+use AIHazirSite\Core\Measurement\IpRanges;
+use AIHazirSite\Core\Measurement\Verifier;
+use AIHazirSite\Tests\Support\FakeHttpClient;
+use AIHazirSite\Tests\Support\FixedClock;
+use AIHazirSite\Tests\Support\MemoryCache;
+use AIHazirSite\Tests\Support\MemorySettings;
+use AIHazirSite\Tests\Support\StaticSecret;
 use AIHazirSite\Tests\Unit\UnitTestCase;
-use Brain\Monkey\Functions;
 use RuntimeException;
 
 /**
- * Verification unit tests (options and transients mocked in memory).
+ * Verification unit tests with in-memory adapters (no WordPress).
  *
- * @covers \AIHazirSite\Modules\Measurement\IpRanges
- * @covers \AIHazirSite\Modules\Measurement\Verifier
+ * @covers \AIHazirSite\Core\Measurement\IpRanges
+ * @covers \AIHazirSite\Core\Measurement\Verifier
  */
 final class VerifierTest extends UnitTestCase {
 
 	private const LIST_URL = 'https://example.com/bot.json';
+	private const LIST     = '{"prefixes":[{"ipv4Prefix":"20.125.66.80/28"}]}';
 
 	/**
-	 * In-memory options and transients.
+	 * Shared settings (like the options table).
 	 *
-	 * @var array<string, mixed>
+	 * @var MemorySettings
 	 */
-	private array $options = array();
+	private MemorySettings $settings;
 
 	/**
-	 * Mocks the options and transient APIs.
+	 * Shared cache (like transients).
+	 *
+	 * @var MemoryCache
+	 */
+	private MemoryCache $cache;
+
+	/**
+	 * Fresh adapters.
 	 */
 	protected function setUp(): void {
 		parent::setUp();
-		$this->options = array();
+		$this->settings = new MemorySettings();
+		$this->cache    = new MemoryCache();
+	}
 
-		Functions\when( 'get_option' )->alias( fn( string $name, $default_value = false ) => $this->options[ $name ] ?? $default_value );
-		Functions\when( 'update_option' )->alias(
-			function ( string $name, $value ): bool {
-				$this->options[ $name ] = $value;
-				return true;
-			}
-		);
-		Functions\when( 'get_transient' )->alias( fn( string $name ) => $this->options[ 'transient_' . $name ] ?? false );
-		Functions\when( 'set_transient' )->alias(
-			function ( string $name, $value ): bool {
-				$this->options[ 'transient_' . $name ] = $value;
-				return true;
-			}
-		);
-		Functions\when( 'wp_salt' )->justReturn( 'test-salt' );
+	/**
+	 * IP list store over the shared settings.
+	 *
+	 * @param array<string, string> $bodies URL → body served by the fake HTTP client.
+	 */
+	private function ranges( array $bodies = array() ): IpRanges {
+		return new IpRanges( $this->settings, new FakeHttpClient( $bodies ), new FixedClock() );
+	}
+
+	/**
+	 * Verifier over the shared settings and cache.
+	 *
+	 * @param callable|null $reverse Reverse lookup.
+	 * @param callable|null $forward Forward lookup.
+	 */
+	private function verifier( ?callable $reverse = null, ?callable $forward = null ): Verifier {
+		return new Verifier( $this->ranges(), $this->cache, new StaticSecret(), $reverse, $forward );
 	}
 
 	/**
@@ -114,13 +132,13 @@ final class VerifierTest extends UnitTestCase {
 	}
 
 	/**
-	 * A downloaded list verifies IPs inside it only.
+	 * A downloaded list verifies IPs inside it only; the list is stored without autoload.
 	 */
 	public function test_ip_ranges_verification(): void {
-		$ranges = new IpRanges( static fn(): string => '{"prefixes":[{"ipv4Prefix":"20.125.66.80/28"}]}' );
-		$this->assertSame( array( self::LIST_URL => 1 ), $ranges->refresh( array( self::LIST_URL ) ) );
+		$this->assertSame( array( self::LIST_URL => 1 ), $this->ranges( array( self::LIST_URL => self::LIST ) )->refresh( array( self::LIST_URL ) ) );
+		$this->assertFalse( $this->settings->autoload[ IpRanges::OPTION ] );
 
-		$verifier = new Verifier( new IpRanges() );
+		$verifier = $this->verifier();
 
 		$this->assertTrue( $verifier->verify( $this->bot(), '20.125.66.81' ) );
 		$this->assertFalse( $verifier->verify( $this->bot(), '198.51.100.1' ) );
@@ -132,31 +150,73 @@ final class VerifierTest extends UnitTestCase {
 	 * any list the request is simply unverified.
 	 */
 	public function test_unreachable_source_never_breaks_and_counts_unverified(): void {
-		$failing = new IpRanges(
-			static function (): ?string {
-				throw new RuntimeException( 'Connection timed out' );
-			}
-		);
-		$this->assertSame( array( self::LIST_URL => 0 ), $failing->refresh( array( self::LIST_URL ) ) );
-		$this->assertFalse( ( new Verifier( new IpRanges() ) )->verify( $this->bot(), '20.125.66.81' ) );
+		$this->assertSame( array( self::LIST_URL => 0 ), $this->ranges()->refresh( array( self::LIST_URL ) ) );
+		$this->assertFalse( $this->verifier()->verify( $this->bot(), '20.125.66.81' ) );
 
-		( new IpRanges( static fn(): string => '{"prefixes":[{"ipv4Prefix":"20.125.66.80/28"}]}' ) )->refresh( array( self::LIST_URL ) );
-		( new IpRanges( static fn(): ?string => null ) )->refresh( array( self::LIST_URL ) );
+		$this->ranges( array( self::LIST_URL => self::LIST ) )->refresh( array( self::LIST_URL ) );
+		$this->ranges()->refresh( array( self::LIST_URL ) );
 
-		$this->assertTrue( ( new Verifier( new IpRanges() ) )->verify( $this->bot(), '20.125.66.81' ), 'Previous list is kept.' );
+		$this->assertTrue( $this->verifier()->verify( $this->bot(), '20.125.66.81' ), 'Previous list is kept.' );
 	}
 
 	/**
-	 * A broken options store makes verification fail closed, not throw.
+	 * A throwing HTTP client is handled like a failed download.
+	 */
+	public function test_throwing_http_client_is_a_failed_download(): void {
+		$http = new class() implements HttpClient {
+			/**
+			 * Always throws.
+			 *
+			 * @param string $url URL.
+			 * @throws RuntimeException Always.
+			 */
+			public function get( string $url ): ?string {
+				throw new RuntimeException( 'Connection timed out' );
+			}
+		};
+
+		$ranges = new IpRanges( $this->settings, $http, new FixedClock() );
+		$this->assertSame( array( self::LIST_URL => 0 ), $ranges->refresh( array( self::LIST_URL ) ) );
+	}
+
+	/**
+	 * A broken settings store makes verification fail closed, not throw.
 	 */
 	public function test_storage_error_is_unverified(): void {
-		Functions\when( 'get_option' )->alias(
-			static function (): void {
+		$broken = new class() implements Settings {
+			/**
+			 * Always throws.
+			 *
+			 * @param string $key           Key.
+			 * @param mixed  $default_value Default.
+			 * @throws RuntimeException Always.
+			 */
+			public function get( string $key, mixed $default_value = null ): mixed {
 				throw new RuntimeException( 'Database gone' );
 			}
-		);
 
-		$this->assertFalse( ( new Verifier( new IpRanges() ) )->verify( $this->bot(), '20.125.66.81' ) );
+			/**
+			 * Unused.
+			 *
+			 * @param string $key      Key.
+			 * @param mixed  $value    Value.
+			 * @param bool   $autoload Autoload.
+			 */
+			public function set( string $key, mixed $value, bool $autoload = false ): void {
+			}
+
+			/**
+			 * Unused.
+			 *
+			 * @param string $key Key.
+			 */
+			public function delete( string $key ): void {
+			}
+		};
+
+		$verifier = new Verifier( new IpRanges( $broken, new FakeHttpClient(), new FixedClock() ), $this->cache, new StaticSecret() );
+
+		$this->assertFalse( $verifier->verify( $this->bot(), '20.125.66.81' ) );
 	}
 
 	/**
@@ -164,8 +224,7 @@ final class VerifierTest extends UnitTestCase {
 	 */
 	public function test_rdns_verification_and_cache(): void {
 		$lookups  = 0;
-		$verifier = new Verifier(
-			new IpRanges(),
+		$verifier = $this->verifier(
 			function ( string $ip ) use ( &$lookups ): string {
 				++$lookups;
 				return '192.0.2.10' === $ip ? 'crawl-1.bot.example.com' : 'evil.example.net';
@@ -179,17 +238,18 @@ final class VerifierTest extends UnitTestCase {
 		$this->assertSame( 1, $lookups, 'Second check is served from cache.' );
 		$this->assertFalse( $verifier->verify( $bot, '192.0.2.11' ), 'Wrong host suffix.' );
 
-		foreach ( array_keys( $this->options ) as $key ) {
+		foreach ( array_keys( $this->cache->values ) as $key ) {
 			$this->assertStringNotContainsString( '192.0.2', $key, 'Cache key must not contain the IP.' );
 		}
+		$this->assertSame( array( Verifier::RDNS_TTL ), array_values( array_unique( $this->cache->ttl ) ) );
+		$this->assertSame( 86400, Verifier::RDNS_TTL );
 	}
 
 	/**
 	 * A spoofed PTR record fails the forward confirmation.
 	 */
 	public function test_rdns_spoofed_ptr_is_rejected(): void {
-		$verifier = new Verifier(
-			new IpRanges(),
+		$verifier = $this->verifier(
 			static fn(): string => 'crawl-1.bot.example.com',
 			static fn(): array => array( '198.51.100.99' )
 		);
