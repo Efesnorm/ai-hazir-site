@@ -12,6 +12,7 @@ namespace AIHazirSite\Modules\Measurement;
 use AIHazirSite\Core\Features;
 use AIHazirSite\Core\Module;
 use AIHazirSite\Core\Storage\HitStore;
+use AIHazirSite\Modules\Measurement\Admin\ReportPage;
 
 /**
  * Wires the tracker into WordPress. When the `measurement` feature is off,
@@ -26,6 +27,11 @@ final class MeasurementModule implements Module {
 	 */
 	public function register(): void {
 		add_action( self::REFRESH_HOOK, array( $this, 'on_refresh_ip_ranges' ) );
+
+		// The report page stays available when measurement is off, so it can be turned back on.
+		if ( is_admin() ) {
+			( new ReportPage() )->register();
+		}
 
 		if ( ! Features::is_enabled( Features::MEASUREMENT ) ) {
 			return;
