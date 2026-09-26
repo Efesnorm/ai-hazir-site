@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace AIHazirSite\Tests\Integration\WordPress;
 
 use AIHazirSite\Core\Contracts\HitRepository;
-use AIHazirSite\Core\Storage\HitStore;
+use AIHazirSite\WordPress\Storage\WpdbHitRepository;
 use AIHazirSite\Tests\Support\MemoryHitRepository;
 use AIHazirSite\WordPress\Platform\WpCache;
 use AIHazirSite\WordPress\Platform\WpClock;
@@ -28,7 +28,7 @@ use WP_UnitTestCase;
  * @covers \AIHazirSite\WordPress\Platform\WpHttpClient
  * @covers \AIHazirSite\WordPress\Platform\WpClock
  * @covers \AIHazirSite\WordPress\Platform\WpSecret
- * @covers \AIHazirSite\Core\Storage\HitStore::totals
+ * @covers \AIHazirSite\WordPress\Storage\WpdbHitRepository::totals
  */
 final class PlatformAdaptersTest extends WP_UnitTestCase {
 
@@ -106,9 +106,9 @@ final class PlatformAdaptersTest extends WP_UnitTestCase {
 	 */
 	public function test_memory_repository_matches_database(): void {
 		global $wpdb;
-		$wpdb->query( $wpdb->prepare( 'DELETE FROM %i', HitStore::table() ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->query( $wpdb->prepare( 'DELETE FROM %i', WpdbHitRepository::table() ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
-		$database = new HitStore();
+		$database = new WpdbHitRepository();
 		$memory   = new MemoryHitRepository();
 		$writes   = array(
 			array( '2026-09-20', 'bot', 'gptbot', '/a/', true ),

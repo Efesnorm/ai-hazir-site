@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace AIHazirSite\Tests\Integration\Measurement;
 
-use AIHazirSite\Core\Lifecycle;
-use AIHazirSite\Core\Storage\HitStore;
+use AIHazirSite\WordPress\Lifecycle;
+use AIHazirSite\WordPress\Storage\WpdbHitRepository;
 use AIHazirSite\Core\Measurement\IpRanges;
 use AIHazirSite\Core\Measurement\Tracker;
 use AIHazirSite\WordPress\Measurement\MeasurementModule;
@@ -36,7 +36,7 @@ final class VerificationTest extends WP_UnitTestCase {
 	public function set_up(): void {
 		parent::set_up();
 		global $wpdb;
-		$wpdb->query( $wpdb->prepare( 'DELETE FROM %i', HitStore::table() ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->query( $wpdb->prepare( 'DELETE FROM %i', WpdbHitRepository::table() ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		delete_option( IpRanges::OPTION );
 	}
 
@@ -110,7 +110,7 @@ final class VerificationTest extends WP_UnitTestCase {
 		global $wpdb;
 		$this->assertSame(
 			array( '0', '1' ),
-			$wpdb->get_col( $wpdb->prepare( 'SELECT verified FROM %i ORDER BY verified', HitStore::table() ) ) // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->get_col( $wpdb->prepare( 'SELECT verified FROM %i ORDER BY verified', WpdbHitRepository::table() ) ) // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		);
 	}
 
@@ -137,6 +137,6 @@ final class VerificationTest extends WP_UnitTestCase {
 		);
 
 		global $wpdb;
-		$this->assertSame( '0', $wpdb->get_var( $wpdb->prepare( 'SELECT verified FROM %i', HitStore::table() ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$this->assertSame( '0', $wpdb->get_var( $wpdb->prepare( 'SELECT verified FROM %i', WpdbHitRepository::table() ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 	}
 }

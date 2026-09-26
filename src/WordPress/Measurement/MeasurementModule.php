@@ -14,8 +14,8 @@ use AIHazirSite\Core\Measurement\IpRanges;
 use AIHazirSite\Core\Measurement\Registry;
 use AIHazirSite\Core\Measurement\Tracker;
 use AIHazirSite\Core\Measurement\Verifier;
-use AIHazirSite\Core\Module;
-use AIHazirSite\Core\Storage\HitStore;
+use AIHazirSite\WordPress\Module;
+use AIHazirSite\WordPress\Storage\WpdbHitRepository;
 use AIHazirSite\WordPress\Measurement\Admin\ReportPage;
 use AIHazirSite\WordPress\Measurement\Cli\HitsCommand;
 use AIHazirSite\WordPress\Platform\WpCache;
@@ -67,7 +67,7 @@ final class MeasurementModule implements Module {
 	 */
 	public static function tracker(): Tracker {
 		return new Tracker(
-			new HitStore(),
+			new WpdbHitRepository(),
 			new WpClock(),
 			null,
 			new Verifier( self::ip_ranges(), new WpCache(), new WpSecret() )
@@ -111,7 +111,7 @@ final class MeasurementModule implements Module {
 		$today  = $today ?? ( new WpClock() )->today();
 		$cutoff = gmdate( 'Y-m-d', (int) strtotime( $today . ' 00:00:00 UTC' ) - self::RETENTION_DAYS * DAY_IN_SECONDS );
 
-		return ( new HitStore() )->prune( $cutoff );
+		return ( new WpdbHitRepository() )->prune( $cutoff );
 	}
 
 	/**

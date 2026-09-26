@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace AIHazirSite\Core;
+namespace AIHazirSite\WordPress;
 
 /**
  * A self-contained part of the plugin (core service or adapter) registered by {@see Plugin}.

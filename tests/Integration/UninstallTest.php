@@ -11,13 +11,13 @@ namespace AIHazirSite\Tests\Integration;
 
 use AIHazirSite\Core\Features;
 use AIHazirSite\Core\Migrations\Migrator;
-use AIHazirSite\Core\Uninstaller;
+use AIHazirSite\WordPress\Uninstaller;
 use WP_UnitTestCase;
 
 /**
  * Uninstall integration tests.
  *
- * @covers \AIHazirSite\Core\Uninstaller
+ * @covers \AIHazirSite\WordPress\Uninstaller
  */
 final class UninstallTest extends WP_UnitTestCase {
 

@@ -10,7 +10,8 @@ declare(strict_types=1);
 namespace AIHazirSite\Tests\Integration\Measurement;
 
 use AIHazirSite\Core\Features;
-use AIHazirSite\Core\Storage\HitStore;
+use AIHazirSite\Core\Measurement\Hit;
+use AIHazirSite\WordPress\Storage\WpdbHitRepository;
 use AIHazirSite\Core\Measurement\CsvExport;
 use AIHazirSite\Core\Measurement\Report;
 use AIHazirSite\WordPress\Measurement\Admin\ReportPage;
@@ -42,37 +43,37 @@ final class ReportTest extends WP_UnitTestCase {
 	public function set_up(): void {
 		parent::set_up();
 		global $wpdb;
-		$wpdb->query( $wpdb->prepare( 'DELETE FROM %i', HitStore::table() ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->query( $wpdb->prepare( 'DELETE FROM %i', WpdbHitRepository::table() ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
 		$this->today = current_time( 'Y-m-d' );
-		$store       = new HitStore();
+		$store       = new WpdbHitRepository();
 		$ago         = fn( int $days ): string => gmdate( 'Y-m-d', (int) strtotime( $this->today . ' 00:00:00 UTC' ) - $days * DAY_IN_SECONDS );
 
 		// GPTBot: 2 verified + 1 unverified on /urunler/ today.
-		$store->increment( $this->today, HitStore::KIND_BOT, 'gptbot', '/urunler/', true );
-		$store->increment( $this->today, HitStore::KIND_BOT, 'gptbot', '/urunler/', true );
-		$store->increment( $this->today, HitStore::KIND_BOT, 'gptbot', '/urunler/', false );
+		$store->increment( $this->today, Hit::KIND_BOT, 'gptbot', '/urunler/', true );
+		$store->increment( $this->today, Hit::KIND_BOT, 'gptbot', '/urunler/', true );
+		$store->increment( $this->today, Hit::KIND_BOT, 'gptbot', '/urunler/', false );
 		// ClaudeBot: 12 distinct pages 6 days ago (inside 7 days) → top-10 limit.
 		for ( $i = 1; $i <= 12; $i++ ) {
-			$store->increment( $ago( 6 ), HitStore::KIND_BOT, 'claudebot', '/sayfa-' . str_pad( (string) $i, 2, '0', STR_PAD_LEFT ) . '/', false );
+			$store->increment( $ago( 6 ), Hit::KIND_BOT, 'claudebot', '/sayfa-' . str_pad( (string) $i, 2, '0', STR_PAD_LEFT ) . '/', false );
 		}
 		// CCBot 20 days ago: only in the 28-day view.
-		$store->increment( $ago( 20 ), HitStore::KIND_BOT, 'ccbot', '/eski/', false );
+		$store->increment( $ago( 20 ), Hit::KIND_BOT, 'ccbot', '/eski/', false );
 		// A second CCBot page.
-		$store->increment( $ago( 20 ), HitStore::KIND_BOT, 'ccbot', '/=cmd', false );
+		$store->increment( $ago( 20 ), Hit::KIND_BOT, 'ccbot', '/=cmd', false );
 		// Referrals.
-		$store->increment( $this->today, HitStore::KIND_REFERRAL, 'chatgpt', '/', false );
-		$store->increment( $ago( 1 ), HitStore::KIND_REFERRAL, 'chatgpt', '/hakkimizda/', false );
-		$store->increment( $ago( 2 ), HitStore::KIND_REFERRAL, 'perplexity', '/', false );
+		$store->increment( $this->today, Hit::KIND_REFERRAL, 'chatgpt', '/', false );
+		$store->increment( $ago( 1 ), Hit::KIND_REFERRAL, 'chatgpt', '/hakkimizda/', false );
+		$store->increment( $ago( 2 ), Hit::KIND_REFERRAL, 'perplexity', '/', false );
 		// Outside 28 days.
-		$store->increment( $ago( 28 ), HitStore::KIND_BOT, 'gptbot', '/cok-eski/', true );
+		$store->increment( $ago( 28 ), Hit::KIND_BOT, 'gptbot', '/cok-eski/', true );
 	}
 
 	/**
 	 * The 7-day report aggregates per bot, limits pages to 10 and groups referrals.
 	 */
 	public function test_seven_day_rows(): void {
-		$rows = ( new Report( new HitStore(), new FixedClock( $this->today ), 7 ) )->rows();
+		$rows = ( new Report( new WpdbHitRepository(), new FixedClock( $this->today ), 7 ) )->rows();
 
 		$this->assertSame(
 			array(
@@ -96,7 +97,7 @@ final class ReportTest extends WP_UnitTestCase {
 	 * The 28-day report includes older rows but not rows from 28 days ago.
 	 */
 	public function test_twenty_eight_day_window(): void {
-		$bots = Report::section( ( new Report( new HitStore(), new FixedClock( $this->today ), 28 ) )->rows(), Report::SECTION_BOTS );
+		$bots = Report::section( ( new Report( new WpdbHitRepository(), new FixedClock( $this->today ), 28 ) )->rows(), Report::SECTION_BOTS );
 
 		$this->assertSame( array( 'ClaudeBot', 'GPTBot', 'CCBot' ), array_column( $bots, 'source' ) );
 		$this->assertSame( 3, $bots[1]['total'], 'The row from 28 days ago is outside the window.' );
@@ -107,7 +108,7 @@ final class ReportTest extends WP_UnitTestCase {
 	 */
 	public function test_csv_matches_admin_page(): void {
 		foreach ( Report::PERIODS as $days ) {
-			$rows = ( new Report( new HitStore(), new FixedClock( $this->today ), $days ) )->rows();
+			$rows = ( new Report( new WpdbHitRepository(), new FixedClock( $this->today ), $days ) )->rows();
 
 			$page = $this->page_cells( ReportPage::render_tables( $rows ) );
 			$csv  = $this->csv_cells( CsvExport::to_csv( $rows, ReportPage::csv_headers(), ReportPage::section_labels() ) );

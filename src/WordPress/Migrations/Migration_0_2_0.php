@@ -7,9 +7,11 @@
 
 declare(strict_types=1);
 
-namespace AIHazirSite\Core\Migrations;
+namespace AIHazirSite\WordPress\Migrations;
 
-use AIHazirSite\Core\Storage\HitStore;
+use AIHazirSite\Core\Migrations\MigrationInterface;
+use AIHazirSite\WordPress\Storage\WpdbHitRepository;
+
 
 /**
  * Creates `{prefix}aihs_hits`: one row per day, kind, source, path and verification state.
@@ -34,7 +36,7 @@ final class Migration_0_2_0 implements MigrationInterface {
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-		$table   = HitStore::table();
+		$table   = WpdbHitRepository::table();
 		$charset = $wpdb->get_charset_collate();
 
 		dbDelta(
@@ -59,6 +61,6 @@ final class Migration_0_2_0 implements MigrationInterface {
 	public function down(): void {
 		global $wpdb;
 
-		$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', HitStore::table() ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- Migration rollback.
+		$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', WpdbHitRepository::table() ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- Migration rollback.
 	}
 }

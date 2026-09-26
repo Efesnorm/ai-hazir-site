@@ -1,6 +1,6 @@
 <?php
 /**
- * Migration_0_2_0, HitStore and upgrade-on-load.
+ * Migration_0_2_0, WpdbHitRepository and upgrade-on-load.
  *
  * @package AIHazirSite
  */
@@ -9,11 +9,12 @@ declare(strict_types=1);
 
 namespace AIHazirSite\Tests\Integration\Measurement;
 
-use AIHazirSite\Core\Lifecycle;
-use AIHazirSite\Core\Migrations\Migration_0_2_0;
+use AIHazirSite\WordPress\Lifecycle;
+use AIHazirSite\WordPress\Migrations\Migration_0_2_0;
 use AIHazirSite\Core\Migrations\Migrator;
-use AIHazirSite\Core\Storage\HitStore;
-use AIHazirSite\Core\Uninstaller;
+use AIHazirSite\Core\Measurement\Hit;
+use AIHazirSite\WordPress\Storage\WpdbHitRepository;
+use AIHazirSite\WordPress\Uninstaller;
 use AIHazirSite\Core\Measurement\IpRanges;
 use AIHazirSite\WordPress\Platform\WpSettings;
 use WP_UnitTestCase;
@@ -21,18 +22,18 @@ use WP_UnitTestCase;
 /**
  * Hits table integration tests.
  *
- * @covers \AIHazirSite\Core\Migrations\Migration_0_2_0
- * @covers \AIHazirSite\Core\Storage\HitStore
- * @covers \AIHazirSite\Core\Lifecycle::maybe_upgrade
+ * @covers \AIHazirSite\WordPress\Migrations\Migration_0_2_0
+ * @covers \AIHazirSite\WordPress\Storage\WpdbHitRepository
+ * @covers \AIHazirSite\WordPress\Lifecycle::maybe_upgrade
  */
 final class HitsTableTest extends WP_UnitTestCase {
 
 	/**
 	 * Store under test.
 	 *
-	 * @var HitStore
+	 * @var WpdbHitRepository
 	 */
-	private HitStore $store;
+	private WpdbHitRepository $store;
 
 	/**
 	 * Empties the table (inside the test transaction).
@@ -40,8 +41,8 @@ final class HitsTableTest extends WP_UnitTestCase {
 	public function set_up(): void {
 		parent::set_up();
 		global $wpdb;
-		$this->store = new HitStore();
-		$wpdb->query( $wpdb->prepare( 'DELETE FROM %i', HitStore::table() ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$this->store = new WpdbHitRepository();
+		$wpdb->query( $wpdb->prepare( 'DELETE FROM %i', WpdbHitRepository::table() ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 	}
 
 	/**
@@ -57,7 +58,7 @@ final class HitsTableTest extends WP_UnitTestCase {
 	 */
 	private function table_exists(): bool {
 		global $wpdb;
-		return HitStore::table() === $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', HitStore::table() ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		return WpdbHitRepository::table() === $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', WpdbHitRepository::table() ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 	}
 
 	/**
@@ -82,7 +83,7 @@ final class HitsTableTest extends WP_UnitTestCase {
 		$migration->up();
 		$this->assertTrue( $this->table_exists() );
 
-		$columns = $wpdb->get_col( $wpdb->prepare( 'SHOW COLUMNS FROM %i', HitStore::table() ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$columns = $wpdb->get_col( $wpdb->prepare( 'SHOW COLUMNS FROM %i', WpdbHitRepository::table() ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		$this->assertSame( array( 'id', 'day', 'kind', 'source_id', 'path', 'verified', 'hits' ), $columns );
 	}
 
@@ -126,11 +127,11 @@ final class HitsTableTest extends WP_UnitTestCase {
 	public function test_increment_upserts_one_row(): void {
 		global $wpdb;
 
-		$this->assertTrue( $this->store->increment( '2026-09-27', HitStore::KIND_BOT, 'gptbot', '/urunler/', true ) );
-		$this->assertTrue( $this->store->increment( '2026-09-27', HitStore::KIND_BOT, 'gptbot', '/urunler/', true ) );
-		$this->store->increment( '2026-09-27', HitStore::KIND_BOT, 'gptbot', '/urunler/', false );
+		$this->assertTrue( $this->store->increment( '2026-09-27', Hit::KIND_BOT, 'gptbot', '/urunler/', true ) );
+		$this->assertTrue( $this->store->increment( '2026-09-27', Hit::KIND_BOT, 'gptbot', '/urunler/', true ) );
+		$this->store->increment( '2026-09-27', Hit::KIND_BOT, 'gptbot', '/urunler/', false );
 
-		$rows = $wpdb->get_results( $wpdb->prepare( 'SELECT verified, hits FROM %i ORDER BY verified', HitStore::table() ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$rows = $wpdb->get_results( $wpdb->prepare( 'SELECT verified, hits FROM %i ORDER BY verified', WpdbHitRepository::table() ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
 		$this->assertSame(
 			array(
@@ -153,13 +154,13 @@ final class HitsTableTest extends WP_UnitTestCase {
 	public function test_path_is_normalized(): void {
 		global $wpdb;
 
-		$this->store->increment( '2026-09-27', HitStore::KIND_BOT, 'gptbot', '/a?email=x@example.com', false );
-		$this->store->increment( '2026-09-27', HitStore::KIND_BOT, 'gptbot', '/' . str_repeat( 'b', 300 ), false );
+		$this->store->increment( '2026-09-27', Hit::KIND_BOT, 'gptbot', '/a?email=x@example.com', false );
+		$this->store->increment( '2026-09-27', Hit::KIND_BOT, 'gptbot', '/' . str_repeat( 'b', 300 ), false );
 
-		$paths = $wpdb->get_col( $wpdb->prepare( 'SELECT path FROM %i ORDER BY id', HitStore::table() ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$paths = $wpdb->get_col( $wpdb->prepare( 'SELECT path FROM %i ORDER BY id', WpdbHitRepository::table() ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
 		$this->assertSame( '/a', $paths[0] );
-		$this->assertSame( HitStore::PATH_MAX, strlen( $paths[1] ) );
+		$this->assertSame( Hit::PATH_MAX, strlen( $paths[1] ) );
 	}
 
 	/**
@@ -168,10 +169,10 @@ final class HitsTableTest extends WP_UnitTestCase {
 	public function test_prune_deletes_old_rows(): void {
 		global $wpdb;
 
-		$this->store->increment( '2025-01-01', HitStore::KIND_BOT, 'gptbot', '/', false );
-		$this->store->increment( '2026-09-27', HitStore::KIND_BOT, 'gptbot', '/', false );
+		$this->store->increment( '2025-01-01', Hit::KIND_BOT, 'gptbot', '/', false );
+		$this->store->increment( '2026-09-27', Hit::KIND_BOT, 'gptbot', '/', false );
 
 		$this->assertSame( 1, $this->store->prune( '2025-08-23' ) );
-		$this->assertSame( array( '2026-09-27' ), $wpdb->get_col( $wpdb->prepare( 'SELECT day FROM %i', HitStore::table() ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$this->assertSame( array( '2026-09-27' ), $wpdb->get_col( $wpdb->prepare( 'SELECT day FROM %i', WpdbHitRepository::table() ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 	}
 }

@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace AIHazirSite\Core;
+namespace AIHazirSite\WordPress;
 
 use AIHazirSite\Core\Migrations\Migrator;
 use AIHazirSite\WordPress\Platform\WpSettings;

@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace AIHazirSite\Core;
+namespace AIHazirSite\WordPress;
 
 /**
  * Checks the runtime environment and shows an admin notice when it is not supported.

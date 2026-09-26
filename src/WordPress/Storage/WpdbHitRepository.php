@@ -1,13 +1,13 @@
 <?php
 /**
- * The only writer of the `aihs_hits` table.
+ * HitRepository on the `{prefix}aihs_hits` table – the only writer of that table.
  *
  * @package AIHazirSite
  */
 
 declare(strict_types=1);
 
-namespace AIHazirSite\Core\Storage;
+namespace AIHazirSite\WordPress\Storage;
 
 use AIHazirSite\Core\Contracts\HitRepository;
 use AIHazirSite\Core\Measurement\Hit;
@@ -15,12 +15,9 @@ use AIHazirSite\Core\Measurement\Hit;
 /**
  * Aggregated hit counters. Stores no IP address, user agent or query string.
  */
-final class HitStore implements HitRepository {
+final class WpdbHitRepository implements HitRepository {
 
-	public const TABLE         = 'aihs_hits';
-	public const KIND_BOT      = Hit::KIND_BOT;
-	public const KIND_REFERRAL = Hit::KIND_REFERRAL;
-	public const PATH_MAX      = Hit::PATH_MAX;
+	public const TABLE = 'aihs_hits';
 
 	/**
 	 * Full table name with the site prefix.
@@ -34,7 +31,7 @@ final class HitStore implements HitRepository {
 	 * Adds one hit with a single query.
 	 *
 	 * @param string $day       Date in Y-m-d.
-	 * @param string $kind      self::KIND_BOT or self::KIND_REFERRAL.
+	 * @param string $kind      Hit::KIND_BOT or Hit::KIND_REFERRAL.
 	 * @param string $source_id Bot or referrer id.
 	 * @param string $path      Request path without query string.
 	 * @param bool   $verified  Whether the bot's identity was verified.
@@ -50,7 +47,7 @@ final class HitStore implements HitRepository {
 				$day,
 				$kind,
 				substr( $source_id, 0, 64 ),
-				self::normalize_path( $path ),
+				Hit::normalize_path( $path ),
 				$verified ? 1 : 0
 			)
 		);
@@ -108,14 +105,5 @@ final class HitStore implements HitRepository {
 			);
 		}
 		return $totals;
-	}
-
-	/**
-	 * Path normalization (see {@see Hit::normalize_path()}).
-	 *
-	 * @param string $path Raw path or request URI.
-	 */
-	public static function normalize_path( string $path ): string {
-		return Hit::normalize_path( $path );
 	}
 }

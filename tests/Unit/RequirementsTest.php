@@ -9,13 +9,13 @@ declare(strict_types=1);
 
 namespace AIHazirSite\Tests\Unit;
 
-use AIHazirSite\Core\Requirements;
+use AIHazirSite\WordPress\Requirements;
 use Brain\Monkey\Functions;
 
 /**
  * Requirements unit tests.
  *
- * @covers \AIHazirSite\Core\Requirements
+ * @covers \AIHazirSite\WordPress\Requirements
  */
 final class RequirementsTest extends UnitTestCase {
 

@@ -14,7 +14,7 @@ use WP_UnitTestCase;
 /**
  * Activation and deactivation of the plugin inside WordPress.
  *
- * @covers \AIHazirSite\Core\Lifecycle
+ * @covers \AIHazirSite\WordPress\Lifecycle
  */
 final class LifecycleTest extends WP_UnitTestCase {
 
@@ -33,7 +33,7 @@ final class LifecycleTest extends WP_UnitTestCase {
 	 */
 	public function test_plugin_is_loaded(): void {
 		$this->assertTrue( defined( 'AIHS_VERSION' ) );
-		$this->assertTrue( class_exists( \AIHazirSite\Core\Plugin::class ) );
+		$this->assertTrue( class_exists( \AIHazirSite\WordPress\Plugin::class ) );
 	}
 
 	/**

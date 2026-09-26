@@ -25,13 +25,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'AIHS_VERSION', '0.2.0' );
 define( 'AIHS_FILE', __FILE__ );
 
-require_once __DIR__ . '/src/Core/Requirements.php';
+require_once __DIR__ . '/src/WordPress/Requirements.php';
 
-( new \AIHazirSite\Core\Requirements( PHP_VERSION, (string) get_bloginfo( 'version' ) ) )->run(
+( new \AIHazirSite\WordPress\Requirements( PHP_VERSION, (string) get_bloginfo( 'version' ) ) )->run(
 	static function () {
 		require_once __DIR__ . '/vendor/autoload.php';
 
-		\AIHazirSite\Core\Lifecycle::register( AIHS_FILE );
-		\AIHazirSite\Core\Plugin::boot();
+		\AIHazirSite\WordPress\Lifecycle::register( AIHS_FILE );
+		\AIHazirSite\WordPress\Plugin::boot();
 	}
 );

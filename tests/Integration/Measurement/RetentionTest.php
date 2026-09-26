@@ -10,8 +10,9 @@ declare(strict_types=1);
 namespace AIHazirSite\Tests\Integration\Measurement;
 
 use AIHazirSite\Core\Features;
-use AIHazirSite\Core\Lifecycle;
-use AIHazirSite\Core\Storage\HitStore;
+use AIHazirSite\WordPress\Lifecycle;
+use AIHazirSite\Core\Measurement\Hit;
+use AIHazirSite\WordPress\Storage\WpdbHitRepository;
 use AIHazirSite\WordPress\Measurement\MeasurementModule;
 use WP_UnitTestCase;
 
@@ -28,7 +29,7 @@ final class RetentionTest extends WP_UnitTestCase {
 	public function set_up(): void {
 		parent::set_up();
 		global $wpdb;
-		$wpdb->query( $wpdb->prepare( 'DELETE FROM %i', HitStore::table() ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->query( $wpdb->prepare( 'DELETE FROM %i', WpdbHitRepository::table() ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		Lifecycle::deactivate();
 	}
 
@@ -37,15 +38,15 @@ final class RetentionTest extends WP_UnitTestCase {
 	 */
 	public function test_prune_keeps_last_400_days(): void {
 		global $wpdb;
-		$store = new HitStore();
-		$store->increment( '2025-08-22', HitStore::KIND_BOT, 'gptbot', '/', false ); // 401 days before 2026-09-27.
-		$store->increment( '2025-08-23', HitStore::KIND_BOT, 'gptbot', '/', false ); // 400 days.
-		$store->increment( '2026-09-27', HitStore::KIND_BOT, 'gptbot', '/', false );
+		$store = new WpdbHitRepository();
+		$store->increment( '2025-08-22', Hit::KIND_BOT, 'gptbot', '/', false ); // 401 days before 2026-09-27.
+		$store->increment( '2025-08-23', Hit::KIND_BOT, 'gptbot', '/', false ); // 400 days.
+		$store->increment( '2026-09-27', Hit::KIND_BOT, 'gptbot', '/', false );
 
 		$this->assertSame( 1, ( new MeasurementModule() )->prune( '2026-09-27' ) );
 		$this->assertSame(
 			array( '2025-08-23', '2026-09-27' ),
-			$wpdb->get_col( $wpdb->prepare( 'SELECT day FROM %i ORDER BY day', HitStore::table() ) ) // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->get_col( $wpdb->prepare( 'SELECT day FROM %i ORDER BY day', WpdbHitRepository::table() ) ) // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		);
 	}
 

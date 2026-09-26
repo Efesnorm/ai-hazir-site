@@ -15,4 +15,4 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-\AIHazirSite\Core\Uninstaller::run();
+\AIHazirSite\WordPress\Uninstaller::run();

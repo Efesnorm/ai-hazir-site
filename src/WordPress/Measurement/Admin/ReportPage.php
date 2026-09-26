@@ -12,7 +12,7 @@ namespace AIHazirSite\WordPress\Measurement\Admin;
 use AIHazirSite\Core\Features;
 use AIHazirSite\Core\Measurement\CsvExport;
 use AIHazirSite\Core\Measurement\Report;
-use AIHazirSite\Core\Storage\HitStore;
+use AIHazirSite\WordPress\Storage\WpdbHitRepository;
 use AIHazirSite\WordPress\Platform\WpClock;
 
 /**
@@ -191,7 +191,7 @@ final class ReportPage {
 	 * @param int $days Days.
 	 */
 	public static function report( int $days ): Report {
-		return new Report( new HitStore(), new WpClock(), $days );
+		return new Report( new WpdbHitRepository(), new WpClock(), $days );
 	}
 
 	/**

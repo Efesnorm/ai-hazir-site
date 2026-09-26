@@ -11,7 +11,7 @@ namespace AIHazirSite\Tests\Integration\Measurement;
 
 use AIHazirSite\Core\Features;
 use AIHazirSite\Core\Measurement\Tracker;
-use AIHazirSite\Core\Storage\HitStore;
+use AIHazirSite\WordPress\Storage\WpdbHitRepository;
 use AIHazirSite\WordPress\Measurement\RequestListener;
 use AIHazirSite\WordPress\Platform\WpClock;
 use WP_UnitTestCase;
@@ -49,9 +49,9 @@ final class TrackerTest extends WP_UnitTestCase {
 	public function set_up(): void {
 		parent::set_up();
 		global $wpdb;
-		$wpdb->query( $wpdb->prepare( 'DELETE FROM %i', HitStore::table() ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->query( $wpdb->prepare( 'DELETE FROM %i', WpdbHitRepository::table() ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		delete_option( Features::OPTION );
-		$this->tracker = new Tracker( new HitStore(), new WpClock() );
+		$this->tracker = new Tracker( new WpdbHitRepository(), new WpClock() );
 		$this->globals = array( $_SERVER, $_GET ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Saved to restore after the test.
 	}
 
@@ -106,7 +106,7 @@ final class TrackerTest extends WP_UnitTestCase {
 	 */
 	private function rows(): array {
 		global $wpdb;
-		return $wpdb->get_results( $wpdb->prepare( 'SELECT day, kind, source_id, path, verified, hits FROM %i ORDER BY id', HitStore::table() ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		return $wpdb->get_results( $wpdb->prepare( 'SELECT day, kind, source_id, path, verified, hits FROM %i ORDER BY id', WpdbHitRepository::table() ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 	}
 
 	/**
@@ -188,12 +188,12 @@ final class TrackerTest extends WP_UnitTestCase {
 	public function test_no_raw_ip_or_user_agent_is_stored(): void {
 		global $wpdb;
 
-		$tracker = new Tracker( new HitStore(), new WpClock(), null, static fn(): bool => true );
+		$tracker = new Tracker( new WpdbHitRepository(), new WpClock(), null, static fn(): bool => true );
 		$this->assertTrue( $this->handle( $this->bot_request(), array(), $tracker ) );
 
 		foreach ( array( self::IP, 'marker-7f3a9c', 'utm_source' ) as $needle ) {
 			$like = '%' . $wpdb->esc_like( $needle ) . '%';
-			$this->assertSame( '0', $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE CONCAT_WS(" ", day, kind, source_id, path, verified, hits) LIKE %s', HitStore::table(), $like ) ), $needle ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$this->assertSame( '0', $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE CONCAT_WS(" ", day, kind, source_id, path, verified, hits) LIKE %s', WpdbHitRepository::table(), $like ) ), $needle ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$this->assertSame( '0', $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE option_value LIKE %s', $wpdb->options, $like ) ), $needle ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		}
 	}
@@ -215,7 +215,7 @@ final class TrackerTest extends WP_UnitTestCase {
 	 */
 	public function test_failing_verifier_counts_unverified(): void {
 		$tracker = new Tracker(
-			new HitStore(),
+			new WpdbHitRepository(),
 			new WpClock(),
 			null,
 			static function (): bool {
