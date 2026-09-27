@@ -1,0 +1,88 @@
+{
+    "@context": "https://schema.org",
+    "@type": "DataFeed",
+    "@id": "https://ornek.com/ai-katalog/#feed",
+    "name": "AI Katalog – Örnek Kablo A.Ş.",
+    "description": "Örnek Kablo A.Ş. firmasının sattığı, aradığı ve tedarik edebildiği ürün ve hizmetler.",
+    "url": "https://ornek.com/ai-katalog/",
+    "dateModified": "2026-09-27T08:00:00Z",
+    "publisher": {
+        "@id": "https://ornek.com/#organization"
+    },
+    "dataFeedElement": [
+        {
+            "@type": "DataFeedItem",
+            "dateModified": "2026-09-27T08:00:00Z",
+            "item": {
+                "@type": "Product",
+                "name": "NYY 3x2,5 enerji kablosu",
+                "description": "Stoktan teslim.",
+                "category": "Kablo",
+                "material": "Bakır",
+                "color": "Siyah",
+                "additionalProperty": [
+                    {
+                        "@type": "PropertyValue",
+                        "name": "Kesit",
+                        "value": 2.5,
+                        "unitCode": "MMK"
+                    },
+                    {
+                        "@type": "PropertyValue",
+                        "name": "Damar sayısı",
+                        "value": 3
+                    },
+                    {
+                        "@type": "PropertyValue",
+                        "name": "İzolasyon",
+                        "value": "PVC"
+                    },
+                    {
+                        "@type": "PropertyValue",
+                        "name": "Standart",
+                        "value": "TSE, IEC 60502-1"
+                    },
+                    {
+                        "@type": "PropertyValue",
+                        "name": "Makara boyu",
+                        "value": 500,
+                        "unitCode": "MTR"
+                    },
+                    {
+                        "@type": "PropertyValue",
+                        "name": "ozel_not",
+                        "value": "Halojen içermez"
+                    }
+                ],
+                "offers": {
+                    "@type": "Offer",
+                    "inventoryLevel": {
+                        "@type": "QuantitativeValue",
+                        "value": 1500,
+                        "unitText": "m"
+                    },
+                    "areaServed": "Türkiye",
+                    "deliveryLeadTime": {
+                        "@type": "QuantitativeValue",
+                        "value": 3,
+                        "unitCode": "DAY"
+                    },
+                    "validThrough": "2026-12-31",
+                    "price": "42.50",
+                    "priceCurrency": "TRY",
+                    "priceValidUntil": "2026-12-31",
+                    "priceSpecification": {
+                        "@type": "PriceSpecification",
+                        "minPrice": 42.5,
+                        "maxPrice": 48.75,
+                        "priceCurrency": "TRY"
+                    },
+                    "availability": "https://schema.org/InStock",
+                    "seller": {
+                        "@id": "https://ornek.com/#organization"
+                    }
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,20 @@
+# Örnek Kablo A.Ş.
+
+> Örnek Kablo A.Ş. (Enerji ve telekom kabloları): sattığı, aradığı ve tedarik edebildiği ürünlerin güncel özeti.
+
+- Ülke: TR
+- Diller: tr, en
+- Sertifikalar: ISO 9001
+- Son güncelleme: 2026-09-27
+
+## Satılanlar
+
+- [NYY 3x2,5 enerji kablosu](https://ornek.com/ai-katalog/#ilan-21): Stoktan teslim. Kategori: Kablo; Miktar: 1500 m; Fiyat: 42.50–48.75 TRY; Bölge: Türkiye; Teslim süresi: 3 gün; Kesit: 2.5 mm²; Damar sayısı: 3; İletken: Bakır; İzolasyon: PVC; Standart: TSE, IEC 60502-1; Renk: Siyah; Makara boyu: 500 m; Geçerlilik: 2026-12-31; Özellikler: ozel_not Halojen içermez
+
+## İletişim
+
+- [Web sitesi](https://ornek.com/): E-posta: satis@ornek.com.tr; Telefon: +90 212 555 12 34
+
+## Optional
+
+- [AI Katalog](https://ornek.com/ai-katalog/): Tüm geçerli ilanların sade HTML listesi

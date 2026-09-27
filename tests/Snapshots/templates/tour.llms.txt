@@ -1,0 +1,20 @@
+# Örnek Kablo A.Ş.
+
+> Örnek Kablo A.Ş. (Enerji ve telekom kabloları): sattığı, aradığı ve tedarik edebildiği ürünlerin güncel özeti.
+
+- Ülke: TR
+- Diller: tr, en
+- Sertifikalar: ISO 9001
+- Son güncelleme: 2026-09-27
+
+## Satılanlar
+
+- [Kapadokya balon turu](https://ornek.com/ai-katalog/#ilan-24): Kategori: Tur; Fiyat: 250 EUR; Bölge: Nevşehir; Başlangıç tarihi: 2026-10-15; Süre: 3 gün; Kontenjan: 20; Kalan yer: 6; Dahil olanlar: Konaklama, balon uçuşu; İptal koşulu: 7 gün öncesine kadar ücretsiz; Buluşma noktası: Göreme otogarı; Geçerlilik: 2026-10-14
+
+## İletişim
+
+- [Web sitesi](https://ornek.com/): E-posta: satis@ornek.com.tr; Telefon: +90 212 555 12 34
+
+## Optional
+
+- [AI Katalog](https://ornek.com/ai-katalog/): Tüm geçerli ilanların sade HTML listesi

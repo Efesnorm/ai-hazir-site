@@ -24,7 +24,7 @@ final class SchemaValidator {
 	/**
 	 * Types our output may contain.
 	 */
-	public const TYPES = array( 'Organization', 'WebPage', 'DataFeed', 'DataFeedItem', 'Product', 'Offer', 'Demand', 'PriceSpecification', 'QuantitativeValue', 'PropertyValue', 'PostalAddress' );
+	public const TYPES = array( 'Organization', 'WebPage', 'DataFeed', 'DataFeedItem', 'Product', 'Offer', 'Demand', 'PriceSpecification', 'QuantitativeValue', 'PropertyValue', 'PostalAddress', 'Service', 'TouristTrip', 'Country' );
 
 	/**
 	 * Required properties per type.
@@ -35,6 +35,9 @@ final class SchemaValidator {
 		'DataFeed'     => array( 'name', 'dateModified' ),
 		'DataFeedItem' => array( 'dateModified', 'item' ),
 		'Product'      => array( 'name' ),
+		'Service'      => array( 'name' ),
+		'TouristTrip'  => array( 'name' ),
+		'Country'      => array( 'name' ),
 		'Offer'        => array( 'validThrough' ),
 		'Demand'       => array( 'validThrough', 'itemOffered' ),
 	);
@@ -124,7 +127,7 @@ final class SchemaValidator {
 	 * @phpstan-param list<string> $warnings
 	 */
 	private function values( string $type, array $node, string $path, array &$errors, array &$warnings ): void {
-		foreach ( array( 'dateModified', 'validThrough', 'priceValidUntil' ) as $property ) {
+		foreach ( array( 'dateModified', 'validThrough', 'priceValidUntil', 'departureTime' ) as $property ) {
 			if ( isset( $node[ $property ] ) && ! self::is_date( $node[ $property ] ) ) {
 				$errors[] = "{$path} ({$type}): {$property} geçerli bir tarih değil.";
 			}

@@ -1,0 +1,20 @@
+# Örnek Kablo A.Ş.
+
+> Örnek Kablo A.Ş. (Enerji ve telekom kabloları): sattığı, aradığı ve tedarik edebildiği ürünlerin güncel özeti.
+
+- Ülke: TR
+- Diller: tr, en
+- Sertifikalar: ISO 9001
+- Son güncelleme: 2026-09-27
+
+## Satılanlar
+
+- [Bakır tel (ihracat)](https://ornek.com/ai-katalog/#ilan-22): Kategori: Hammadde; Miktar: 20000 kg; Fiyat: 9.5 USD; Teslim süresi: 30 gün; GTİP kodu: 7408.11; Menşe: TR; Teslim şekli (Incoterms 2020): FOB; Hedef pazarlar: DE, FR; Sertifikalar: ISO 9001, REACH; En az sipariş miktarı (MOQ): 1000; Geçerlilik: 2026-12-31
+
+## İletişim
+
+- [Web sitesi](https://ornek.com/): E-posta: satis@ornek.com.tr; Telefon: +90 212 555 12 34
+
+## Optional
+
+- [AI Katalog](https://ornek.com/ai-katalog/): Tüm geçerli ilanların sade HTML listesi

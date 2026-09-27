@@ -58,6 +58,11 @@ final class Features {
 	public const LLMS_TXT = 'llms_txt';
 
 	/**
+	 * Sector templates (0.8.0).
+	 */
+	public const TEMPLATES = 'templates';
+
+	/**
 	 * Approved exceptions to "disabled by default", each with a CHANGELOG rationale.
 	 *
 	 * - measurement: the "before" baseline must be collected from the moment the
@@ -94,6 +99,7 @@ final class Features {
 			self::BOT_ACCESS      => false,
 			self::SCHEMA_OUTPUT   => false,
 			self::LLMS_TXT        => false,
+			self::TEMPLATES       => false,
 		);
 	}
 

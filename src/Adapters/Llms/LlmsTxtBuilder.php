@@ -13,12 +13,17 @@ use AIHazirSite\Core\Catalog\CompanyProfile;
 use AIHazirSite\Core\Catalog\Listing;
 use AIHazirSite\Core\Catalog\ListingType;
 use AIHazirSite\Core\Catalog\ListingValidity;
+use AIHazirSite\Core\Templates\Freshness;
+use AIHazirSite\Core\Templates\Template;
+use AIHazirSite\Core\Templates\TemplateRegistry;
 
 /**
  * Follows the format proposed at llmstxt.org: an H1 with the site name (the only required
  * part), a blockquote summary, non-heading details, then H2 sections of file lists
  * ("- [name](url): notes"); the "Optional" section holds links an agent may skip.
  * Current listings only (ListingValidity); empty sections are left out. UTF-8, LF, no BOM.
+ * Sector templates (0.8.0): template fields marked `llms` are listed with their label and unit,
+ * prices are left out where the template forbids them, and stale short-lived values are marked.
  */
 final class LlmsTxtBuilder {
 
@@ -49,6 +54,7 @@ final class LlmsTxtBuilder {
 		'phone'             => 'Telefon',
 		'catalog'           => 'AI Katalog',
 		'catalog_note'      => 'Tüm geçerli ilanların sade HTML listesi',
+		'unverified'        => '%1$s (doğrulanmadı, son güncelleme %2$s)',
 	);
 
 	/**
@@ -65,12 +71,14 @@ final class LlmsTxtBuilder {
 	 * @param string                $catalog_url AI catalog page URL (listing anchors: #ilan-{id}).
 	 * @param string                $site_name   Used when the profile has no name.
 	 * @param array<string, string> $labels      Translated texts (keys of self::LABELS).
+	 * @param TemplateRegistry|null $templates   Sector templates; null = every listing is "general".
 	 */
 	public function __construct(
 		private readonly string $site_url,
 		private readonly string $catalog_url,
 		private readonly string $site_name,
-		array $labels = array()
+		array $labels = array(),
+		private readonly ?TemplateRegistry $templates = null
 	) {
 		$this->labels = array_merge( self::LABELS, $labels );
 	}
@@ -82,10 +90,11 @@ final class LlmsTxtBuilder {
 	 * @param Listing[]      $listings      All listings (expired ones are skipped).
 	 * @param string         $today         Y-m-d.
 	 * @param string         $date_modified Last change of the data (ISO 8601), '' when unknown.
+	 * @param string|null    $now           ISO 8601 date-time for freshness (default: start of today).
 	 *
 	 * @phpstan-param list<Listing> $listings
 	 */
-	public function build( CompanyProfile $profile, array $listings, string $today, string $date_modified ): string {
+	public function build( CompanyProfile $profile, array $listings, string $today, string $date_modified, ?string $now = null ): string {
 		$name   = self::inline( '' === $profile->name ? $this->site_name : $profile->name );
 		$blocks = array(
 			'# ' . $name,
@@ -109,7 +118,7 @@ final class LlmsTxtBuilder {
 			$lines = array();
 			foreach ( $listings as $listing ) {
 				if ( $type === $listing->type && ListingValidity::is_current( $listing, $today ) ) {
-					$lines[] = $this->listing_line( $listing, $today );
+					$lines[] = $this->listing_line( $listing, $today, $now );
 				}
 			}
 			if ( array() !== $lines ) {
@@ -133,12 +142,13 @@ final class LlmsTxtBuilder {
 	/**
 	 * One listing as a file-list item pointing at its anchor on the catalog page.
 	 *
-	 * @param Listing $listing Listing.
-	 * @param string  $today   Y-m-d.
+	 * @param Listing     $listing Listing.
+	 * @param string      $today   Y-m-d.
+	 * @param string|null $now     ISO 8601 date-time.
 	 */
-	private function listing_line( Listing $listing, string $today ): string {
+	private function listing_line( Listing $listing, string $today, ?string $now ): string {
 		$details = array();
-		foreach ( $this->details( $listing, $today ) as $label => $value ) {
+		foreach ( $this->details( $listing, $today, $now ) as $label => $value ) {
 			$details[] = $label . ': ' . $value;
 		}
 
@@ -151,19 +161,21 @@ final class LlmsTxtBuilder {
 	/**
 	 * A listing's details as label → single-line value (also shown on the catalog page).
 	 *
-	 * @param Listing $listing Listing.
-	 * @param string  $today   Y-m-d.
+	 * @param Listing     $listing Listing.
+	 * @param string      $today   Y-m-d.
+	 * @param string|null $now     ISO 8601 date-time for freshness (default: start of today).
 	 * @return array<string, string>
 	 */
-	public function details( Listing $listing, string $today ): array {
-		$notes = array();
+	public function details( Listing $listing, string $today, ?string $now = null ): array {
+		$template = null === $this->templates ? Template::general() : $this->templates->get( $listing->template );
+		$notes    = array();
 		if ( '' !== $listing->category ) {
 			$notes['category'] = $listing->category;
 		}
 		if ( null !== $listing->quantity ) {
 			$notes['quantity'] = trim( $listing->quantity . ' ' . $listing->unit );
 		}
-		if ( null !== $listing->price_min ) {
+		if ( null !== $listing->price_min && $template->price ) {
 			$range = null === $listing->price_max || $listing->price_max === $listing->price_min ? $listing->price_min : $listing->price_min . '–' . $listing->price_max;
 			$notes[ ListingType::DEMAND === $listing->type ? 'budget' : 'price' ] = trim( $range . ' ' . $listing->currency );
 		}
@@ -174,15 +186,45 @@ final class LlmsTxtBuilder {
 			$notes['lead_time'] = sprintf( $this->labels['days'], $listing->lead_time_days );
 		}
 		$notes['valid_until'] = ListingValidity::valid_until( $listing, $today );
-		if ( array() !== $listing->attributes ) {
-			$notes['attributes'] = implode( ', ', array_map( static fn( string $k, string $v ): string => $k . ' ' . $v, array_keys( $listing->attributes ), $listing->attributes ) );
+
+		$fields = array();
+		$extras = array();
+		foreach ( $listing->attributes as $key => $value ) {
+			$field = $template->field( $key );
+			if ( null === $field ) {
+				$extras[ $key ] = $value;
+			} elseif ( $field->llms ) {
+				$shown = trim( $value . ' ' . $field->unit );
+				if ( Freshness::is_stale( $field, $listing, $now ?? $today . 'T00:00:00Z' ) ) {
+					$shown = sprintf( $this->labels['unverified'], $shown, self::moment( (string) $listing->updated_at ) );
+				}
+				$fields[ $field->label ] = $shown;
+			}
+		}
+		if ( array() !== $extras ) {
+			$notes['attributes'] = implode( ', ', array_map( static fn( string $k, string $v ): string => $k . ' ' . $v, array_keys( $extras ), $extras ) );
 		}
 
 		$details = array();
 		foreach ( $notes as $key => $value ) {
+			if ( 'valid_until' === $key ) {
+				foreach ( $fields as $label => $shown ) {
+					$details[ self::inline( $label ) ] = self::inline( $shown );
+				}
+			}
 			$details[ $this->labels[ $key ] ] = self::inline( $value );
 		}
 		return $details;
+	}
+
+	/**
+	 * "2026-09-25 10:00 UTC" from an ISO 8601 UTC time.
+	 *
+	 * @param string $iso ISO 8601.
+	 */
+	private static function moment( string $iso ): string {
+		$time = strtotime( $iso );
+		return false === $time ? $iso : gmdate( 'Y-m-d H:i', $time ) . ' UTC';
 	}
 
 	/**

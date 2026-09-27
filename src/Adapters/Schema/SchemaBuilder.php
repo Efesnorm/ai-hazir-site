@@ -12,6 +12,10 @@ namespace AIHazirSite\Adapters\Schema;
 use AIHazirSite\Core\Catalog\CompanyProfile;
 use AIHazirSite\Core\Catalog\Listing;
 use AIHazirSite\Core\Catalog\ListingValidity;
+use AIHazirSite\Core\Templates\Freshness;
+use AIHazirSite\Core\Templates\Template;
+use AIHazirSite\Core\Templates\TemplateField;
+use AIHazirSite\Core\Templates\TemplateRegistry;
 
 /**
  * Platform-neutral producer. Reads core catalog objects only; field placement comes from SchemaMap.
@@ -19,6 +23,9 @@ use AIHazirSite\Core\Catalog\ListingValidity;
  * - Home page: Organization + WebPage (dateModified lives on WebPage, a CreativeWork).
  * - AI catalog page: DataFeed whose DataFeedItems carry dateModified and wrap a Product (with Offer)
  *   or a Demand. Expired listings are left out.
+ * - Sector templates (0.8.0) set the item type (Product, Service, TouristTrip), map template fields to
+ *   Schema.org properties, hide prices where the template forbids them and mark stale short-lived values.
+ *   Without a registry every listing uses the "general" template (the 0.7.0 output).
  */
 final class SchemaBuilder {
 
@@ -27,14 +34,25 @@ final class SchemaBuilder {
 	/**
 	 * Constructor.
 	 *
-	 * @param string $site_url Home URL with trailing slash (used for @id values).
-	 * @param bool   $link_organization False when another plugin owns the Organization node:
-	 *                                  references then carry the name instead of our @id.
+	 * @param string                $site_url Home URL with trailing slash (used for @id values).
+	 * @param bool                  $link_organization False when another plugin owns the Organization node:
+	 *                                                 references then carry the name instead of our @id.
+	 * @param TemplateRegistry|null $templates Sector templates; null = every listing is "general".
 	 */
 	public function __construct(
 		private readonly string $site_url,
-		private readonly bool $link_organization = true
+		private readonly bool $link_organization = true,
+		private readonly ?TemplateRegistry $templates = null
 	) {
+	}
+
+	/**
+	 * The listing's template.
+	 *
+	 * @param Listing $listing Listing.
+	 */
+	private function template( Listing $listing ): Template {
+		return null === $this->templates ? Template::general() : $this->templates->get( $listing->template );
 	}
 
 	/**
@@ -93,13 +111,14 @@ final class SchemaBuilder {
 	 * @param Listing[]      $listings    Listings of any type.
 	 * @param string         $today       Y-m-d.
 	 * @param string         $catalog_url Catalog page URL.
+	 * @param string|null    $now         ISO 8601 date-time for freshness (default: start of today).
 	 * @return array<string, mixed>
 	 */
-	public function catalog( CompanyProfile $profile, array $listings, string $today, string $catalog_url ): array {
+	public function catalog( CompanyProfile $profile, array $listings, string $today, string $catalog_url, ?string $now = null ): array {
 		$entries  = array();
 		$modified = array();
 		foreach ( $listings as $listing ) {
-			$entry = $this->entry( $listing, $today, $profile );
+			$entry = $this->entry( $listing, $today, $profile, $now );
 			if ( null !== $entry ) {
 				$entries[]  = $entry;
 				$modified[] = (string) $entry['dateModified'];
@@ -126,18 +145,20 @@ final class SchemaBuilder {
 	 * @param Listing             $listing Listing.
 	 * @param string              $today   Y-m-d.
 	 * @param CompanyProfile|null $profile Profile (named seller when another plugin owns Organization).
+	 * @param string|null         $now     ISO 8601 date-time for freshness (default: start of today).
 	 * @return array<string, mixed>|null
 	 */
-	public function entry( Listing $listing, string $today, ?CompanyProfile $profile = null ): ?array {
+	public function entry( Listing $listing, string $today, ?CompanyProfile $profile = null, ?string $now = null ): ?array {
 		$updated     = $listing->updated_at ?? $today . 'T00:00:00Z';
 		$valid_until = ListingValidity::valid_until( $listing, $today );
 		if ( ! ListingValidity::is_current( $listing, $today ) || ! isset( SchemaMap::DEAL_TYPE[ $listing->type ] ) ) {
 			return null;
 		}
 
+		$template              = $this->template( $listing );
 		$deal_type             = SchemaMap::DEAL_TYPE[ $listing->type ];
 		$nodes                 = array(
-			'item'  => array( '@type' => 'Product' ),
+			'item'  => array( '@type' => $template->item_type ),
 			'deal'  => array( '@type' => $deal_type ),
 			'entry' => array( '@type' => 'DataFeedItem' ),
 		);
@@ -146,6 +167,10 @@ final class SchemaBuilder {
 		$values['updated_at']  = $updated;
 
 		foreach ( SchemaMap::FIELDS as $field => [ $node, $property, $transform ] ) {
+			if ( 'attributes' === $field ) {
+				$this->attributes( $listing, $template, $deal_type, $now ?? $today . 'T00:00:00Z', $nodes );
+				continue;
+			}
 			$value = $this->transform( $transform, $values[ $field ], $listing );
 			if ( null === $value || str_starts_with( $property, '@price' ) ) {
 				continue;
@@ -154,7 +179,9 @@ final class SchemaBuilder {
 			$nodes[ $node ][ $property ] = $value;
 		}
 
-		$nodes['deal'] = array_merge( $nodes['deal'], $this->price( $listing, $deal_type, $valid_until ) );
+		if ( $template->price ) {
+			$nodes['deal'] = array_merge( $nodes['deal'], $this->price( $listing, $deal_type, $valid_until ) );
+		}
 
 		$availability = SchemaMap::AVAILABILITY[ $listing->type ] ?? null;
 		if ( 'Offer' === $deal_type && null === $availability && null !== $listing->quantity ) {
@@ -253,6 +280,111 @@ final class SchemaBuilder {
 			),
 			default                 => null,
 		};
+	}
+
+	/**
+	 * Writes the listing's attributes: template fields to their mapped property, everything else
+	 * (and fields without a mapping) as PropertyValue in additionalProperty. additionalProperty
+	 * exists on Product and Offer but not on Service, TouristTrip or Demand, so for those items the
+	 * PropertyValues go on the Offer, and for a Demand they are left out (llms.txt still has them).
+	 *
+	 * @param Listing              $listing   Listing.
+	 * @param Template             $template  Template.
+	 * @param string               $deal_type Offer or Demand.
+	 * @param string               $now       ISO 8601 date-time.
+	 * @param array<string, mixed> $nodes     Nodes (by reference).
+	 */
+	private function attributes( Listing $listing, Template $template, string $deal_type, string $now, array &$nodes ): void {
+		$holder     = 'Product' === $template->item_type ? 'item' : ( 'Offer' === $deal_type ? 'deal' : null );
+		$properties = array();
+		foreach ( $listing->attributes as $key => $value ) {
+			$field = $template->field( $key );
+			if ( null === $field ) {
+				$properties[] = array(
+					'@type' => 'PropertyValue',
+					'name'  => $key,
+					'value' => $value,
+				);
+				continue;
+			}
+			if ( Freshness::is_stale( $field, $listing, $now ) ) {
+				$properties[] = array_merge( self::property_value( $field, $value ), array( 'description' => 'Doğrulanmadı: son güncelleme ' . (string) $listing->updated_at ) );
+				continue;
+			}
+			$map = $field->schema;
+			if ( null === $map || 'property' === $map['as'] ) {
+				if ( null === $map || 'item' === $map['node'] ) {
+					$properties[] = self::property_value( $field, $value );
+				} elseif ( 'Offer' === $deal_type ) {
+					$nodes['deal']['additionalProperty'][] = self::property_value( $field, $value );
+				}
+				continue;
+			}
+			if ( ! isset( $nodes[ $map['node'] ][ $map['property'] ] ) ) {
+				$nodes[ $map['node'] ][ $map['property'] ] = self::mapped( $field, $map['as'], $value, $listing );
+			}
+		}
+		if ( array() !== $properties && null !== $holder ) {
+			$nodes[ $holder ]['additionalProperty'] = array_merge( $nodes[ $holder ]['additionalProperty'] ?? array(), $properties );
+		}
+	}
+
+	/**
+	 * A template field as a PropertyValue (numbers as numbers, with its UN/CEFACT unit code).
+	 *
+	 * @param TemplateField $field Field.
+	 * @param string        $value Value.
+	 * @return array<string, mixed>
+	 */
+	private static function property_value( TemplateField $field, string $value ): array {
+		return array_filter(
+			array(
+				'@type'    => 'PropertyValue',
+				'name'     => $field->label,
+				'value'    => in_array( $field->type, array( 'integer', 'decimal' ), true ) ? self::number( $value ) : $value,
+				'unitCode' => $field->unit_code,
+				'unitText' => '' === $field->unit_code ? $field->unit : '',
+			),
+			array( self::class, 'present' )
+		);
+	}
+
+	/**
+	 * A template field value in the form its mapping asks for.
+	 *
+	 * @param TemplateField $field   Field.
+	 * @param string        $form    text | number | date | country | quantity | min_quantity.
+	 * @param string        $value   Value.
+	 * @param Listing       $listing Listing (for its unit).
+	 */
+	private static function mapped( TemplateField $field, string $form, string $value, Listing $listing ): mixed {
+		$items  = 'list' === $field->type ? array_map( 'trim', explode( ',', $value ) ) : array( $value );
+		$one    = static fn( string $v ): mixed => match ( $form ) {
+			'number'       => self::number( $v ),
+			'country'      => array(
+				'@type' => 'Country',
+				'name'  => $v,
+			),
+			'quantity'     => array_filter(
+				array(
+					'@type'    => 'QuantitativeValue',
+					'value'    => self::number( $v ),
+					'unitCode' => $field->unit_code,
+				),
+				array( self::class, 'present' )
+			),
+			'min_quantity' => array_filter(
+				array(
+					'@type'    => 'QuantitativeValue',
+					'minValue' => self::number( $v ),
+					'unitText' => $listing->unit,
+				),
+				array( self::class, 'present' )
+			),
+			default        => $v,
+		};
+		$mapped = array_map( $one, $items );
+		return 1 === count( $mapped ) ? $mapped[0] : $mapped;
 	}
 
 	/**

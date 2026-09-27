@@ -18,6 +18,7 @@ use AIHazirSite\WordPress\Module;
 use AIHazirSite\WordPress\Platform\WpClock;
 use AIHazirSite\WordPress\Platform\WpSettings;
 use AIHazirSite\WordPress\Schema\SchemaModule;
+use AIHazirSite\WordPress\Templates\TemplatesModule;
 
 /**
  * Serves /llms.txt while `llms_txt` is on. The request path is matched directly on
@@ -101,18 +102,28 @@ final class LlmsModule implements Module {
 		$listings = SchemaModule::listings();
 		$today    = ( new WpClock() )->today();
 		$modified = (string) SchemaModule::last_modified( $listings );
-		$builder  = new LlmsTxtBuilder( home_url( '/' ), SchemaModule::catalog_url(), (string) get_bloginfo( 'name' ), self::labels() );
+		$registry = TemplatesModule::registry();
+		$builder  = new LlmsTxtBuilder( home_url( '/' ), SchemaModule::catalog_url(), (string) get_bloginfo( 'name' ), self::labels(), $registry );
+		$now      = TemplatesModule::now();
+
+		// Short-lived values can turn stale within a day: then the text depends on the hour too.
+		$hourly = false;
+		foreach ( $listings as $listing ) {
+			$hourly = $hourly || ( null !== $registry && $registry->get( $listing->template )->has_freshness() );
+		}
 
 		$input = array(
 			'profile'  => $profile->to_array(),
 			'listings' => array_map( static fn( $l ): array => $l->to_array(), $listings ),
 			'today'    => $today,
+			'hour'     => $hourly ? substr( $now, 0, 13 ) : '',
+			'template' => null === $registry ? array() : array_map( static fn( $t ): array => array( $t->id, $t->version ), array_values( $registry->all() ) ),
 			'modified' => $modified,
 			'site'     => array( home_url( '/' ), SchemaModule::catalog_url(), get_bloginfo( 'name' ) ),
 			'labels'   => self::labels(),
 		);
 
-		return self::cache()->text( $input, static fn(): string => $builder->build( $profile, $listings, $today, $modified ) );
+		return self::cache()->text( $input, static fn(): string => $builder->build( $profile, $listings, $today, $modified, $now ) );
 	}
 
 	/**
@@ -164,6 +175,8 @@ final class LlmsModule implements Module {
 			'country'           => __( 'Ülke', 'ai-hazir-site' ),
 			'languages'         => __( 'Diller', 'ai-hazir-site' ),
 			'certifications'    => __( 'Sertifikalar', 'ai-hazir-site' ),
+			/* translators: 1: value, 2: time of the last confirmation. */
+			'unverified'        => __( '%1$s (doğrulanmadı, son güncelleme %2$s)', 'ai-hazir-site' ),
 			'updated'           => __( 'Son güncelleme', 'ai-hazir-site' ),
 			'category'          => __( 'Kategori', 'ai-hazir-site' ),
 			'quantity'          => __( 'Miktar', 'ai-hazir-site' ),

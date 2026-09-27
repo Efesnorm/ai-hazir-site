@@ -19,6 +19,7 @@ use AIHazirSite\WordPress\Catalog\WpProfileRepository;
 use AIHazirSite\WordPress\Module;
 use AIHazirSite\WordPress\Platform\WpClock;
 use AIHazirSite\WordPress\Platform\WpSettings;
+use AIHazirSite\WordPress\Templates\TemplatesModule;
 
 /**
  * Publishes Organization + WebPage on the home page and a DataFeed on /ai-katalog/ while
@@ -99,7 +100,7 @@ final class SchemaModule implements Module {
 	 * Builder for this site.
 	 */
 	public static function builder(): SchemaBuilder {
-		return new SchemaBuilder( home_url( '/' ), null === SeoConflict::detect() );
+		return new SchemaBuilder( home_url( '/' ), null === SeoConflict::detect(), TemplatesModule::registry() );
 	}
 
 	/**
@@ -156,7 +157,7 @@ final class SchemaModule implements Module {
 	 * @return array<string, mixed>|null
 	 */
 	public static function catalog_document(): ?array {
-		$document = self::builder()->catalog( ( new WpProfileRepository() )->get(), self::listings(), ( new WpClock() )->today(), self::catalog_url() );
+		$document = self::builder()->catalog( ( new WpProfileRepository() )->get(), self::listings(), ( new WpClock() )->today(), self::catalog_url(), TemplatesModule::now() );
 		return self::cache()->publish( 'catalog', $document, gmdate( 'Y-m-d\TH:i:s\Z' ) );
 	}
 

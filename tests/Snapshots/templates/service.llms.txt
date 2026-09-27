@@ -1,0 +1,20 @@
+# Örnek Kablo A.Ş.
+
+> Örnek Kablo A.Ş. (Enerji ve telekom kabloları): sattığı, aradığı ve tedarik edebildiği ürünlerin güncel özeti.
+
+- Ülke: TR
+- Diller: tr, en
+- Sertifikalar: ISO 9001
+- Son güncelleme: 2026-09-27
+
+## Satılanlar
+
+- [Tahkim danışmanlığı](https://ornek.com/ai-katalog/#ilan-23): Uluslararası ticari uyuşmazlıklar. Bölge: Türkiye; Uzmanlık alanı: Ticaret hukuku, Tahkim; Ofis ülkesi: TR; Diller: tr, en; Geçerlilik: 2026-12-31
+
+## İletişim
+
+- [Web sitesi](https://ornek.com/): E-posta: satis@ornek.com.tr; Telefon: +90 212 555 12 34
+
+## Optional
+
+- [AI Katalog](https://ornek.com/ai-katalog/): Tüm geçerli ilanların sade HTML listesi

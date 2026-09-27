@@ -18,6 +18,7 @@ use AIHazirSite\WordPress\Catalog\Admin\CatalogAdmin;
 use AIHazirSite\WordPress\Catalog\WpProfileRepository;
 use AIHazirSite\WordPress\Llms\LlmsModule;
 use AIHazirSite\WordPress\Platform\WpClock;
+use AIHazirSite\WordPress\Templates\TemplatesModule;
 
 /**
  * A minimal, JavaScript-free HTML page: the company, then its current listings by type
@@ -52,7 +53,8 @@ final class CatalogPage {
 			'' === $profile->name ? get_bloginfo( 'name' ) : $profile->name
 		);
 
-		$details  = new LlmsTxtBuilder( home_url( '/' ), SchemaModule::catalog_url(), '', LlmsModule::labels() );
+		$details  = new LlmsTxtBuilder( home_url( '/' ), SchemaModule::catalog_url(), '', LlmsModule::labels(), TemplatesModule::registry() );
+		$now      = TemplatesModule::now();
 		$sections = '';
 		$by_type  = array_fill_keys( ListingType::ALL, array() );
 		foreach ( SchemaModule::listings() as $listing ) {
@@ -67,7 +69,7 @@ final class CatalogPage {
 			$sections .= '<section><h2>' . esc_html( $labels[ $type ] ) . '</h2><ul>';
 			foreach ( $listings as $listing ) {
 				$lines = array();
-				foreach ( $details->details( $listing, $today ) as $label => $value ) {
+				foreach ( $details->details( $listing, $today, $now ) as $label => $value ) {
 					$lines[] = esc_html( $label . ': ' . $value );
 				}
 				$sections .= '<li' . ( null === $listing->id ? '' : ' id="ilan-' . (int) $listing->id . '"' ) . '><strong>' . esc_html( $listing->title ) . '</strong>'

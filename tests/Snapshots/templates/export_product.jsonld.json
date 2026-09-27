@@ -1,0 +1,76 @@
+{
+    "@context": "https://schema.org",
+    "@type": "DataFeed",
+    "@id": "https://ornek.com/ai-katalog/#feed",
+    "name": "AI Katalog – Örnek Kablo A.Ş.",
+    "description": "Örnek Kablo A.Ş. firmasının sattığı, aradığı ve tedarik edebildiği ürün ve hizmetler.",
+    "url": "https://ornek.com/ai-katalog/",
+    "dateModified": "2026-09-27T08:00:00Z",
+    "publisher": {
+        "@id": "https://ornek.com/#organization"
+    },
+    "dataFeedElement": [
+        {
+            "@type": "DataFeedItem",
+            "dateModified": "2026-09-27T08:00:00Z",
+            "item": {
+                "@type": "Product",
+                "name": "Bakır tel (ihracat)",
+                "category": "Hammadde",
+                "countryOfOrigin": {
+                    "@type": "Country",
+                    "name": "TR"
+                },
+                "additionalProperty": [
+                    {
+                        "@type": "PropertyValue",
+                        "name": "GTİP kodu",
+                        "value": "7408.11"
+                    },
+                    {
+                        "@type": "PropertyValue",
+                        "name": "Sertifikalar",
+                        "value": "ISO 9001, REACH"
+                    }
+                ],
+                "offers": {
+                    "@type": "Offer",
+                    "additionalProperty": [
+                        {
+                            "@type": "PropertyValue",
+                            "name": "Teslim şekli (Incoterms 2020)",
+                            "value": "FOB"
+                        }
+                    ],
+                    "eligibleRegion": [
+                        "DE",
+                        "FR"
+                    ],
+                    "eligibleQuantity": {
+                        "@type": "QuantitativeValue",
+                        "minValue": 1000,
+                        "unitText": "kg"
+                    },
+                    "inventoryLevel": {
+                        "@type": "QuantitativeValue",
+                        "value": 20000,
+                        "unitText": "kg"
+                    },
+                    "deliveryLeadTime": {
+                        "@type": "QuantitativeValue",
+                        "value": 30,
+                        "unitCode": "DAY"
+                    },
+                    "validThrough": "2026-12-31",
+                    "price": "9.5",
+                    "priceCurrency": "USD",
+                    "priceValidUntil": "2026-12-31",
+                    "availability": "https://schema.org/InStock",
+                    "seller": {
+                        "@id": "https://ornek.com/#organization"
+                    }
+                }
+            }
+        }
+    ]
+}

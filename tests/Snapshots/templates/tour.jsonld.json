@@ -1,0 +1,67 @@
+{
+    "@context": "https://schema.org",
+    "@type": "DataFeed",
+    "@id": "https://ornek.com/ai-katalog/#feed",
+    "name": "AI Katalog – Örnek Kablo A.Ş.",
+    "description": "Örnek Kablo A.Ş. firmasının sattığı, aradığı ve tedarik edebildiği ürün ve hizmetler.",
+    "url": "https://ornek.com/ai-katalog/",
+    "dateModified": "2026-09-27T08:00:00Z",
+    "publisher": {
+        "@id": "https://ornek.com/#organization"
+    },
+    "dataFeedElement": [
+        {
+            "@type": "DataFeedItem",
+            "dateModified": "2026-09-27T08:00:00Z",
+            "item": {
+                "@type": "TouristTrip",
+                "name": "Kapadokya balon turu",
+                "category": "Tur",
+                "departureTime": "2026-10-15",
+                "offers": {
+                    "@type": "Offer",
+                    "inventoryLevel": {
+                        "@type": "QuantitativeValue",
+                        "value": 6
+                    },
+                    "additionalProperty": [
+                        {
+                            "@type": "PropertyValue",
+                            "name": "Süre",
+                            "value": 3,
+                            "unitCode": "DAY"
+                        },
+                        {
+                            "@type": "PropertyValue",
+                            "name": "Kontenjan",
+                            "value": 20
+                        },
+                        {
+                            "@type": "PropertyValue",
+                            "name": "Dahil olanlar",
+                            "value": "Konaklama, balon uçuşu"
+                        },
+                        {
+                            "@type": "PropertyValue",
+                            "name": "İptal koşulu",
+                            "value": "7 gün öncesine kadar ücretsiz"
+                        },
+                        {
+                            "@type": "PropertyValue",
+                            "name": "Buluşma noktası",
+                            "value": "Göreme otogarı"
+                        }
+                    ],
+                    "areaServed": "Nevşehir",
+                    "validThrough": "2026-10-14",
+                    "price": "250",
+                    "priceCurrency": "EUR",
+                    "priceValidUntil": "2026-10-14",
+                    "seller": {
+                        "@id": "https://ornek.com/#organization"
+                    }
+                }
+            }
+        }
+    ]
+}
