@@ -87,7 +87,9 @@ final class InquiryStorageTest extends WP_UnitTestCase {
 		$this->assertSame( array( '2026-09-27T12:00:00Z', array( 'Bağlantı içeriyor.' ), null ), array( $found->created_at, $found->spam_reasons, $found->listing_id ) );
 
 		$raw = (string) $wpdb->get_var( $wpdb->prepare( 'SELECT contact FROM %i WHERE id = %d', WpInquiryRepository::table(), $stored->id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		foreach ( array( 'satinalma', 'Ayşe', '555' ) as $plain ) {
+		// Each value holds a character outside the base64 alphabet ("@", " ", "ş"), so a random
+		// ciphertext can never contain it by chance.
+		foreach ( array( 'satinalma@alici.example', 'Ayşe', '+90 212 555 00 00', 'Alıcı A.Ş.' ) as $plain ) {
 			$this->assertStringNotContainsString( $plain, $raw );
 		}
 		$this->assertNull( SodiumCipher::decrypt( 'bozuk' ) );
