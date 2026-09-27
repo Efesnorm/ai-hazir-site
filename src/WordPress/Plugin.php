@@ -12,6 +12,7 @@ namespace AIHazirSite\WordPress;
 use AIHazirSite\Core\Features;
 use AIHazirSite\Core\Migrations\MigrationInterface;
 use AIHazirSite\WordPress\Migrations\Migration_0_2_0;
+use AIHazirSite\WordPress\Access\AccessModule;
 use AIHazirSite\WordPress\Catalog\CatalogModule;
 use AIHazirSite\WordPress\Compliance\ComplianceModule;
 use AIHazirSite\WordPress\Measurement\MeasurementModule;
@@ -57,6 +58,7 @@ final class Plugin {
 			new MeasurementModule(),
 			new ComplianceModule(),
 			new CatalogModule(),
+			new AccessModule(),
 		);
 	}
 

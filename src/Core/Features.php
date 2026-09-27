@@ -43,6 +43,11 @@ final class Features {
 	public const CATALOG = 'catalog';
 
 	/**
+	 * AI bot access rules in robots.txt (0.5.0).
+	 */
+	public const BOT_ACCESS = 'bot_access';
+
+	/**
 	 * Approved exceptions to "disabled by default", each with a CHANGELOG rationale.
 	 *
 	 * - measurement: the "before" baseline must be collected from the moment the
@@ -76,6 +81,7 @@ final class Features {
 			self::MEASUREMENT     => true,
 			self::COMPLIANCE_SCAN => false,
 			self::CATALOG         => false,
+			self::BOT_ACCESS      => false,
 		);
 	}
 
