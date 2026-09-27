@@ -1,0 +1,29 @@
+# Örnek Kablo A.Ş.
+
+> Örnek Kablo A.Ş. (Enerji ve telekom kabloları): sattığı, aradığı ve tedarik edebildiği ürünlerin güncel özeti.
+
+- Ülke: TR
+- Diller: tr, en
+- Sertifikalar: ISO 9001
+- Son güncelleme: 2026-09-22
+
+## Satılanlar
+
+- [NYY 3x2,5 enerji kablosu](https://ornek.com/ai-katalog/#ilan-11): TSE belgeli, stoktan teslim. Kategori: Kablo; Miktar: 1500 m; Fiyat: 42.50–48.75 TRY; Bölge: Türkiye; Teslim süresi: 3 gün; Geçerlilik: 2026-12-31; Özellikler: kesit 3x2,5 mm², standart TS EN 60228
+- [Fiyat sorunuz](https://ornek.com/ai-katalog/#ilan-16): Geçerlilik: 2026-12-24
+
+## Arananlar
+
+- [Bakır katot](https://ornek.com/ai-katalog/#ilan-13): LME A sınıfı. Kategori: Hammadde; Miktar: 20 ton; Bütçe: 8000–9000 USD; Bölge: Marmara; Teslim süresi: 30 gün; Geçerlilik: 2026-10-31
+
+## Tedarik edilebilenler
+
+- [Özel kesim kablo demeti](https://ornek.com/ai-katalog/#ilan-12): Çizime göre üretim. Kategori: Kablo demeti; Fiyat: 120 EUR; Bölge: Avrupa; Teslim süresi: 21 gün; Geçerlilik: 2027-03-31
+
+## İletişim
+
+- [Web sitesi](https://ornek.com/): E-posta: satis@ornek.com.tr; Telefon: +90 212 555 12 34
+
+## Optional
+
+- [AI Katalog](https://ornek.com/ai-katalog/): Tüm geçerli ilanların sade HTML listesi

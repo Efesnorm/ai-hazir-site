@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace AIHazirSite\Adapters\Schema;
 
 use AIHazirSite\Core\Catalog\ListingType;
+use AIHazirSite\Core\Catalog\ListingValidity;
 
 /**
  * Which listing field goes to which Schema.org property, per listing type.
@@ -80,7 +81,8 @@ final class SchemaMap {
 	);
 
 	/**
-	 * Days after the last update used as validThrough when a listing has no validity date.
+	 * Days after the last update used as validThrough when a listing has no validity date
+	 * (the rule itself lives in ListingValidity).
 	 */
-	public const DEFAULT_VALIDITY_DAYS = 90;
+	public const DEFAULT_VALIDITY_DAYS = ListingValidity::DEFAULT_DAYS;
 }

@@ -11,6 +11,7 @@ namespace AIHazirSite\Adapters\Schema;
 
 use AIHazirSite\Core\Catalog\CompanyProfile;
 use AIHazirSite\Core\Catalog\Listing;
+use AIHazirSite\Core\Catalog\ListingValidity;
 
 /**
  * Platform-neutral producer. Reads core catalog objects only; field placement comes from SchemaMap.
@@ -129,8 +130,8 @@ final class SchemaBuilder {
 	 */
 	public function entry( Listing $listing, string $today, ?CompanyProfile $profile = null ): ?array {
 		$updated     = $listing->updated_at ?? $today . 'T00:00:00Z';
-		$valid_until = $listing->valid_until ?? gmdate( 'Y-m-d', (int) strtotime( substr( $updated, 0, 10 ) . ' 00:00:00 UTC' ) + SchemaMap::DEFAULT_VALIDITY_DAYS * 86400 );
-		if ( $valid_until < $today || ! isset( SchemaMap::DEAL_TYPE[ $listing->type ] ) ) {
+		$valid_until = ListingValidity::valid_until( $listing, $today );
+		if ( ! ListingValidity::is_current( $listing, $today ) || ! isset( SchemaMap::DEAL_TYPE[ $listing->type ] ) ) {
 			return null;
 		}
 
