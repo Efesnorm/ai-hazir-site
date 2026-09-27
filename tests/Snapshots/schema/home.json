@@ -1,0 +1,32 @@
+{
+    "@context": "https://schema.org",
+    "@graph": [
+        {
+            "@type": "Organization",
+            "@id": "https://ornek.com/#organization",
+            "name": "Örnek Kablo A.Ş.",
+            "url": "https://ornek.com/",
+            "email": "satis@ornek.com.tr",
+            "telephone": "+90 212 555 12 34",
+            "knowsAbout": "Enerji ve telekom kabloları",
+            "knowsLanguage": [
+                "tr",
+                "en"
+            ],
+            "address": {
+                "@type": "PostalAddress",
+                "addressCountry": "TR"
+            }
+        },
+        {
+            "@type": "WebPage",
+            "@id": "https://ornek.com/#webpage",
+            "url": "https://ornek.com/",
+            "name": "Örnek Kablo A.Ş.",
+            "about": {
+                "@id": "https://ornek.com/#organization"
+            },
+            "dateModified": "2026-09-22T08:00:00Z"
+        }
+    ]
+}

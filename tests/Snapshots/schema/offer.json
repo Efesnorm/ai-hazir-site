@@ -1,0 +1,50 @@
+{
+    "@type": "DataFeedItem",
+    "dateModified": "2026-09-20T09:30:00Z",
+    "item": {
+        "@type": "Product",
+        "name": "NYY 3x2,5 enerji kablosu",
+        "description": "TSE belgeli, stoktan teslim.",
+        "category": "Kablo",
+        "additionalProperty": [
+            {
+                "@type": "PropertyValue",
+                "name": "kesit",
+                "value": "3x2,5 mm²"
+            },
+            {
+                "@type": "PropertyValue",
+                "name": "standart",
+                "value": "TS EN 60228"
+            }
+        ],
+        "offers": {
+            "@type": "Offer",
+            "inventoryLevel": {
+                "@type": "QuantitativeValue",
+                "value": 1500,
+                "unitText": "m"
+            },
+            "areaServed": "Türkiye",
+            "deliveryLeadTime": {
+                "@type": "QuantitativeValue",
+                "value": 3,
+                "unitCode": "DAY"
+            },
+            "validThrough": "2026-12-31",
+            "price": "42.50",
+            "priceCurrency": "TRY",
+            "priceValidUntil": "2026-12-31",
+            "priceSpecification": {
+                "@type": "PriceSpecification",
+                "minPrice": 42.5,
+                "maxPrice": 48.75,
+                "priceCurrency": "TRY"
+            },
+            "availability": "https://schema.org/InStock",
+            "seller": {
+                "@id": "https://ornek.com/#organization"
+            }
+        }
+    }
+}

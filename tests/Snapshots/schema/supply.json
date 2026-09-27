@@ -1,0 +1,27 @@
+{
+    "@type": "DataFeedItem",
+    "dateModified": "2026-09-21T10:00:00Z",
+    "item": {
+        "@type": "Product",
+        "name": "Özel kesim kablo demeti",
+        "description": "Çizime göre üretim.",
+        "category": "Kablo demeti",
+        "offers": {
+            "@type": "Offer",
+            "areaServed": "Avrupa",
+            "deliveryLeadTime": {
+                "@type": "QuantitativeValue",
+                "value": 21,
+                "unitCode": "DAY"
+            },
+            "validThrough": "2027-03-31",
+            "price": "120",
+            "priceCurrency": "EUR",
+            "priceValidUntil": "2027-03-31",
+            "availability": "https://schema.org/MadeToOrder",
+            "seller": {
+                "@id": "https://ornek.com/#organization"
+            }
+        }
+    }
+}

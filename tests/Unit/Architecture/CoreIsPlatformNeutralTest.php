@@ -51,6 +51,28 @@ final class CoreIsPlatformNeutralTest extends TestCase {
 	}
 
 	/**
+	 * AI channel producers under src/Adapters are platform-neutral too (00-SIRA rule 2).
+	 */
+	public function test_adapters_have_no_platform_dependencies(): void {
+		$root       = dirname( __DIR__, 3 ) . '/src/Adapters';
+		$violations = array();
+		$files      = 0;
+
+		foreach ( new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $root ) ) as $file ) {
+			if ( 'php' !== $file->getExtension() ) {
+				continue;
+			}
+			++$files;
+			foreach ( self::violations( (string) file_get_contents( $file->getPathname() ) ) as $violation ) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+				$violations[] = substr( $file->getPathname(), strlen( $root ) + 1 ) . ': ' . $violation;
+			}
+		}
+
+		$this->assertGreaterThan( 0, $files, 'src/Adapters was scanned.' );
+		$this->assertSame( array(), $violations, "Platform code in src/Adapters:\n" . implode( "\n", $violations ) );
+	}
+
+	/**
 	 * Samples the scanner must reject.
 	 *
 	 * @return array<string, array{string, list<string>}>

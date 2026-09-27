@@ -1,0 +1,31 @@
+{
+    "@type": "DataFeedItem",
+    "dateModified": "2026-09-22T08:00:00Z",
+    "item": {
+        "@type": "Demand",
+        "eligibleQuantity": {
+            "@type": "QuantitativeValue",
+            "value": 20,
+            "unitText": "ton"
+        },
+        "areaServed": "Marmara",
+        "deliveryLeadTime": {
+            "@type": "QuantitativeValue",
+            "value": 30,
+            "unitCode": "DAY"
+        },
+        "validThrough": "2026-10-31",
+        "priceSpecification": {
+            "@type": "PriceSpecification",
+            "minPrice": 8000,
+            "maxPrice": 9000,
+            "priceCurrency": "USD"
+        },
+        "itemOffered": {
+            "@type": "Product",
+            "name": "Bakır katot",
+            "description": "LME A sınıfı.",
+            "category": "Hammadde"
+        }
+    }
+}
