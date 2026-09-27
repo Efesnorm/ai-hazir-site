@@ -48,9 +48,27 @@ final class MemoryProfileRepository implements ProfileRepository {
 	}
 
 	/**
+	 * Earlier save time put back by restore_profile() (null: the fixed time applies).
+	 *
+	 * @var string|null
+	 */
+	public ?string $restored_at = null;
+
+	/**
+	 * Puts back an earlier state.
+	 *
+	 * @param CompanyProfile|null $profile    Profile.
+	 * @param string|null         $updated_at Save time.
+	 */
+	public function restore_profile( ?CompanyProfile $profile, ?string $updated_at ): void {
+		$this->profile     = $profile;
+		$this->restored_at = $updated_at;
+	}
+
+	/**
 	 * Fixed save time when a profile exists.
 	 */
 	public function updated_at(): ?string {
-		return null === $this->profile ? null : '2026-09-27T12:00:00Z';
+		return null === $this->profile ? null : ( $this->restored_at ?? '2026-09-27T12:00:00Z' );
 	}
 }

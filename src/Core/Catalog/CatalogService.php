@@ -93,6 +93,26 @@ final class CatalogService {
 	}
 
 	/**
+	 * Puts back an earlier profile state exactly (undo of a change; the earlier state was valid).
+	 *
+	 * @param CompanyProfile|null $profile    Earlier profile (null = none).
+	 * @param string|null         $updated_at Earlier save time.
+	 */
+	public function revert_profile( ?CompanyProfile $profile, ?string $updated_at ): void {
+		$this->profiles->restore_profile( $profile, $updated_at );
+	}
+
+	/**
+	 * Stored profile and its save time (null profile when none).
+	 *
+	 * @return array{0: CompanyProfile|null, 1: string|null}
+	 */
+	public function profile_state(): array {
+		$updated = $this->profiles->updated_at();
+		return array( null === $updated ? null : $this->profiles->get(), $updated );
+	}
+
+	/**
 	 * Removes all catalog data (uninstall with the site owner's opt-in).
 	 *
 	 * @return int Listings deleted.

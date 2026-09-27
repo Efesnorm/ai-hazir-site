@@ -58,6 +58,11 @@ final class Features {
 	public const LLMS_TXT = 'llms_txt';
 
 	/**
+	 * Compliance wizard (0.9.0).
+	 */
+	public const COMPLIANCE_WIZARD = 'compliance_wizard';
+
+	/**
 	 * Sector templates (0.8.0).
 	 */
 	public const TEMPLATES = 'templates';
@@ -93,13 +98,14 @@ final class Features {
 	 */
 	public static function defaults(): array {
 		return array(
-			self::MEASUREMENT     => true,
-			self::COMPLIANCE_SCAN => false,
-			self::CATALOG         => false,
-			self::BOT_ACCESS      => false,
-			self::SCHEMA_OUTPUT   => false,
-			self::LLMS_TXT        => false,
-			self::TEMPLATES       => false,
+			self::MEASUREMENT       => true,
+			self::COMPLIANCE_SCAN   => false,
+			self::CATALOG           => false,
+			self::BOT_ACCESS        => false,
+			self::SCHEMA_OUTPUT     => false,
+			self::LLMS_TXT          => false,
+			self::TEMPLATES         => false,
+			self::COMPLIANCE_WIZARD => false,
 		);
 	}
 
@@ -140,6 +146,38 @@ final class Features {
 		self::settings()->set( self::OPTION, $stored, true );
 
 		return true;
+	}
+
+	/**
+	 * The stored override of a feature (null when the default applies).
+	 *
+	 * @param string $key Feature key.
+	 */
+	public static function stored( string $key ): ?bool {
+		$stored = self::settings()->get( self::OPTION, array() );
+		return is_array( $stored ) && array_key_exists( $key, $stored ) ? (bool) $stored[ $key ] : null;
+	}
+
+	/**
+	 * Puts back an override read earlier with stored(); null removes it (the default applies again).
+	 * The option itself is removed when no override is left.
+	 *
+	 * @param string    $key    Feature key.
+	 * @param bool|null $stored Earlier override.
+	 */
+	public static function restore( string $key, ?bool $stored ): void {
+		$overrides = self::settings()->get( self::OPTION, array() );
+		$overrides = is_array( $overrides ) ? $overrides : array();
+		if ( null === $stored ) {
+			unset( $overrides[ $key ] );
+		} else {
+			$overrides[ $key ] = $stored;
+		}
+		if ( array() === $overrides ) {
+			self::settings()->delete( self::OPTION );
+			return;
+		}
+		self::settings()->set( self::OPTION, $overrides, true );
 	}
 
 	/**

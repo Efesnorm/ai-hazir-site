@@ -34,6 +34,15 @@ interface ProfileRepository {
 	public function remove_profile(): void;
 
 	/**
+	 * Puts back an earlier stored state exactly: the profile and its save time
+	 * (null profile = no profile). Used to undo a change.
+	 *
+	 * @param CompanyProfile|null $profile    Earlier profile.
+	 * @param string|null         $updated_at Earlier save time.
+	 */
+	public function restore_profile( ?CompanyProfile $profile, ?string $updated_at ): void;
+
+	/**
 	 * When the profile was last saved (ISO 8601 UTC), or null.
 	 */
 	public function updated_at(): ?string;

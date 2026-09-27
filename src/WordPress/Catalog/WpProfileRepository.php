@@ -56,6 +56,26 @@ final class WpProfileRepository implements ProfileRepository {
 	}
 
 	/**
+	 * Puts back an earlier state exactly.
+	 *
+	 * @param CompanyProfile|null $profile    Earlier profile (null = none).
+	 * @param string|null         $updated_at Earlier save time.
+	 */
+	public function restore_profile( ?CompanyProfile $profile, ?string $updated_at ): void {
+		if ( null === $profile ) {
+			$this->settings->delete( self::OPTION );
+			$this->settings->delete( self::UPDATED_OPTION );
+			return;
+		}
+		$this->settings->set( self::OPTION, $profile->to_array(), false );
+		if ( null === $updated_at ) {
+			$this->settings->delete( self::UPDATED_OPTION );
+		} else {
+			$this->settings->set( self::UPDATED_OPTION, $updated_at, false );
+		}
+	}
+
+	/**
 	 * Last save time.
 	 */
 	public function updated_at(): ?string {

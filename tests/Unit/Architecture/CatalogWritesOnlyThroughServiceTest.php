@@ -26,10 +26,11 @@ final class CatalogWritesOnlyThroughServiceTest extends TestCase {
 	 * Repository write methods → files allowed to call them.
 	 */
 	private const METHOD_CALLS = array(
-		'store_listing'  => array( 'Core/Catalog/CatalogService.php' ),
-		'remove_listing' => array( 'Core/Catalog/CatalogService.php' ),
-		'store_profile'  => array( 'Core/Catalog/CatalogService.php' ),
-		'remove_profile' => array( 'Core/Catalog/CatalogService.php' ),
+		'store_listing'   => array( 'Core/Catalog/CatalogService.php' ),
+		'remove_listing'  => array( 'Core/Catalog/CatalogService.php' ),
+		'store_profile'   => array( 'Core/Catalog/CatalogService.php' ),
+		'remove_profile'  => array( 'Core/Catalog/CatalogService.php' ),
+		'restore_profile' => array( 'Core/Catalog/CatalogService.php' ),
 	);
 
 	/**
