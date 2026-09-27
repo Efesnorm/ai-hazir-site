@@ -3,6 +3,32 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [0.5.0] - 2026-09-27
+
+### Eklendi
+- **U2 AI bot erişim ayarları** (`bot_access` anahtarı, varsayılan kapalı).
+  - Her AI botu için "site kuralları / izin ver / engelle"; hazır ayarlar: "Hepsine izin ver",
+    "Sadece arama ve kullanıcı agentları", "Eğitim botlarını engelle" (bot listesi ve kategoriler
+    `data/ai-bots.json`).
+  - WordPress'in sanal robots.txt'sine `robots_txt` filtresiyle, işaretli bir blok olarak eklenir
+    (`# BEGIN AI Hazir Site ... # END AI Hazir Site`). Mevcut kurallar ve diğer eklentilerin satırları
+    değişmez; anahtar kapatılınca robots.txt eski haline döner, ayar saklanır.
+  - "İzin ver" grubu, RFC 9309 gereği `*` grubunu yok saydığı için `/wp-admin/` kısıtlamasını tekrarlar.
+  - Fiziksel robots.txt dosyası varsa dosyaya dokunulmaz; uyarı ve eklenecek metin gösterilir.
+  - Araçlar → AI Bot Erişimi: bot, işletmeci, kategori, ayar, robots.txt'nin tamamından hesaplanan
+    gerçek durum, önizleme; "arama motorlarını engelle" ve önbellek uyarıları.
+
+### Değişti
+- U1 `bot_access` kontrolü, AI Bot Erişimi ayarıyla bilerek engellenen botları "bilerek engellendi"
+  olarak gösterir ve puandan düşmez. Puanlama sürümü (`score_version`) 1 → 2; eski taramalar sürüm 1
+  olarak kalır.
+
+### Bilinen sınırlar
+- robots.txt bir ricadır; kurallara uymayan botları durdurmaz (sunucu/CDN engeli kapsam dışı).
+- Önbellek eklentileri robots.txt'yi saklıyorsa değişiklik önbellek temizlenene kadar görünmeyebilir.
+- Ekrandaki "şu anki durum", robots.txt önizlemesi için `do_robots()` çıktısını yeniden kurar;
+  `do_robotstxt` eylemine doğrudan yazan eklentilerin satırları önizlemede görünmez.
+
 ## [0.4.0] - 2026-09-27
 
 ### Eklendi

@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace AIHazirSite\Core\Compliance;
 
+use AIHazirSite\Core\Access\BotPolicy;
 use AIHazirSite\Core\Compliance\Checks\AdvancedCheck;
 use AIHazirSite\Core\Compliance\Checks\BotAccessCheck;
 use AIHazirSite\Core\Compliance\Checks\FreshnessCheck;
@@ -27,9 +28,12 @@ use Throwable;
 final class Scanner {
 
 	/**
-	 * Version of the scoring rules; bump when checks or weights change.
+	 * Version of the scoring rules; bump when checks, weights or scoring change.
+	 *
+	 * 1: 0.3.0 – seven checks.
+	 * 2: 0.5.0 – bots blocked on purpose with the AI bot access setting no longer lower bot_access.
 	 */
-	public const SCORE_VERSION = 1;
+	public const SCORE_VERSION = 2;
 
 	/**
 	 * Checks in display order.
@@ -65,14 +69,15 @@ final class Scanner {
 	 * The seven U1 checks with the PRD weights (20+20+20+15+10+10+5 = 100).
 	 * A new check is added here only; existing checks are not touched.
 	 *
+	 * @param BotPolicy|null $policy The site's AI bot access policy, when that setting is on.
 	 * @return list<Check>
 	 */
-	public static function default_checks(): array {
+	public static function default_checks( ?BotPolicy $policy = null ): array {
 		return array(
 			new StructuredDataCheck(),
 			new ReadabilityCheck(),
 			new MachineInterfaceCheck(),
-			new BotAccessCheck(),
+			new BotAccessCheck( $policy ),
 			new LlmsTxtCheck(),
 			new FreshnessCheck(),
 			new AdvancedCheck(),

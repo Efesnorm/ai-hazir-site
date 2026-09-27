@@ -159,7 +159,26 @@ final class CompliancePageTest extends WP_UnitTestCase {
 		$this->assertSame( 'advanced', $order[1] );
 		$this->assertSame( '85/100', trim( $xpath->query( '//*[@id="aihs-score"]' )->item( 0 )->textContent ) ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		$this->assertSame( '(+85)', trim( $xpath->query( '//*[@id="aihs-delta"]' )->item( 0 )->textContent ) ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-		$this->assertStringContainsString( 'Puanlama sürümü: 1', $html );
+		$this->assertStringContainsString( 'Puanlama sürümü: 2', $html );
+	}
+
+	/**
+	 * With the AI bot access setting on, bots blocked there are "bilerek engellendi" and not penalized;
+	 * with it off the same robots.txt lowers the score.
+	 */
+	public function test_scan_recognizes_intentional_blocks(): void {
+		$fake = ComplianceSites::perfect();
+		$fake->on( ComplianceSites::BASE . 'robots.txt', new PageResponse( 200, array(), "User-agent: GPTBot\nDisallow: /\n" ) );
+		$this->serve( $fake );
+		\AIHazirSite\WordPress\Access\AccessModule::store()->save( ( new \AIHazirSite\Core\Access\BotPolicy() )->with( 'gptbot', 'disallow' ), \AIHazirSite\Core\Measurement\Registry::bots() );
+
+		$off = ComplianceModule::run()->result( 'bot_access' );
+		$this->assertLessThan( 1.0, (float) $off['ratio'], 'Setting off: not recognized.' );
+
+		Features::set( Features::BOT_ACCESS, true );
+		$on = ComplianceModule::run()->result( 'bot_access' );
+		$this->assertSame( 1.0, $on['ratio'] );
+		$this->assertStringContainsString( 'Bilerek engellendi', implode( ' ', $on['findings'] ) );
 	}
 
 	/**

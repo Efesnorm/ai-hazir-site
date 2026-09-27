@@ -15,6 +15,7 @@ use AIHazirSite\Core\Compliance\ScanToken;
 use AIHazirSite\Core\Compliance\ScoreReport;
 use AIHazirSite\Core\Compliance\Site;
 use AIHazirSite\Core\Features;
+use AIHazirSite\WordPress\Access\AccessModule;
 use AIHazirSite\WordPress\Compliance\Admin\CompliancePage;
 use AIHazirSite\WordPress\Compliance\Cli\ScanCommand;
 use AIHazirSite\WordPress\Module;
@@ -57,7 +58,8 @@ final class ComplianceModule implements Module {
 	 * @param string|null $base_url Address to fetch instead of home_url() (local development).
 	 */
 	public static function run( ?string $base_url = null ): ScoreReport {
-		$report = ( new Scanner( Scanner::default_checks(), new WpClock() ) )->scan( self::site( $base_url ) );
+		$policy = Features::is_enabled( Features::BOT_ACCESS ) ? AccessModule::store()->get() : null;
+		$report = ( new Scanner( Scanner::default_checks( $policy ), new WpClock() ) )->scan( self::site( $base_url ) );
 		self::store()->add( $report );
 		return $report;
 	}
