@@ -25,6 +25,8 @@ final class SiteState {
 	 * @param bool                $physical_llms    Whether a physical llms.txt hides the virtual one.
 	 * @param bool                $search_visible   WordPress "discourage search engines" is off.
 	 * @param bool                $robots_blocks_ai Whether robots.txt currently blocks any known AI bot.
+	 * @param bool                $robots_fixable   Whether the AI bot access setting ("allow all") would unblock them
+	 *                                              (not when another plugin or the theme blocks a bot by name).
 	 */
 	public function __construct(
 		public readonly array $features = array(),
@@ -33,7 +35,8 @@ final class SiteState {
 		public readonly bool $physical_robots = false,
 		public readonly bool $physical_llms = false,
 		public readonly bool $search_visible = true,
-		public readonly bool $robots_blocks_ai = false
+		public readonly bool $robots_blocks_ai = false,
+		public readonly bool $robots_fixable = true
 	) {
 	}
 

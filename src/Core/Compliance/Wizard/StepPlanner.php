@@ -78,10 +78,12 @@ final class StepPlanner {
 
 		[ $bots, $bots_max ] = self::gain( $report, 'bot_access' );
 		if ( $bots > 0 ) {
-			if ( $state->robots_blocks_ai && ! $state->physical_robots ) {
+			if ( $state->robots_blocks_ai && $state->robots_fixable && ! $state->physical_robots ) {
 				$actions[] = new FixStep( FixStep::BOTS, 'AI botlarına erişim izni verin', 'robots.txt\'ye AI botları için işaretli bir izin bloğu ekler (AI Bot Erişimi ayarı). Mevcut satırlara dokunulmaz; engellemek istediğiniz botları sonradan tek tek seçebilirsiniz.', $bots, $bots_max, array(), array( 'bot_access' ) );
 			} elseif ( $state->physical_robots ) {
 				$manual[] = new FixStep( 'manual_bot_access', 'Elle yazılmış robots.txt dosyası', 'Sitenin kök dizinindeki robots.txt dosyası AI botlarını engelliyor ve AI Hazır Site bu dosyaya dokunmaz. Dosyaya AI Bot Erişimi sayfasında gösterilen izin bloğunu ekleyin.', $bots, $bots_max, array(), array( 'bot_access' ), true );
+			} elseif ( $state->robots_blocks_ai ) {
+				$manual[] = new FixStep( 'manual_bot_access', 'AI botları adıyla engelleniyor', 'Başka bir eklenti veya tema robots.txt\'ye AI botlarını adıyla engelleyen satırlar ekliyor; AI Bot Erişimi ayarı bunları kaldıramaz. robots.txt\'yi açıp bu satırları ekleyen eklentinin ayarından kaldırın.', $bots, $bots_max, array(), array( 'bot_access' ), true );
 			} elseif ( ! $state->search_visible ) {
 				$manual[] = new FixStep( 'manual_bot_access', 'Arama motorları engelleniyor', 'Ayarlar → Okuma\'daki "Arama motorlarının bu siteyi dizine eklemesini engelle" seçeneği açık. Site yayındaysa bu seçeneği kapatın (WordPress ayarıdır; sihirbaz değiştirmez).', $bots, $bots_max, array(), array( 'bot_access' ), true );
 			} else {

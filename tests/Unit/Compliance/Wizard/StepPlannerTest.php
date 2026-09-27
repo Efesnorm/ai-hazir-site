@@ -72,7 +72,8 @@ final class StepPlannerTest extends TestCase {
 			$overrides['physical_robots'] ?? false,
 			$overrides['physical_llms'] ?? false,
 			$overrides['search_visible'] ?? true,
-			$overrides['robots_blocks_ai'] ?? false
+			$overrides['robots_blocks_ai'] ?? false,
+			$overrides['robots_fixable'] ?? true
 		);
 	}
 
@@ -187,6 +188,18 @@ final class StepPlannerTest extends TestCase {
 
 		$hidden = ( new StepPlanner() )->plan( $report, self::state( array( 'search_visible' => false ) ) );
 		$this->assertStringContainsString( 'Ayarlar → Okuma', $hidden['manual'][0]->description );
+
+		$named = ( new StepPlanner() )->plan(
+			$report,
+			self::state(
+				array(
+					'robots_blocks_ai' => true,
+					'robots_fixable'   => false,
+				)
+			)
+		);
+		$this->assertNotContains( 'bots', array_map( static fn( FixStep $s ): string => $s->id, $named['actions'] ), 'No promise the setting cannot keep.' );
+		$this->assertSame( 'AI botları adıyla engelleniyor', $named['manual'][0]->title );
 
 		$llms = ( new StepPlanner() )->plan( self::report( array( 'llms_txt' => 0.0 ) ), self::state( array( 'physical_llms' => true ) ) );
 		$this->assertSame( array(), $llms['actions'], 'A physical llms.txt is never replaced.' );

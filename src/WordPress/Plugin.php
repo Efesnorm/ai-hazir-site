@@ -15,6 +15,7 @@ use AIHazirSite\WordPress\Migrations\Migration_0_2_0;
 use AIHazirSite\WordPress\Access\AccessModule;
 use AIHazirSite\WordPress\Catalog\CatalogModule;
 use AIHazirSite\WordPress\Compliance\ComplianceModule;
+use AIHazirSite\WordPress\Compliance\Wizard\WizardModule;
 use AIHazirSite\WordPress\Llms\LlmsModule;
 use AIHazirSite\WordPress\Measurement\MeasurementModule;
 use AIHazirSite\WordPress\Schema\SchemaModule;
@@ -60,6 +61,7 @@ final class Plugin {
 		return array(
 			new MeasurementModule(),
 			new ComplianceModule(),
+			new WizardModule(),
 			new TemplatesModule(),
 			new CatalogModule(),
 			new AccessModule(),

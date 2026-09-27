@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace AIHazirSite\WordPress;
 
 use AIHazirSite\Adapters\Llms\LlmsCache;
+use AIHazirSite\Core\Compliance\Wizard\WizardJournal;
 use AIHazirSite\Adapters\Schema\SchemaCache;
 use AIHazirSite\Core\Access\PolicyStore;
 use AIHazirSite\Core\Compliance\ScanStore;
@@ -45,6 +46,7 @@ final class Uninstaller {
 			SchemaCache::OPTION,
 			SchemaCache::ERROR_OPTION,
 			LlmsCache::OPTION,
+			WizardJournal::OPTION,
 		);
 	}
 
