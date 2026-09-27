@@ -1,0 +1,16 @@
+{
+	"id": "export_product",
+	"version": 1,
+	"name": "İhracat ürünü",
+	"description": "İhracata yönelik ürünler. Taslak: alanlar pilot firmalarla doğrulanacak.",
+	"item_type": "Product",
+	"price": true,
+	"fields": [
+		{ "name": "gtip", "label": "GTİP kodu", "type": "text", "pattern": "^[0-9]{4}([.]?[0-9]{2}){1,4}$", "llms": true },
+		{ "name": "mense", "label": "Menşe", "type": "text", "case": "upper", "pattern": "^[A-Z]{2}$", "help": "ISO 3166-1 ülke kodu (ör. TR)", "llms": true, "schema": { "node": "item", "property": "countryOfOrigin", "as": "country" } },
+		{ "name": "teslim_sekli", "label": "Teslim şekli (Incoterms 2020)", "type": "enum", "allowed": [ "EXW", "FCA", "CPT", "CIP", "DAP", "DPU", "DDP", "FAS", "FOB", "CFR", "CIF" ], "llms": true, "schema": { "node": "deal", "property": "additionalProperty", "as": "property" } },
+		{ "name": "hedef_pazarlar", "label": "Hedef pazarlar", "type": "list", "case": "upper", "pattern": "^[A-Z]{2}$", "help": "ISO 3166-1 ülke kodları, virgülle (ör. DE, FR)", "llms": true, "schema": { "node": "deal", "property": "eligibleRegion", "as": "text" } },
+		{ "name": "sertifikalar", "label": "Sertifikalar", "type": "list", "llms": true },
+		{ "name": "moq", "label": "En az sipariş miktarı (MOQ)", "type": "decimal", "llms": true, "schema": { "node": "deal", "property": "eligibleQuantity", "as": "min_quantity" } }
+	]
+}

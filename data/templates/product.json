@@ -1,0 +1,17 @@
+{
+	"id": "product",
+	"version": 1,
+	"name": "Ürün (kablo)",
+	"description": "Kablo ve benzeri teknik ürünler. Taslak: alanlar pilot firmalarla doğrulanacak.",
+	"item_type": "Product",
+	"price": true,
+	"fields": [
+		{ "name": "kesit", "label": "Kesit", "type": "decimal", "unit": "mm²", "unit_code": "MMK", "llms": true },
+		{ "name": "damar_sayisi", "label": "Damar sayısı", "type": "integer", "llms": true },
+		{ "name": "iletken", "label": "İletken", "type": "enum", "allowed": [ "Bakır", "Alüminyum" ], "llms": true, "schema": { "node": "item", "property": "material", "as": "text" } },
+		{ "name": "izolasyon", "label": "İzolasyon", "type": "enum", "allowed": [ "PVC", "XLPE", "HFFR/LSOH", "Kauçuk" ], "llms": true },
+		{ "name": "standart", "label": "Standart", "type": "list", "llms": true },
+		{ "name": "renk", "label": "Renk", "type": "text", "llms": true, "schema": { "node": "item", "property": "color", "as": "text" } },
+		{ "name": "makara_boyu", "label": "Makara boyu", "type": "decimal", "unit": "m", "unit_code": "MTR", "llms": true }
+	]
+}

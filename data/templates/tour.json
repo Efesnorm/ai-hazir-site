@@ -1,0 +1,17 @@
+{
+	"id": "tour",
+	"version": 1,
+	"name": "Tur",
+	"description": "Turlar. Kalan yer 24 saat içinde yeniden kaydedilmezse AI çıktılarında \"doğrulanmadı\" olarak işaretlenir. Taslak: alanlar pilot firmalarla doğrulanacak.",
+	"item_type": "TouristTrip",
+	"price": true,
+	"fields": [
+		{ "name": "baslangic_tarihi", "label": "Başlangıç tarihi", "type": "date", "required": true, "llms": true, "schema": { "node": "item", "property": "departureTime", "as": "date" } },
+		{ "name": "sure_gun", "label": "Süre", "type": "integer", "unit": "gün", "unit_code": "DAY", "llms": true },
+		{ "name": "kontenjan", "label": "Kontenjan", "type": "integer", "llms": true },
+		{ "name": "kalan_yer", "label": "Kalan yer", "type": "integer", "llms": true, "fresh_hours": 24, "schema": { "node": "deal", "property": "inventoryLevel", "as": "quantity" } },
+		{ "name": "dahil_olanlar", "label": "Dahil olanlar", "type": "text", "llms": true },
+		{ "name": "iptal_kosulu", "label": "İptal koşulu", "type": "text", "llms": true },
+		{ "name": "bulusma_noktasi", "label": "Buluşma noktası", "type": "text", "llms": true }
+	]
+}

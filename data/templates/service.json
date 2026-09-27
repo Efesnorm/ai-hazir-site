@@ -1,0 +1,13 @@
+{
+	"id": "service",
+	"version": 1,
+	"name": "Hizmet (hukuk)",
+	"description": "Profesyonel hizmetler; fiyat girilmez ve hiçbir çıktıda yayınlanmaz. Taslak: alanlar pilot firmalarla doğrulanacak.",
+	"item_type": "Service",
+	"price": false,
+	"fields": [
+		{ "name": "uzmanlik_alani", "label": "Uzmanlık alanı", "type": "list", "required": true, "llms": true, "schema": { "node": "item", "property": "serviceType", "as": "text" } },
+		{ "name": "ofis_ulkesi", "label": "Ofis ülkesi", "type": "text", "case": "upper", "pattern": "^[A-Z]{2}$", "help": "ISO 3166-1 ülke kodu (ör. TR)", "llms": true },
+		{ "name": "diller", "label": "Diller", "type": "list", "case": "lower", "pattern": "^[a-z]{2}$", "help": "ISO 639-1 dil kodları, virgülle (ör. tr, en)", "llms": true }
+	]
+}

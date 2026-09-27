@@ -1,0 +1,9 @@
+{
+	"id": "general",
+	"version": 1,
+	"name": "Genel",
+	"description": "Sektöre özel alan yok; özellikler serbest \"anahtar: değer\" satırlarıdır.",
+	"item_type": "Product",
+	"price": true,
+	"fields": []
+}
