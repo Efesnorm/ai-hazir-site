@@ -3,7 +3,7 @@
 Sitenin "ne satıyorum, ne arıyorum, ne tedarik edebilirim" bilgisini AI agentların okuyup
 kullanabileceği biçimde yayınlayan WordPress eklentisi.
 
-> Sürüm 0.5.0: AI bot ve yönlendirme ölçümü (A0), AI uyum taraması (U1), veri modeli ve yönetim formları (A1), AI bot erişim ayarları (U2). Ayrıntılar: [CHANGELOG.md](CHANGELOG.md).
+> Sürüm 0.6.0: AI bot ve yönlendirme ölçümü (A0), AI uyum taraması (U1), veri modeli ve yönetim formları (A1), AI bot erişim ayarları (U2), Schema.org yapılandırılmış veri (A2). Ayrıntılar: [CHANGELOG.md](CHANGELOG.md).
 
 - En düşük sürümler: PHP 8.1, WordPress 6.9
 - Lisans: GPL-2.0-or-later
@@ -77,19 +77,34 @@ engellenir ya da sitenin genel kurallarına bırakılır. Seçimler robots.txt'y
 eklenir; diğer satırlara dokunulmaz. Fiziksel bir robots.txt dosyası varsa dosya değiştirilmez,
 eklenecek metin gösterilir.
 
+## Schema.org çıktısı (A2)
+
+`schema_output` anahtarı açıkken ana sayfaya firma profilinden `Organization` JSON-LD'si eklenir ve
+**/ai-katalog/** adresinde ilanların sade HTML listesi ile `DataFeed` JSON-LD'si yayınlanır. Her çıktı
+yayından önce doğrulanır; hatalıysa son geçerli çıktı sunulur ve yönetim panelinde uyarı çıkar.
+Bir SEO eklentisi (Yoast, Rank Math, AIOSEO, SEOPress, The SEO Framework) zaten `Organization`
+üretiyorsa bizimki eklenmez. Başka bir eklenti için:
+
+```php
+add_filter( 'aihs_schema_seo_conflict', fn() => 'Eklenti adı' );
+```
+
 ## Klasör yapısı
 
 ```
 ai-hazir-site.php          Eklenti başlığı, sürüm kontrolü, açılış
 uninstall.php              Silmede veri temizliği (yalnızca seçenek açıksa)
 src/Core/                  Platformdan bağımsız çekirdek (WordPress fonksiyonu kullanmaz)
-  Contracts/               Arayüzler: Settings, Cache, HttpClient, Clock, Secret, HitRepository
+  Contracts/               Arayüzler: Settings, Cache, HttpClient, PageFetcher, Clock, Secret, HitRepository,
+                           ListingRepository, ProfileRepository
   Features.php             Özellik anahtarları
   Migrations/              MigrationInterface, Migrator
   Measurement/             A0 iş kuralları: Classifier, Verifier, IpRanges, Tracker, Report, CsvExport
   Compliance/              U1: Site, Html, Robots, Scanner, ScoreReport, ScanStore, Checks/ (7 kontrol)
   Catalog/                 A1: Listing, CompanyProfile, doğrulayıcılar, CatalogService (tek yazma noktası)
   Access/                  U2: BotPolicy, Presets, RobotsRules, PolicyStore
+src/Adapters/              AI kanalı üreticileri (platformdan bağımsız)
+  Schema/                  A2: SchemaMap, SchemaBuilder, SchemaValidator, SchemaCache
 src/WordPress/             WordPress adaptörü
   Plugin, Lifecycle, Uninstaller, Requirements, Module
   Platform/                Arayüz uygulamaları: WpSettings, WpCache, WpHttpClient, WpPageFetcher, WpClock, WpSecret
@@ -99,11 +114,12 @@ src/WordPress/             WordPress adaptörü
   Compliance/              ComplianceModule, AI Uyum sayfası, wp aihs scan
   Catalog/                 aihs_listing içerik türü, WpListingRepository, WpProfileRepository, AI Katalog ekranları
   Access/                  robots_txt filtresi, AI Bot Erişimi sayfası
+  Schema/                  SchemaModule (ana sayfa JSON-LD), CatalogPage (/ai-katalog/), SeoConflict
 data/                      Düzenlenebilir bot ve yönlendirme listeleri
 docs/                      PRD, görevler, mimari kararlar (ADR)
 tests/Unit/                Birim testleri (WordPress'siz; bellek içi adaptörler)
 tests/Integration/         Entegrasyon testleri (WordPress test paketi)
-tests/Snapshots/           Anlık görüntü dosyaları (ör. robots.txt çıktıları)
+tests/Snapshots/           Anlık görüntü dosyaları (ör. robots.txt ve Schema.org çıktıları)
 tests/Support/             Bellek içi test adaptörleri
 ```
 
@@ -111,13 +127,16 @@ tests/Support/             Bellek içi test adaptörleri
 
 | Seçenek | Anlamı |
 | --- | --- |
-| `aihs_features` | Özellik anahtarları (`measurement`, `compliance_scan`, `catalog`, `bot_access`); `measurement` dışında hepsi varsayılan kapalı |
+| `aihs_features` | Özellik anahtarları (`measurement`, `compliance_scan`, `catalog`, `bot_access`, `schema_output`); `measurement` dışında hepsi varsayılan kapalı |
 | `aihs_db_version` | Uygulanan son geçiş sürümü |
 | `aihs_delete_data_on_uninstall` | Açıksa eklenti silinirken tüm verisi (tablo dahil) silinir |
 | `aihs_ip_ranges` | Botların yayınlanmış IP listeleri önbelleği (otomatik yüklenmez) |
 | `aihs_scans` | Son 20 uyum taraması (otomatik yüklenmez) |
 | `aihs_profile` | Firma profili (otomatik yüklenmez) |
 | `aihs_bot_policy` | AI bot erişim ayarları (otomatik yüklenmez) |
+| `aihs_profile_updated` | Firma profilinin son güncellenme zamanı (otomatik yüklenmez) |
+| `aihs_schema_cache` | Son geçerli Schema.org çıktıları (otomatik yüklenmez) |
+| `aihs_schema_error` | Son Schema.org doğrulama hataları (otomatik yüklenmez) |
 
 Veritabanı tablosu: `{prefix}aihs_hits`. Cron görevleri: `aihs_refresh_ip_ranges` (günlük),
 `aihs_prune_hits` (haftalık).

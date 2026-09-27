@@ -3,6 +3,42 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [0.6.0] - 2026-09-27
+
+### Eklendi
+- **A2 Schema.org yapılandırılmış veri** (`schema_output` anahtarı, varsayılan kapalı).
+  - Ana sayfa: firma profilinden `Organization` (ad, adres, iletişim, uzmanlık, dil) ve `WebPage`
+    JSON-LD'si, `wp_head` içinde. `dateModified` profil ve ilanlardaki en son değişikliktir.
+  - Sanal **/ai-katalog/** sayfası: JavaScript'siz, sade HTML liste (satılan / aranan / tedarik edilebilen)
+    ve `DataFeed` JSON-LD'si. Satılan → `Offer`, aranan → `Demand` (`Organization.seeks` karşılığı),
+    tedarik edilebilen → `Offer` + `availability: MadeToOrder` ve `deliveryLeadTime`.
+  - Tek eşleme tablosu `SchemaMap`; üretim platformdan bağımsız `src/Adapters/Schema` altında
+    (`SchemaBuilder`, `SchemaValidator`, `SchemaCache`).
+  - Her çıktı yayından önce doğrulanır. Hatalı çıktı yayınlanmaz; son geçerli çıktı sunulur ve yöneticiye
+    hata (sayfa, zaman, hatalar) bildirilir.
+  - Yoast SEO, Rank Math, All in One SEO, SEOPress veya The SEO Framework etkinse kendi `Organization`
+    düğümümüz eklenmez, ilanlar firmaya adla bağlanır ve yöneticiye uyarı gösterilir. Diğer eklentiler
+    `aihs_schema_seo_conflict` filtresiyle bildirilebilir.
+  - U1 taramasında bu çıktılarla "yapılandırılmış veri" ve "tazelik" kontrolleri tam puan alır.
+- `ProfileRepository::updated_at()`; profil kaydedilince `aihs_profile_updated` seçeneği güncellenir.
+
+### Kararlar
+- `dateModified` yalnızca `CreativeWork` ve `DataFeedItem` üzerinde geçerli olduğu için her ilan bir
+  `DataFeedItem` içine konur; tarih ilanın son güncellemesidir.
+- Geçerlilik tarihi girilmemiş ilana 90 günlük varsayılan `validThrough` verilir; süresi dolan ilan
+  hiçbir çıktıda yer almaz.
+- Fiyatı olmayan satılan ilan da `Offer` olarak yayınlanır; doğrulayıcı uyarı verir (Google zengin
+  sonuçları fiyat ister).
+- Fiyat aralığında `price` en düşük değerdir, aralık `priceSpecification` (`minPrice`/`maxPrice`) ile verilir.
+
+### Bilinen sınırlar
+- Elle doğrulama (validator.schema.org) henüz yapılmadı; otomatik doğrulama `SchemaValidator` ve anlık
+  görüntü testleriyle yapılır.
+- Ana sayfa ve /ai-katalog/ dışındaki sayfalara şema eklenmez; U1 bu sayfalarda yapılandırılmış veri
+  bulamazsa puan düşebilir.
+- SEO eklentisi tespiti sabitlere dayanır; tanınmayan eklentiler filtreyle bildirilmelidir.
+- /ai-katalog/ yeniden yazma kuralı anahtar açıldıktan sonraki ilk istekte eklenir.
+
 ## [0.5.0] - 2026-09-27
 
 ### Eklendi
