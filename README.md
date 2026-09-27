@@ -3,7 +3,7 @@
 Sitenin "ne satıyorum, ne arıyorum, ne tedarik edebilirim" bilgisini AI agentların okuyup
 kullanabileceği biçimde yayınlayan WordPress eklentisi.
 
-> Sürüm 0.12.0: AI bot ve yönlendirme ölçümü (A0), AI uyum taraması (U1), veri modeli ve yönetim formları (A1), AI bot erişim ayarları (U2), Schema.org yapılandırılmış veri (A2), llms.txt ve AI katalog sayfası (A3), sektör şablonları (A4), AI uyum sihirbazı (U3), REST API (A5), Abilities API ve MCP (A6), teklif kutusu ve güvenlik katmanı (A7). Ayrıntılar: [CHANGELOG.md](CHANGELOG.md).
+> Sürüm 1.0.0 (MVP): AI bot ve yönlendirme ölçümü (A0), AI uyum taraması (U1), veri modeli ve yönetim formları (A1), AI bot erişim ayarları (U2), Schema.org yapılandırılmış veri (A2), llms.txt ve AI katalog sayfası (A3), sektör şablonları (A4), AI uyum sihirbazı (U3), REST API (A5), Abilities API ve MCP (A6), teklif kutusu ve güvenlik katmanı (A7), AI uyum raporu ve AI Hazır rozeti (U4). Ayrıntılar: [CHANGELOG.md](CHANGELOG.md).
 
 - En düşük sürümler: PHP 8.1, WordPress 6.9
 - Lisans: GPL-2.0-or-later
@@ -96,6 +96,23 @@ Hiçbir talep otomatik onaylanmaz, talep sahibine otomatik yanıt gitmez. İleti
 saklama süresi (varsayılan 180 gün) dolunca silinir. Hukuk gibi fiyatı yasak şablonlu sitelerde yalnızca
 yönlendirme talebi (`aihs/request-referral`) alınır. Yerelde e-postalar `wp-content/mails/` klasörüne yazılır.
 
+## AI uyum raporu ve rozet (U4)
+
+`compliance_report` anahtarı açıkken Araçlar → **AI Uyum Raporu** son tarama puanını, kontrol bazında durumu,
+ilk ↔ son tarama karşılaştırmasını, son 28 günün AI ölçüm özetini ve açık yetenekleri gösterir; **PDF indir**
+aynı içeriği A4 PDF olarak verir (Dompdf, DejaVu Sans). Puan eşiği (varsayılan 70, `aihs_badge_threshold`)
+aşılınca `[aihs_rozet]` kısa kodu ve "AI Hazır rozeti" bloğu rozeti gösterir; rozet **/ai-hazir-dogrulama/**
+sayfasına bağlanır. Kullanım: [docs/kullanim/rapor-ve-rozet.md](docs/kullanim/rapor-ve-rozet.md).
+
+## Kullanıcı belgeleri ve paket
+
+- Site sahibi için başlangıç: [docs/kullanim/baslangic.md](docs/kullanim/baslangic.md)
+- Bilinen sınırlar: [docs/bilinen-sinirlar.md](docs/bilinen-sinirlar.md)
+- WordPress.org biçiminde tanıtım: [readme.txt](readme.txt)
+- Kurulabilir zip: `composer paketle` (ya da `php bin/paketle [git-ref]`) → `dist/ai-hazir-site-<sürüm>.zip`.
+  Yalnızca işlenmiş dosyalar ve çalışma bağımlılıkları girer; `.gitattributes` içindeki `export-ignore`
+  satırları (testler, belgeler, geliştirme araçları) dışarıda kalır.
+
 ## AI Katalog (A1)
 
 `catalog` anahtarı açıkken **AI Katalog** menüsünden satılan, aranan ve tedarik edilebilen ilanlar ile
@@ -158,7 +175,7 @@ src/Core/                  Platformdan bağımsız çekirdek (WordPress fonksiyo
   Features.php             Özellik anahtarları
   Migrations/              MigrationInterface, Migrator
   Measurement/             A0 iş kuralları: Classifier, Verifier, IpRanges, Tracker, Report, CsvExport
-  Compliance/              U1: Site, Html, Robots, Scanner, ScoreReport, ScanStore, Checks/ (7 kontrol)
+  Compliance/              U1: Site, Html, Robots, Scanner, ScoreReport, ScanStore, Badge (U4), Checks/ (7 kontrol)
     Wizard/                U3: FixStep, SiteState, StepPlanner, Wizard, WizardJournal
   Catalog/                 A1: Listing, CompanyProfile, doğrulayıcılar, ListingValidity, CatalogService (tek yazma noktası)
     Query/                 A6: ListingSearch, CatalogQuery (tek okuma yolu), Availability
@@ -171,6 +188,7 @@ src/Adapters/              AI kanalı üreticileri (platformdan bağımsız)
   Llms/                    A3: LlmsTxtBuilder, LlmsCache
   Rest/                    A5: RestResponder, RestSchemas, ListingsQuery
   Abilities/               A6: AbilitySchemas; A7: InquirySchemas
+  Report/                  U4: ComplianceReportData (rapor verisi, tek kaynak), BadgeSvg
 src/WordPress/             WordPress adaptörü
   Plugin, Lifecycle, Uninstaller, Requirements, Module
   Platform/                Arayüz uygulamaları: WpSettings, WpCache, WpHttpClient, WpPageFetcher, WpClock, WpSecret
@@ -189,6 +207,9 @@ src/WordPress/             WordPress adaptörü
   Inquiry/                 InquiryModule, InquiryChannels, WpInquiryRepository (şifreli), WpAuditRepository,
                            WpInquiryNotifier, Admin/InquiryAdmin (Teklif Kutusu)
   Templates/               TemplatesModule (kayıt defteri, aihs_template_dirs, hatalı dosya uyarısı)
+  Report/                  U4: ReportModule (AI Uyum Raporu, PDF), ComplianceReportView, BadgeModule (rozet, doğrulama sayfası)
+blocks/rozet/              "AI Hazır rozeti" dinamik bloğu (block.json, derlemesiz editör betiği)
+bin/paketle                Kurulabilir zip üretir
 data/                      Düzenlenebilir bot ve yönlendirme listeleri, templates/ (sektör şablonları)
 docs/                      PRD, görevler, mimari kararlar (ADR)
 tests/Unit/                Birim testleri (WordPress'siz; bellek içi adaptörler)
@@ -201,11 +222,12 @@ tests/Support/             Bellek içi test adaptörleri
 
 | Seçenek | Anlamı |
 | --- | --- |
-| `aihs_features` | Özellik anahtarları (`measurement`, `compliance_scan`, `catalog`, `bot_access`, `schema_output`, `llms_txt`, `templates`, `compliance_wizard`, `rest_api`, `abilities`, `mcp`, `inquiries`); `measurement` dışında hepsi varsayılan kapalı |
+| `aihs_features` | Özellik anahtarları (`measurement`, `compliance_scan`, `catalog`, `bot_access`, `schema_output`, `llms_txt`, `templates`, `compliance_wizard`, `rest_api`, `abilities`, `mcp`, `inquiries`, `compliance_report`); `measurement` dışında hepsi varsayılan kapalı |
 | `aihs_db_version` | Uygulanan son geçiş sürümü |
 | `aihs_delete_data_on_uninstall` | Açıksa eklenti silinirken tüm verisi (tablo dahil) silinir |
 | `aihs_ip_ranges` | Botların yayınlanmış IP listeleri önbelleği (otomatik yüklenmez) |
 | `aihs_scans` | Son 20 uyum taraması (otomatik yüklenmez) |
+| `aihs_first_scan` | İlk uyum taraması, raporun önce/sonra karşılaştırması için (otomatik yüklenmez) |
 | `aihs_profile` | Firma profili (otomatik yüklenmez) |
 | `aihs_bot_policy` | AI bot erişim ayarları (otomatik yüklenmez) |
 | `aihs_profile_updated` | Firma profilinin son güncellenme zamanı (otomatik yüklenmez) |

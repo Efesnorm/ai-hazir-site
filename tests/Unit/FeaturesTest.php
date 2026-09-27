@@ -97,4 +97,32 @@ final class FeaturesTest extends UnitTestCase {
 		);
 		$this->assertTrue( $this->settings->autoload[ Features::OPTION ] );
 	}
+
+	/**
+	 * 1.0.0 (MVP) final check: the complete key list with its shipped defaults, as stored names.
+	 * A fresh install enables only measurement; every key is still read with the same name.
+	 */
+	public function test_mvp_feature_defaults(): void {
+		$this->assertSame(
+			array(
+				'measurement'       => true,
+				'compliance_scan'   => false,
+				'catalog'           => false,
+				'bot_access'        => false,
+				'schema_output'     => false,
+				'llms_txt'          => false,
+				'templates'         => false,
+				'compliance_wizard' => false,
+				'rest_api'          => false,
+				'abilities'         => false,
+				'mcp'               => false,
+				'inquiries'         => false,
+				'compliance_report' => false,
+			),
+			Features::defaults()
+		);
+
+		$enabled = array_keys( array_filter( array_map( array( Features::class, 'is_enabled' ), array_combine( array_keys( Features::defaults() ), array_keys( Features::defaults() ) ) ) ) );
+		$this->assertSame( array( 'measurement' ), $enabled, 'Fresh install: only measurement is on.' );
+	}
 }

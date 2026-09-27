@@ -1,0 +1,110 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Builds the installable plugin zip: dist/ai-hazir-site-<version>.zip
+ *
+ * Usage: php bin/paketle [git-ref]   (default: HEAD)
+ *
+ * 1. `git archive` of the ref (files marked export-ignore in .gitattributes stay out),
+ * 2. `composer install --no-dev --optimize-autoloader` inside that copy,
+ * 3. zip with a single top folder `ai-hazir-site/` (what WordPress's plugin uploader expects).
+ *
+ * Only committed files are packaged; uncommitted changes are reported and left out.
+ *
+ * @package AIHazirSite
+ */
+
+declare(strict_types=1);
+
+// phpcs:disable WordPress -- Command-line build tool, runs outside WordPress.
+
+const AIHS_SLUG = 'ai-hazir-site';
+
+/**
+ * Runs a command; stops the build on failure.
+ *
+ * @param string $command Command line.
+ */
+function aihs_run( string $command ): void {
+	passthru( $command, $code );
+	if ( 0 !== $code ) {
+		fwrite( STDERR, "Hata ({$code}): {$command}\n" );
+		exit( 1 );
+	}
+}
+
+/**
+ * Deletes a directory tree.
+ *
+ * @param string $dir Directory.
+ */
+function aihs_remove( string $dir ): void {
+	if ( ! is_dir( $dir ) ) {
+		return;
+	}
+	$items = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $dir, FilesystemIterator::SKIP_DOTS ), RecursiveIteratorIterator::CHILD_FIRST );
+	foreach ( $items as $item ) {
+		$item->isDir() ? rmdir( $item->getPathname() ) : unlink( $item->getPathname() );
+	}
+	rmdir( $dir );
+}
+
+$root = dirname( __DIR__ );
+$ref  = $argv[1] ?? 'HEAD';
+chdir( $root );
+
+if ( ! class_exists( ZipArchive::class ) ) {
+	fwrite( STDERR, "PHP zip eklentisi gerekli.\n" );
+	exit( 1 );
+}
+if ( 'HEAD' === $ref && '' !== trim( (string) shell_exec( 'git status --porcelain --untracked-files=no' ) ) ) {
+	fwrite( STDERR, "Uyarı: işlenmemiş değişiklikler pakete girmez (yalnızca {$ref} paketlenir).\n" );
+}
+
+$build = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'aihs-paket-' . bin2hex( random_bytes( 4 ) );
+$src   = $build . DIRECTORY_SEPARATOR . AIHS_SLUG;
+mkdir( $build );
+
+// 1. Committed files of the ref.
+$archive = $build . DIRECTORY_SEPARATOR . 'kaynak.zip';
+aihs_run( 'git archive --worktree-attributes --format=zip --prefix=' . AIHS_SLUG . '/ -o ' . escapeshellarg( $archive ) . ' ' . escapeshellarg( $ref ) );
+$zip = new ZipArchive();
+if ( true !== $zip->open( $archive ) || ! $zip->extractTo( $build ) ) {
+	fwrite( STDERR, "Arşiv açılamadı.\n" );
+	exit( 1 );
+}
+$zip->close();
+unlink( $archive );
+
+// 2. Runtime dependencies only.
+aihs_run( 'composer install --no-dev --optimize-autoloader --no-interaction --no-progress --working-dir=' . escapeshellarg( $src ) );
+
+if ( ! preg_match( '/^\s*\*\s*Version:\s*(\S+)/m', (string) file_get_contents( $src . '/' . AIHS_SLUG . '.php' ), $m ) ) {
+	fwrite( STDERR, "Sürüm okunamadı.\n" );
+	exit( 1 );
+}
+$version = $m[1];
+
+// 3. Zip with a single top folder.
+@mkdir( $root . '/dist' ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- May already exist.
+$target = $root . '/dist/' . AIHS_SLUG . '-' . $version . '.zip';
+if ( is_file( $target ) ) {
+	unlink( $target );
+}
+$out = new ZipArchive();
+$out->open( $target, ZipArchive::CREATE );
+$files = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $src, FilesystemIterator::SKIP_DOTS ), RecursiveIteratorIterator::SELF_FIRST );
+$count = 0;
+foreach ( $files as $file ) {
+	$local = AIHS_SLUG . '/' . str_replace( '\\', '/', substr( $file->getPathname(), strlen( $src ) + 1 ) );
+	if ( $file->isDir() ) {
+		$out->addEmptyDir( $local );
+		continue;
+	}
+	$out->addFile( $file->getPathname(), $local );
+	++$count;
+}
+$out->close();
+aihs_remove( $build );
+
+printf( "Paket: %s (%d dosya, %.1f MB)\n", $target, $count, filesize( $target ) / 1048576 );

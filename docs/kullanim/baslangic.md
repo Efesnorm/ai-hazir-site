@@ -1,0 +1,59 @@
+# AI Hazır Site – Başlangıç
+
+Bu belge eklentiyi kuran site sahibi içindir. Geliştirme ortamı için: [README.md](../../README.md).
+
+## Kurulum
+
+1. **Yedek alın.** Güncellemelerden önce de sitenin dosyalarının ve veritabanının yedeğini alın.
+2. Eklentiler → Yeni Ekle → **Eklenti Yükle** ile `ai-hazir-site-<sürüm>.zip` dosyasını yükleyin ve etkinleştirin.
+   Gereksinimler: WordPress 6.9+, PHP 8.1+.
+3. Etkinleştirmeden sonra yalnızca **AI ölçümü** açıktır. Diğer her özellik bir anahtarla açılır.
+
+Güncelleme: yeni zip dosyasını aynı yoldan yükleyin, WordPress "mevcut eklentiyi değiştir" diye sorar.
+Veriler ve ayarlar korunur; veritabanı değişiklikleri yalnızca ekleme şeklindedir ve kendiliğinden uygulanır.
+
+## Özellik anahtarları
+
+| Anahtar | Ne açar | Nereden açılır |
+| --- | --- | --- |
+| `measurement` | AI bot ve yönlendirme ölçümü (Araçlar → AI Ölçüm) | Açık gelir; AI Ölçüm sayfasından kapatılır |
+| `compliance_scan` | AI uyum taraması ve puanı (Araçlar → AI Uyum) | WP-CLI ya da sihirbaz |
+| `compliance_wizard` | AI Uyum Sihirbazı | WP-CLI |
+| `catalog` | AI Katalog: firma profili ve ilanlar | WP-CLI ya da sihirbaz |
+| `templates` | Sektör şablonları | WP-CLI |
+| `bot_access` | robots.txt'de AI bot izinleri (Araçlar → AI Bot Erişimi) | WP-CLI ya da sihirbaz |
+| `schema_output` | Schema.org JSON-LD ve /ai-katalog/ | WP-CLI ya da sihirbaz |
+| `llms_txt` | /llms.txt ve /ai-katalog/ | WP-CLI ya da sihirbaz |
+| `rest_api` | `/wp-json/aihs/v1/` | WP-CLI |
+| `abilities` | Katalog yetenekleri (Abilities API) | WP-CLI |
+| `mcp` | MCP sunucusu `/wp-json/aihs/mcp` | WP-CLI |
+| `inquiries` | Teklif kutusu | AI Katalog → Teklif Kutusu (uyarı ve onayla) |
+| `compliance_report` | AI Uyum Raporu, rozet, doğrulama sayfası | WP-CLI |
+
+WP-CLI ile açma (örnek: tarama, sihirbaz ve rapor):
+
+```bash
+wp eval 'foreach ( array( "compliance_scan", "compliance_wizard", "compliance_report" ) as $k ) { AIHazirSite\Core\Features::set( $k, true ); }'
+```
+
+Kapatmak için `true` yerine `false` yazın. WP-CLI'ye erişiminiz yoksa barındırma firmanızdan destek isteyin
+(genel bir ayar ekranı henüz yok; bkz. [bilinen sınırlar](../bilinen-sinirlar.md)).
+
+## Önerilen sıra
+
+1. **AI Uyum** taramasını açın ve puanınızı görün.
+2. **AI Uyum Sihirbazı** ile eksikleri tamamlayın: firma profili, ilk ilan, Schema.org, llms.txt, bot erişimi.
+3. İlanlarınızı **AI Katalog** menüsünden girin; gerekiyorsa bir sektör şablonu seçin.
+4. AI asistanlarının kataloğu doğrudan sorgulaması için REST, Abilities ve MCP'yi açın:
+   [mcp-baglanti.md](mcp-baglanti.md).
+5. Talep almak istiyorsanız **Teklif Kutusu**'nu açın.
+6. **AI Uyum Raporu** ve rozet: [rapor-ve-rozet.md](rapor-ve-rozet.md).
+
+## Eklentiyi silme
+
+Varsayılan olarak veriler korunur. Silmede tüm verinin (tablolar, ayarlar, ilanlar, talepler) kaldırılması için
+silmeden önce şunu çalıştırın:
+
+```bash
+wp option update aihs_delete_data_on_uninstall 1
+```

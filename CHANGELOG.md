@@ -3,6 +3,43 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.0.0] - 2026-09-28
+
+İlk kararlı sürüm (MVP).
+
+### Eklendi
+- **U4 AI uyum raporu ve AI Hazır rozeti** (`compliance_report` anahtarı, varsayılan kapalı).
+  - Rapor verisi tek kaynaktan: `ComplianceReportData` (`src/Adapters/Report/`) kayıtlı taramaları ve A0 ölçümünü
+    bir kez okur; ekran ve PDF aynı veriyi ve aynı işaretlemeyi kullanır. İçerik: son puan, kontrol bazında durum,
+    ilk ↔ son tarama karşılaştırması (puan sürümü aynıysa), son 28 günün AI ölçüm özeti, açık yetenekler.
+  - İlk tarama artık ayrıca saklanır (`aihs_first_scan`); eski sitelerde saklanan geçmişin en eskisi kullanılır.
+  - Araçlar → **AI Uyum Raporu** ve **PDF indir** (nonce, `manage_options`). PDF: Dompdf 3.1.6, DejaVu Sans
+    gömülü (tam Türkçe), uzak kaynak ve PHP çalıştırma kapalı.
+  - Rozet kuralı `Badge` (çekirdek): ölçülmüş puan eşiğe (varsayılan 70, `aihs_badge_threshold` süzgeci) ulaşırsa.
+    Erişilebilir SVG (`BadgeSvg`), `[aihs_rozet]` kısa kodu ve dinamik `ai-hazir-site/rozet` bloğu (block.json
+    apiVersion 3, derleme adımı olmayan editör betiği). Eşik altında, tarama yokken veya özellik kapalıyken boş çıktı.
+  - Doğrulama sayfası **/ai-hazir-dogrulama/**: site, puan, tarama tarihi, kontrol bazında durum ya da
+    "şu anda kriter karşılanmıyor".
+- **MVP sürüm işleri**
+  - WordPress.org biçiminde `readme.txt`.
+  - Kullanıcı belgeleri: `docs/kullanim/baslangic.md` (kurulum, anahtarlar, önerilen sıra),
+    `docs/kullanim/rapor-ve-rozet.md`; bilinen sınırlar: `docs/bilinen-sinirlar.md`.
+  - `bin/paketle` (`composer paketle`): işlenmiş dosyalardan, yalnızca çalışma bağımlılıklarıyla kurulabilir zip.
+    Paket dışı dosyalar `.gitattributes` içinde `export-ignore`.
+  - Özellik anahtarlarının son denetimi: 13 anahtar, yalnızca `measurement` açık (yeni birim testi).
+  - 0.2.0 → 1.0.0 güncelleme entegrasyon testi (şema 200'den 1200'e, 0.2.0 verisi ve seçimleri korunuyor, yeni
+    özellikler kapalı geliyor; ikinci çalıştırma bir şey değiştirmiyor).
+
+### Bağımlılıklar
+- `dompdf/dompdf` ^3.1.6 (LGPL-2.1; alt bağımlılığı php-svg-lib LGPL-3.0-or-later; GPL ile birlikte dağıtılabilir).
+- Geliştirme: `smalot/pdfparser` (MIT, PDF içerik testleri).
+
+### Kararlar
+- PDF kütüphanesi olarak Dompdf: WordPress ekosisteminde en yaygın, HTML'den PDF, saf PHP, GPL uyumlu lisans.
+- Onaylı test güncellemesi: `WizardFlowTest` tarama geçmişi gibi `aihs_first_scan`'i de karşılaştırma dışında tutuyor.
+- Pilot site kopyası yerine güncelleme geliştirme ortamında 0.2.0 kurulumu üzerinden elle denendi; gerçek sitelerde
+  güncellemeden önce yedek alınması belgelere yazıldı.
+
 ## [0.12.0] - 2026-09-27
 
 ### Eklendi
