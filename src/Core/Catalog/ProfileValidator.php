@@ -9,6 +9,9 @@ declare(strict_types=1);
 
 namespace AIHazirSite\Core\Catalog;
 
+use AIHazirSite\Core\Templates\Template;
+use AIHazirSite\Core\Templates\TemplateRegistry;
+
 /**
  * Validates the profile and warns when the contact e-mail looks personal
  * (a free mailbox provider) instead of corporate.
@@ -21,6 +24,14 @@ final class ProfileValidator {
 	public const PERSONAL_EMAIL_DOMAINS = array( 'gmail.com', 'googlemail.com', 'hotmail.com', 'hotmail.com.tr', 'outlook.com', 'outlook.com.tr', 'live.com', 'msn.com', 'yahoo.com', 'yahoo.com.tr', 'ymail.com', 'yandex.com', 'yandex.com.tr', 'yandex.ru', 'icloud.com', 'me.com', 'mail.com', 'mail.ru', 'aol.com', 'gmx.com', 'gmx.de', 'proton.me', 'protonmail.com', 'zoho.com' );
 
 	public const PERSONAL_EMAIL_WARNING = 'İletişim e-postası kişisel bir adres gibi görünüyor. AI agentlarına yayınlanacağı için kurumsal bir adres (ör. satis@firmaniz.com) kullanın.';
+
+	/**
+	 * Constructor.
+	 *
+	 * @param TemplateRegistry|null $templates Known sector templates; null when templates are off (always "general").
+	 */
+	public function __construct( private readonly ?TemplateRegistry $templates = null ) {
+	}
 
 	/**
 	 * Validates input.
@@ -70,12 +81,19 @@ final class ProfileValidator {
 			$errors['certifications'] = 'En fazla 20 sertifika girilebilir.';
 		}
 
+		$template = '' === $text( 'template' ) ? Template::GENERAL : $text( 'template' );
+		if ( null === $this->templates ) {
+			$template = Template::GENERAL;
+		} elseif ( ! $this->templates->has( $template ) ) {
+			$errors['template'] = 'Bilinmeyen sektör şablonu.';
+		}
+
 		if ( array() !== $errors ) {
 			return new ValidationResult( null, $errors, $warnings );
 		}
 
 		return new ValidationResult(
-			new CompanyProfile( $name, $text( 'sector' ), $country, array_values( array_unique( $languages ) ), $email, $phone, $certifications ),
+			new CompanyProfile( $name, $text( 'sector' ), $country, array_values( array_unique( $languages ) ), $email, $phone, $certifications, $template ),
 			array(),
 			$warnings
 		);

@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace AIHazirSite\Core\Catalog;
 
+use AIHazirSite\Core\Templates\Template;
+
 /**
  * Immutable listing. Prices and quantities are decimal strings ("12.50") so no
  * rounding happens between the form, the database and the AI outputs.
@@ -19,7 +21,7 @@ final class Listing {
 	/**
 	 * Field names, in form order.
 	 */
-	public const FIELDS = array( 'id', 'type', 'title', 'description', 'category', 'quantity', 'unit', 'price_min', 'price_max', 'currency', 'region', 'lead_time_days', 'valid_until', 'updated_at', 'attributes' );
+	public const FIELDS = array( 'id', 'type', 'title', 'description', 'category', 'quantity', 'unit', 'price_min', 'price_max', 'currency', 'region', 'lead_time_days', 'valid_until', 'updated_at', 'attributes', 'template' );
 
 	/**
 	 * Constructor.
@@ -39,6 +41,7 @@ final class Listing {
 	 * @param string|null           $valid_until    Y-m-d.
 	 * @param string|null           $updated_at     ISO 8601 UTC, set by storage.
 	 * @param array<string, string> $attributes     Sector-specific key–value pairs.
+	 * @param string                $template       Sector template id (0.8.0; "general" for older listings).
 	 */
 	public function __construct(
 		public readonly ?int $id,
@@ -55,7 +58,8 @@ final class Listing {
 		public readonly ?int $lead_time_days = null,
 		public readonly ?string $valid_until = null,
 		public readonly ?string $updated_at = null,
-		public readonly array $attributes = array()
+		public readonly array $attributes = array(),
+		public readonly string $template = Template::GENERAL
 	) {
 	}
 
@@ -123,7 +127,8 @@ final class Listing {
 			isset( $data['lead_time_days'] ) && is_numeric( $data['lead_time_days'] ) ? (int) $data['lead_time_days'] : null,
 			$nullable( 'valid_until' ),
 			$nullable( 'updated_at' ),
-			$attributes
+			$attributes,
+			'' === $string( 'template' ) ? Template::GENERAL : $string( 'template' )
 		);
 	}
 }

@@ -9,6 +9,9 @@ declare(strict_types=1);
 
 namespace AIHazirSite\Core\Catalog;
 
+use AIHazirSite\Core\Templates\Template;
+use AIHazirSite\Core\Templates\TemplateRegistry;
+use AIHazirSite\Core\Templates\TemplateValidator;
 use DateTimeImmutable;
 
 /**
@@ -21,9 +24,19 @@ final class ListingValidator {
 	public const ATTRIBUTE_KEY = '/^[a-z0-9_]{1,64}$/';
 
 	/**
+	 * Constructor.
+	 *
+	 * @param TemplateRegistry|null $templates Sector templates; null when templates are off
+	 *                                         (new listings are "general", stored templates are kept unchecked).
+	 */
+	public function __construct( private readonly ?TemplateRegistry $templates = null ) {
+	}
+
+	/**
 	 * Validates input.
 	 *
-	 * @param array<string, mixed> $input    Raw input (strings; attributes as array or "anahtar: değer" lines).
+	 * @param array<string, mixed> $input    Raw input (strings; attributes as array or "anahtar: değer" lines;
+	 *                                        "template" for a new listing).
 	 * @param string               $today    Y-m-d.
 	 * @param Listing|null         $existing Stored listing when editing.
 	 */
@@ -82,6 +95,21 @@ final class ListingValidator {
 
 		$attributes = self::attributes( $input['attributes'] ?? array(), $errors );
 
+		// A listing keeps its template, like its type; a new one takes the requested template.
+		$template = $existing->template ?? ( '' === $text( 'template' ) ? Template::GENERAL : $text( 'template' ) );
+		if ( null !== $existing && '' !== $text( 'template' ) && $text( 'template' ) !== $existing->template ) {
+			$errors['template'] = 'İlanın şablonu değiştirilemez.';
+		}
+		if ( null === $this->templates ) {
+			$template = $existing->template ?? Template::GENERAL;
+		} elseif ( null === $existing && ! $this->templates->has( $template ) ) {
+			$errors['template'] = 'Bilinmeyen sektör şablonu.';
+		} elseif ( ! isset( $errors['attributes'] ) ) {
+			$checked    = ( new TemplateValidator() )->validate( $this->templates->get( $template ), $attributes, null !== $price_min || null !== $price_max );
+			$attributes = $checked['attributes'];
+			$errors     = array_merge( $errors, $checked['errors'] );
+		}
+
 		if ( array() !== $errors ) {
 			return new ValidationResult( null, $errors );
 		}
@@ -102,7 +130,8 @@ final class ListingValidator {
 				$lead_time,
 				$valid_until,
 				$existing?->updated_at,
-				$attributes
+				$attributes,
+				$template
 			)
 		);
 	}

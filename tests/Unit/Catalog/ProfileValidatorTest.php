@@ -104,9 +104,9 @@ final class ProfileValidatorTest extends TestCase {
 	 * The data model has no personal-data fields; changing the field lists must be deliberate.
 	 */
 	public function test_no_personal_data_fields(): void {
-		$this->assertSame( array( 'name', 'sector', 'country', 'languages', 'contact_email', 'contact_phone', 'certifications' ), CompanyProfile::FIELDS );
+		$this->assertSame( array( 'name', 'sector', 'country', 'languages', 'contact_email', 'contact_phone', 'certifications', 'template' ), CompanyProfile::FIELDS );
 		$this->assertSame(
-			array( 'id', 'type', 'title', 'description', 'category', 'quantity', 'unit', 'price_min', 'price_max', 'currency', 'region', 'lead_time_days', 'valid_until', 'updated_at', 'attributes' ),
+			array( 'id', 'type', 'title', 'description', 'category', 'quantity', 'unit', 'price_min', 'price_max', 'currency', 'region', 'lead_time_days', 'valid_until', 'updated_at', 'attributes', 'template' ),
 			Listing::FIELDS
 		);
 		foreach ( array_merge( CompanyProfile::FIELDS, Listing::FIELDS ) as $field ) {

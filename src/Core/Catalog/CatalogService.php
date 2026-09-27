@@ -12,6 +12,7 @@ namespace AIHazirSite\Core\Catalog;
 use AIHazirSite\Core\Contracts\Clock;
 use AIHazirSite\Core\Contracts\ListingRepository;
 use AIHazirSite\Core\Contracts\ProfileRepository;
+use AIHazirSite\Core\Templates\TemplateRegistry;
 
 /**
  * Validates before every write. Admin forms, imports and future channels all go through here.
@@ -21,14 +22,16 @@ final class CatalogService {
 	/**
 	 * Constructor.
 	 *
-	 * @param ListingRepository $listings Listing storage.
-	 * @param ProfileRepository $profiles Profile storage.
-	 * @param Clock             $clock    Provides today for date rules.
+	 * @param ListingRepository     $listings Listing storage.
+	 * @param ProfileRepository     $profiles Profile storage.
+	 * @param Clock                 $clock     Provides today for date rules.
+	 * @param TemplateRegistry|null $templates Sector templates; null when templates are off.
 	 */
 	public function __construct(
 		private readonly ListingRepository $listings,
 		private readonly ProfileRepository $profiles,
-		private readonly Clock $clock
+		private readonly Clock $clock,
+		private readonly ?TemplateRegistry $templates = null
 	) {
 	}
 
@@ -47,7 +50,7 @@ final class CatalogService {
 			}
 		}
 
-		$result  = ( new ListingValidator() )->validate( $input, $this->clock->today(), $existing );
+		$result  = ( new ListingValidator( $this->templates ) )->validate( $input, $this->clock->today(), $existing );
 		$listing = $result->listing();
 		if ( null === $listing ) {
 			return $result;
@@ -76,7 +79,11 @@ final class CatalogService {
 	 * @param array<string, mixed> $input Raw input.
 	 */
 	public function save_profile( array $input ): ValidationResult {
-		$result  = ( new ProfileValidator() )->validate( $input );
+		// A form without the template choice (templates off) keeps the stored one.
+		if ( ! isset( $input['template'] ) ) {
+			$input['template'] = null === $this->templates ? '' : $this->profiles->get()->template;
+		}
+		$result  = ( new ProfileValidator( $this->templates ) )->validate( $input );
 		$profile = $result->profile();
 		if ( null !== $profile ) {
 			$this->profiles->store_profile( $profile );

@@ -34,6 +34,7 @@ final class PostType {
 		'lead_time_days' => '_aihs_lead_time_days',
 		'valid_until'    => '_aihs_valid_until',
 		'attributes'     => '_aihs_attributes',
+		'template'       => '_aihs_template',
 	);
 
 	/**
