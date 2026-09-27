@@ -9,6 +9,13 @@ declare(strict_types=1);
 
 namespace AIHazirSite\Core\Compliance;
 
+use AIHazirSite\Core\Compliance\Checks\AdvancedCheck;
+use AIHazirSite\Core\Compliance\Checks\BotAccessCheck;
+use AIHazirSite\Core\Compliance\Checks\FreshnessCheck;
+use AIHazirSite\Core\Compliance\Checks\LlmsTxtCheck;
+use AIHazirSite\Core\Compliance\Checks\MachineInterfaceCheck;
+use AIHazirSite\Core\Compliance\Checks\ReadabilityCheck;
+use AIHazirSite\Core\Compliance\Checks\StructuredDataCheck;
 use AIHazirSite\Core\Contracts\Clock;
 use InvalidArgumentException;
 use Throwable;
@@ -52,6 +59,24 @@ final class Scanner {
 			$ids[ $check->id() ] = true;
 		}
 		$this->checks = $checks;
+	}
+
+	/**
+	 * The seven U1 checks with the PRD weights (20+20+20+15+10+10+5 = 100).
+	 * A new check is added here only; existing checks are not touched.
+	 *
+	 * @return list<Check>
+	 */
+	public static function default_checks(): array {
+		return array(
+			new StructuredDataCheck(),
+			new ReadabilityCheck(),
+			new MachineInterfaceCheck(),
+			new BotAccessCheck(),
+			new LlmsTxtCheck(),
+			new FreshnessCheck(),
+			new AdvancedCheck(),
+		);
 	}
 
 	/**

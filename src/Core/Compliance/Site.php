@@ -14,8 +14,9 @@ use AIHazirSite\Core\Contracts\PageResponse;
 
 /**
  * Fetches the site's own URLs for the checks: every URL at most once per header set,
- * at most 5 s per request and 60 s in total. When the budget is used up, further
- * requests are not made and return status 0 ("skipped").
+ * at most 5 s per request and 60 s in total. A request is only started when it can
+ * finish within the budget even at its full timeout; otherwise it is not made and
+ * returns status 0 ("skipped").
  */
 final class Site {
 
@@ -117,6 +118,22 @@ final class Site {
 	}
 
 	/**
+	 * Sample pages with their (normal) responses.
+	 *
+	 * @return list<array{url: string, response: PageResponse}>
+	 */
+	public function page_responses(): array {
+		$list = array();
+		foreach ( $this->pages() as $url ) {
+			$list[] = array(
+				'url'      => $url,
+				'response' => $this->fetch( $url ),
+			);
+		}
+		return $list;
+	}
+
+	/**
 	 * Home page response.
 	 */
 	public function home(): PageResponse {
@@ -134,7 +151,7 @@ final class Site {
 	 * Whether the 60-second budget is used up.
 	 */
 	public function budget_exhausted(): bool {
-		return $this->elapsed_ms >= self::BUDGET_MS;
+		return $this->elapsed_ms + self::TIMEOUT * 1000 > self::BUDGET_MS;
 	}
 
 	/**

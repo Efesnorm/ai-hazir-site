@@ -27,8 +27,9 @@ final class FakePageFetcher implements PageFetcher {
 	/**
 	 * Constructor.
 	 *
-	 * @param array<string, PageResponse|string> $responses URL → response (a string is a 200 HTML body).
-	 * @param int                                $elapsed   Milliseconds each request "takes".
+	 * @param array<string, PageResponse|string|\Closure> $responses URL → response (a string is a 200 HTML body;
+	 *                                                      a closure receives the request headers).
+	 * @param int                                         $elapsed   Milliseconds each request "takes".
 	 */
 	public function __construct( public array $responses = array(), public int $elapsed = 50 ) {
 	}
@@ -36,10 +37,10 @@ final class FakePageFetcher implements PageFetcher {
 	/**
 	 * Adds or replaces a response.
 	 *
-	 * @param string              $url      URL.
-	 * @param PageResponse|string $response Response or 200 body.
+	 * @param string                       $url      URL.
+	 * @param PageResponse|string|\Closure $response Response, 200 body, or fn( array $headers ).
 	 */
-	public function on( string $url, PageResponse|string $response ): self {
+	public function on( string $url, PageResponse|string|\Closure $response ): self {
 		$this->responses[ $url ] = $response;
 		return $this;
 	}
@@ -59,6 +60,9 @@ final class FakePageFetcher implements PageFetcher {
 		);
 
 		$response = $this->responses[ $url ] ?? new PageResponse( 404, array(), 'Not found' );
+		if ( $response instanceof \Closure ) {
+			$response = $response( $headers );
+		}
 		if ( is_string( $response ) ) {
 			$response = new PageResponse( 200, array( 'content-type' => 'text/html; charset=utf-8' ), $response );
 		}
