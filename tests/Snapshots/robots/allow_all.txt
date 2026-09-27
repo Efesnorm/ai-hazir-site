@@ -1,0 +1,55 @@
+User-agent: *
+Disallow: /wp-admin/
+Allow: /wp-admin/admin-ajax.php
+
+Sitemap: https://ornek.com/wp-sitemap.xml
+
+# BEGIN AI Hazir Site - AI bot erisimi
+User-agent: GPTBot
+Disallow: /wp-admin/
+Allow: /wp-admin/admin-ajax.php
+
+User-agent: OAI-SearchBot
+Disallow: /wp-admin/
+Allow: /wp-admin/admin-ajax.php
+
+User-agent: ChatGPT-User
+Disallow: /wp-admin/
+Allow: /wp-admin/admin-ajax.php
+
+User-agent: ClaudeBot
+Disallow: /wp-admin/
+Allow: /wp-admin/admin-ajax.php
+
+User-agent: Claude-User
+Disallow: /wp-admin/
+Allow: /wp-admin/admin-ajax.php
+
+User-agent: Claude-SearchBot
+Disallow: /wp-admin/
+Allow: /wp-admin/admin-ajax.php
+
+User-agent: PerplexityBot
+Disallow: /wp-admin/
+Allow: /wp-admin/admin-ajax.php
+
+User-agent: Perplexity-User
+Disallow: /wp-admin/
+Allow: /wp-admin/admin-ajax.php
+
+User-agent: CCBot
+Disallow: /wp-admin/
+Allow: /wp-admin/admin-ajax.php
+
+User-agent: Amazonbot
+Disallow: /wp-admin/
+Allow: /wp-admin/admin-ajax.php
+
+User-agent: Bytespider
+Disallow: /wp-admin/
+Allow: /wp-admin/admin-ajax.php
+
+User-agent: meta-externalagent
+Disallow: /wp-admin/
+Allow: /wp-admin/admin-ajax.php
+# END AI Hazir Site
