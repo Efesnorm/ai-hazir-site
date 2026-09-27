@@ -47,7 +47,12 @@ POST tools/list (Origin: https://kotu.example) → 401;  GET → 405
 wp aihs hits report → mcp,aihs-check-availability,1 / mcp,aihs-search-listings,1
 ```
 WP-CLI ile STDIO (`wp mcp-adapter serve --server=aihs-catalog`) aynı cevabı verdi.
-Claude ile elle deneme: **bekliyor** (yayındaki sitede custom connector ya da Claude Desktop ile; sonuç buraya eklenecek).
+Claude ile elle deneme (27.09.2026, Claude Desktop, yerel site, rehberdeki STDIO bağlantısı): soru
+*"Stokta 3x2,5 kablo var mı, 500 metre kaç günde gelir?"* — Claude 3 araç kullandı ve şöyle cevapladı:
+"Evet, stokta var. 500 metre için ilandaki teslim süresi 7 gün. NYY 3x2,5 enerji kablosu (ilan #6):
+stok 1.500 m, istenen 500 m karşılanıyor; teslim süresi 7 gün; metresi 42,50–48,75 TL; geçerlilik
+31.12.2026. Bu cevap yalnızca ilandaki bilgilere dayanıyor; kesin fiyat ve teslim tarihi için firmadan
+teklif almanız gerekir." (Kayıt: kullanıcının ilettiği sohbet metni.) Sonuç doğru.
 
 ### Bilinen sınırlar
 - Claude'un custom connector özelliği sunucuya Anthropic'in sunucularından bağlanır; yerel veya güvenlik
