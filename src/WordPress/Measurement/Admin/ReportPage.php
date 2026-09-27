@@ -122,7 +122,7 @@ final class ReportPage {
 	}
 
 	/**
-	 * The three report tables. Every text is escaped here.
+	 * The report tables. Every text is escaped here.
 	 *
 	 * @param array[] $rows Report rows.
 	 *
@@ -151,6 +151,13 @@ final class ReportPage {
 			__( 'AI platformlarından gelen insan ziyaretleri', 'ai-hazir-site' ),
 			array( __( 'Kaynak', 'ai-hazir-site' ), __( 'Ziyaret', 'ai-hazir-site' ) ),
 			array_map( static fn( array $r ): array => array( $r['source'], $r['total'] ), Report::section( $rows, Report::SECTION_REFERRALS ) )
+		);
+
+		$html .= self::table(
+			'ai-files',
+			__( 'Botların AI dosyalarını okuması (llms.txt, AI katalog)', 'ai-hazir-site' ),
+			array( __( 'Dosya', 'ai-hazir-site' ), __( 'Doğrulanmış', 'ai-hazir-site' ), __( 'Doğrulanmamış', 'ai-hazir-site' ), __( 'Toplam', 'ai-hazir-site' ) ),
+			array_map( static fn( array $r ): array => array( $r['path'], $r['verified'], $r['unverified'], $r['total'] ), Report::section( $rows, Report::SECTION_AI_FILES ) )
 		);
 
 		return $html;
@@ -220,6 +227,7 @@ final class ReportPage {
 			Report::SECTION_BOTS      => __( 'Bot', 'ai-hazir-site' ),
 			Report::SECTION_PAGES     => __( 'Sayfa', 'ai-hazir-site' ),
 			Report::SECTION_REFERRALS => __( 'Yönlendirme', 'ai-hazir-site' ),
+			Report::SECTION_AI_FILES  => __( 'AI dosyası', 'ai-hazir-site' ),
 		);
 	}
 

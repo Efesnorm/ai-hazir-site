@@ -25,8 +25,15 @@ final class Report {
 	public const SECTION_BOTS      = 'bots';
 	public const SECTION_PAGES     = 'pages';
 	public const SECTION_REFERRALS = 'referrals';
+	public const SECTION_AI_FILES  = 'ai_files';
 
 	public const TOP_PAGES = 10;
+
+	/**
+	 * Paths published for AI agents (llms.txt, the AI catalog page), reported on their own
+	 * even when they are not among the top pages. Already counted like any other path.
+	 */
+	public const AI_FILES = array( '/llms.txt', '/ai-katalog/', '/ai-katalog' );
 
 	/**
 	 * Constructor.
@@ -53,7 +60,8 @@ final class Report {
 	}
 
 	/**
-	 * All report rows: bots, then the top pages read by bots, then referrals.
+	 * All report rows: bots, then the top pages read by bots, then referrals, then bot
+	 * visits to the AI files (only files that were read).
 	 *
 	 * @return array[]
 	 *
@@ -71,6 +79,11 @@ final class Report {
 		}
 		foreach ( $this->hits->totals( Hit::KIND_REFERRAL, $since, HitRepository::GROUP_SOURCE ) as $totals ) {
 			$rows[] = $this->row( self::SECTION_REFERRALS, $this->referrer_name( $totals['key'] ), '', $totals );
+		}
+		foreach ( $this->hits->totals( Hit::KIND_BOT, $since, HitRepository::GROUP_PATH ) as $totals ) {
+			if ( in_array( $totals['key'], self::AI_FILES, true ) ) {
+				$rows[] = $this->row( self::SECTION_AI_FILES, '', $totals['key'], $totals );
+			}
 		}
 
 		return $rows;

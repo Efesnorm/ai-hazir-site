@@ -121,6 +121,25 @@ final class ReportTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Bot visits to llms.txt get their own table on the page and their own label in the CSV.
+	 */
+	public function test_ai_files_table(): void {
+		( new WpdbHitRepository() )->increment( $this->today, Hit::KIND_BOT, 'gptbot', '/llms.txt', true );
+		$rows = ( new Report( new WpdbHitRepository(), new FixedClock( $this->today ), 7 ) )->rows();
+
+		$dom = new DOMDocument();
+		$dom->loadHTML( '<?xml encoding="utf-8"?><body>' . ReportPage::render_tables( $rows ) . '</body>', LIBXML_NOERROR );
+		$cells = array();
+		foreach ( ( new DOMXPath( $dom ) )->query( "//table[@id='aihs-ai-files']/tbody/tr/td" ) as $td ) {
+			$cells[] = $td->textContent; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- DOM API.
+		}
+
+		$this->assertSame( array( '/llms.txt', '1', '0', '1' ), $cells );
+		$csv = CsvExport::to_csv( $rows, ReportPage::csv_headers(), ReportPage::section_labels() );
+		$this->assertStringContainsString( "\"AI dosyası\",,/llms.txt,1,0,1\n", $csv );
+	}
+
+	/**
 	 * The admin page shows the cache warning and the export link.
 	 */
 	public function test_admin_page_shows_warning(): void {
