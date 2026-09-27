@@ -3,7 +3,7 @@
 Sitenin "ne satıyorum, ne arıyorum, ne tedarik edebilirim" bilgisini AI agentların okuyup
 kullanabileceği biçimde yayınlayan WordPress eklentisi.
 
-> Sürüm 0.6.0: AI bot ve yönlendirme ölçümü (A0), AI uyum taraması (U1), veri modeli ve yönetim formları (A1), AI bot erişim ayarları (U2), Schema.org yapılandırılmış veri (A2). Ayrıntılar: [CHANGELOG.md](CHANGELOG.md).
+> Sürüm 0.7.0: AI bot ve yönlendirme ölçümü (A0), AI uyum taraması (U1), veri modeli ve yönetim formları (A1), AI bot erişim ayarları (U2), Schema.org yapılandırılmış veri (A2), llms.txt ve AI katalog sayfası (A3). Ayrıntılar: [CHANGELOG.md](CHANGELOG.md).
 
 - En düşük sürümler: PHP 8.1, WordPress 6.9
 - Lisans: GPL-2.0-or-later
@@ -89,6 +89,14 @@ Bir SEO eklentisi (Yoast, Rank Math, AIOSEO, SEOPress, The SEO Framework) zaten 
 add_filter( 'aihs_schema_seo_conflict', fn() => 'Eklenti adı' );
 ```
 
+## llms.txt ve AI katalog sayfası (A3)
+
+`llms_txt` anahtarı açıkken **/llms.txt** adresinde firmayı ve geçerli ilanları özetleyen sade bir metin
+([llmstxt.org](https://llmstxt.org/) biçimi) ve **/ai-katalog/** adresinde ilanların sade HTML listesi yayınlanır.
+Metin yalnızca veri değişince yeniden üretilir. Sitenin kök dizininde fiziksel bir `llms.txt` varsa ona
+dokunulmaz ve yönetim panelinde uyarı çıkar. Botların bu dosyaları okuması AI Ölçüm sayfasında
+"AI dosyaları" tablosunda görünür.
+
 ## Klasör yapısı
 
 ```
@@ -101,10 +109,11 @@ src/Core/                  Platformdan bağımsız çekirdek (WordPress fonksiyo
   Migrations/              MigrationInterface, Migrator
   Measurement/             A0 iş kuralları: Classifier, Verifier, IpRanges, Tracker, Report, CsvExport
   Compliance/              U1: Site, Html, Robots, Scanner, ScoreReport, ScanStore, Checks/ (7 kontrol)
-  Catalog/                 A1: Listing, CompanyProfile, doğrulayıcılar, CatalogService (tek yazma noktası)
+  Catalog/                 A1: Listing, CompanyProfile, doğrulayıcılar, ListingValidity, CatalogService (tek yazma noktası)
   Access/                  U2: BotPolicy, Presets, RobotsRules, PolicyStore
 src/Adapters/              AI kanalı üreticileri (platformdan bağımsız)
   Schema/                  A2: SchemaMap, SchemaBuilder, SchemaValidator, SchemaCache
+  Llms/                    A3: LlmsTxtBuilder, LlmsCache
 src/WordPress/             WordPress adaptörü
   Plugin, Lifecycle, Uninstaller, Requirements, Module
   Platform/                Arayüz uygulamaları: WpSettings, WpCache, WpHttpClient, WpPageFetcher, WpClock, WpSecret
@@ -115,11 +124,12 @@ src/WordPress/             WordPress adaptörü
   Catalog/                 aihs_listing içerik türü, WpListingRepository, WpProfileRepository, AI Katalog ekranları
   Access/                  robots_txt filtresi, AI Bot Erişimi sayfası
   Schema/                  SchemaModule (ana sayfa JSON-LD), CatalogPage (/ai-katalog/), SeoConflict
+  Llms/                    LlmsModule (/llms.txt)
 data/                      Düzenlenebilir bot ve yönlendirme listeleri
 docs/                      PRD, görevler, mimari kararlar (ADR)
 tests/Unit/                Birim testleri (WordPress'siz; bellek içi adaptörler)
 tests/Integration/         Entegrasyon testleri (WordPress test paketi)
-tests/Snapshots/           Anlık görüntü dosyaları (ör. robots.txt ve Schema.org çıktıları)
+tests/Snapshots/           Anlık görüntü dosyaları (ör. robots.txt, Schema.org ve llms.txt çıktıları)
 tests/Support/             Bellek içi test adaptörleri
 ```
 
@@ -127,7 +137,7 @@ tests/Support/             Bellek içi test adaptörleri
 
 | Seçenek | Anlamı |
 | --- | --- |
-| `aihs_features` | Özellik anahtarları (`measurement`, `compliance_scan`, `catalog`, `bot_access`, `schema_output`); `measurement` dışında hepsi varsayılan kapalı |
+| `aihs_features` | Özellik anahtarları (`measurement`, `compliance_scan`, `catalog`, `bot_access`, `schema_output`, `llms_txt`); `measurement` dışında hepsi varsayılan kapalı |
 | `aihs_db_version` | Uygulanan son geçiş sürümü |
 | `aihs_delete_data_on_uninstall` | Açıksa eklenti silinirken tüm verisi (tablo dahil) silinir |
 | `aihs_ip_ranges` | Botların yayınlanmış IP listeleri önbelleği (otomatik yüklenmez) |
@@ -137,6 +147,7 @@ tests/Support/             Bellek içi test adaptörleri
 | `aihs_profile_updated` | Firma profilinin son güncellenme zamanı (otomatik yüklenmez) |
 | `aihs_schema_cache` | Son geçerli Schema.org çıktıları (otomatik yüklenmez) |
 | `aihs_schema_error` | Son Schema.org doğrulama hataları (otomatik yüklenmez) |
+| `aihs_llms_cache` | Son üretilen llms.txt metni ve girdisinin parmak izi (otomatik yüklenmez) |
 
 Veritabanı tablosu: `{prefix}aihs_hits`. Cron görevleri: `aihs_refresh_ip_ranges` (günlük),
 `aihs_prune_hits` (haftalık).

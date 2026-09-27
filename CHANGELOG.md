@@ -3,6 +3,39 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [0.7.0] - 2026-09-27
+
+### Eklendi
+- **A3 llms.txt ve AI katalog sayfası** (`llms_txt` anahtarı, varsayılan kapalı).
+  - `/llms.txt`, [llmstxt.org](https://llmstxt.org/) önerisine göre: firma adıyla H1, özet alıntısı, ülke / dil /
+    sertifika / son güncelleme, satılanlar / arananlar / tedarik edilebilenler bölümleri (her ilan AI katalog
+    sayfasındaki çapasına bağlanır; kategori, miktar, fiyat veya bütçe, bölge, teslim süresi, geçerlilik,
+    özellikler), İletişim ve "Optional" altında AI katalog bağlantısı.
+  - `text/plain; charset=utf-8`, UTF-8, LF, BOM yok. Üretim platformdan bağımsız
+    `src/Adapters/Llms/LlmsTxtBuilder`.
+  - İstek yolu `parse_request` üzerinde doğrudan eşlenir; kalıcı bağlantı ayarı ne olursa olsun çalışır ve
+    yönlendirme kuralı gerektirmez.
+  - Metin yalnızca veri değişince (profil, ilanlar, gün, adresler) yeniden üretilir; aksi halde
+    `aihs_llms_cache` seçeneğinden sunulur.
+  - Sitenin kök dizininde fiziksel bir `llms.txt` varsa ona dokunulmaz, sanal adres devreye girmez;
+    yöneticiye uyarı ve eklenecek metin gösterilir.
+- **AI katalog sayfası** (`/ai-katalog/`): artık `schema_output` **veya** `llms_txt` açıkken sunulur.
+  Firma özeti, her ilan için `ilan-{id}` çapası ve ayrıntı satırı eklendi. JSON-LD yalnızca `schema_output`
+  açıkken eklenir.
+- **A0 raporu**: "AI dosyaları" bölümü (AI Ölçüm sayfası, CSV'de "AI dosyası", WP-CLI'da `ai_files`).
+  Botların `/llms.txt` ve `/ai-katalog/` okumaları ilk 10 sayfada olmasa da gösterilir. Bu istekler zaten
+  sayılıyordu; yeni bir kayıt eklenmedi.
+- Çekirdek `ListingValidity`: Schema.org, llms.txt ve katalog sayfası aynı geçerlilik kuralını kullanır
+  (kendi tarihi, yoksa son güncelleme + 90 gün). JSON-LD çıktısı değişmedi.
+
+### Bilinen sınırlar
+- Sunucu, var olmayan `/llms.txt` isteğini WordPress'e iletmiyorsa (ör. `.htaccess` ya da nginx
+  `try_files` yoksa) sanal adres çalışamaz.
+- Site bir alt dizindeyse dosya `/{alt-dizin}/llms.txt` adresinde sunulur; kök alan adındaki `/llms.txt`
+  için sunucu ayarı gerekir.
+- Önbellek eklentileri `/llms.txt`'yi saklıyorsa değişiklik önbellek temizlenene kadar görünmeyebilir.
+- Metinler Türkçedir ve çevrilebilir; çok dilli llms.txt A8'de.
+
 ## [0.6.0] - 2026-09-27
 
 ### Eklendi
