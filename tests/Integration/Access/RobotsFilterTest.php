@@ -56,9 +56,19 @@ final class RobotsFilterTest extends WP_UnitTestCase {
 	 * What /robots.txt returns: WordPress's own do_robots().
 	 */
 	private static function served(): string {
-		ob_start();
-		do_robots();
-		return (string) ob_get_clean();
+		// WordPress 6.9's do_robots() calls header() without checking headers_sent(); in the test
+		// runner output has already started. Only that warning is ignored; any other still fails.
+		set_error_handler( // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_set_error_handler
+			static fn( int $errno, string $message ): bool => str_contains( $message, 'Cannot modify header information' ),
+			E_WARNING
+		);
+		try {
+			ob_start();
+			do_robots();
+			return (string) ob_get_clean();
+		} finally {
+			restore_error_handler();
+		}
 	}
 
 	/**
