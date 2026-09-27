@@ -43,6 +43,7 @@ final class Uninstaller {
 			self::DELETE_OPTION,
 			IpRanges::OPTION,
 			ScanStore::OPTION,
+			ScanStore::FIRST_OPTION,
 			PolicyStore::OPTION,
 			SchemaCache::OPTION,
 			SchemaCache::ERROR_OPTION,

@@ -17,8 +17,9 @@ use AIHazirSite\Core\Contracts\Settings;
  */
 final class ScanStore {
 
-	public const OPTION = 'aihs_scans';
-	public const KEEP   = 20;
+	public const OPTION       = 'aihs_scans';
+	public const FIRST_OPTION = 'aihs_first_scan';
+	public const KEEP         = 20;
 
 	/**
 	 * Constructor.
@@ -38,6 +39,22 @@ final class ScanStore {
 		$stored = is_array( $stored ) ? array_values( $stored ) : array();
 		array_unshift( $stored, $report->to_array() );
 		$this->settings->set( self::OPTION, array_slice( $stored, 0, self::KEEP ), false );
+		if ( null === ScoreReport::from_array( $this->settings->get( self::FIRST_OPTION ) ) ) {
+			$this->settings->set( self::FIRST_OPTION, $report->to_array(), false );
+		}
+	}
+
+	/**
+	 * The very first scan (kept beyond the last KEEP scans, for the before/after report); for sites
+	 * scanned before 1.0.0 the oldest stored scan.
+	 */
+	public function first(): ?ScoreReport {
+		$first = ScoreReport::from_array( $this->settings->get( self::FIRST_OPTION ) );
+		if ( null !== $first ) {
+			return $first;
+		}
+		$all = $this->all();
+		return array() === $all ? null : $all[ count( $all ) - 1 ];
 	}
 
 	/**
