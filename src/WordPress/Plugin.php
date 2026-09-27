@@ -12,6 +12,7 @@ namespace AIHazirSite\WordPress;
 use AIHazirSite\Core\Features;
 use AIHazirSite\Core\Migrations\MigrationInterface;
 use AIHazirSite\WordPress\Migrations\Migration_0_2_0;
+use AIHazirSite\WordPress\Compliance\ComplianceModule;
 use AIHazirSite\WordPress\Measurement\MeasurementModule;
 use AIHazirSite\WordPress\Platform\WpSettings;
 
@@ -53,6 +54,7 @@ final class Plugin {
 	public static function modules(): array {
 		return array(
 			new MeasurementModule(),
+			new ComplianceModule(),
 		);
 	}
 
