@@ -3,6 +3,59 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [0.11.0] - 2026-09-27
+
+### Eklendi
+- **A6 Abilities API ve MCP, salt okuma** (`abilities` ve `mcp` anahtarları, ayrı ayrı, varsayılan kapalı).
+  - Çekirdek sorgu servisi `src/Core/Catalog/Query/`: `ListingSearch` (tür, kategori, bölge, anahtar kelime,
+    şablon alanları), `CatalogQuery` (geçerli ilanlar için tek okuma yolu), `Availability` (miktar ve teslim
+    süresi sorusuna yes / no / unknown ve gerekçe). REST (A5) de bu servisi kullanıyor; A5'in dışarıdan
+    görünen davranışı değişmedi.
+  - WordPress Abilities API ile `aihs-catalog` kategorisinde dört yetenek: `aihs/get-profile`,
+    `aihs/search-listings`, `aihs/get-listing`, `aihs/check-availability`. Girdi/çıktı şemaları; çıktılar
+    REST sözleşmesiyle aynı.
+  - MCP sunucusu `aihs-catalog`, adres `/wp-json/aihs/mcp`, resmi MCP Adapter paketiyle
+    (`wordpress/mcp-adapter` **0.6.1**, sabit; Jetpack Autoloader ile). Herkese açık okuma, istemci başına
+    dakikada 60 araç çağrısı (`aihs_abilities_rate_limit`).
+  - Her MCP araç çağrısı A0 ölçümüne `kind = mcp` olarak işlenir; AI Ölçüm'de "MCP çağrıları" tablosu,
+    CSV'de "MCP" etiketi. Tablo değişikliği yok (`kind` zaten `varchar(16)`).
+  - Kullanım rehberi: [docs/kullanim/mcp-baglanti.md](docs/kullanim/mcp-baglanti.md).
+
+### Kararlar
+- Erişim modeli (onaylı): herkese açık okuma, anahtarla kapatılabilir, hız sınırlı.
+- MCP Adapter 0.6.1'in `HttpTransport`'u her oturumu giriş yapmış bir WordPress kullanıcısına bağlar;
+  girişsiz istemciye `401 User authentication required for session creation` döner. Bu yüzden sunucu,
+  paketin `McpRestTransportInterface` arayüzüyle yazılmış **oturumsuz** `StatelessHttpTransport` kullanır.
+  MCP 2025-06-18'e göre oturum isteğe bağlıdır ("A server … MAY assign a session ID"). POST ile JSON-RPC,
+  bildirimlere 202, GET/DELETE'e 405; tarayıcıdan gelen yabancı `Origin` reddedilir (spesifikasyonun
+  DNS rebinding uyarısı), desteklenmeyen `MCP-Protocol-Version` 400.
+- Paketin varsayılan sunucusu (`/wp-json/mcp/mcp-adapter-default-server`, giriş gerekir, yalnızca açıkça
+  herkese açık işaretli yetenekler) olduğu gibi bırakıldı; bizim yeteneklerimiz orada görünmez.
+- Hız sınırı yürütme geri çağrısında: WordPress, yetki geri çağrısından dönen `WP_Error`'u genel bir
+  "izin yok" hatasına çevirip gizliyor.
+
+### Uçtan uca deneme (geliştirme sitesi, `curl`, MCP 2025-06-18)
+```
+POST /wp-json/aihs/mcp  initialize            → 200, serverInfo "AI Hazır Site – AI Katalog", oturum başlığı yok
+POST notifications/initialized                → 202
+POST tools/list                               → aihs-get-profile, aihs-search-listings, aihs-get-listing, aihs-check-availability
+POST tools/call aihs-search-listings {"keyword":"3x2,5"}
+     → 6 "NYY 3x2,5 enerji kablosu", stok 1500 m, teslim 7 gün
+POST tools/call aihs-check-availability {"id":6,"quantity":500,"within_days":10}
+     → {"answer":"yes","reasons":["Stokta 1500 m var; istenen 500.","Teslim süresi 7 gün; istenen 10 gün içinde."]}
+POST tools/list (Origin: https://kotu.example) → 401;  GET → 405
+wp aihs hits report → mcp,aihs-check-availability,1 / mcp,aihs-search-listings,1
+```
+WP-CLI ile STDIO (`wp mcp-adapter serve --server=aihs-catalog`) aynı cevabı verdi.
+Claude ile elle deneme: **bekliyor** (yayındaki sitede custom connector ya da Claude Desktop ile; sonuç buraya eklenecek).
+
+### Bilinen sınırlar
+- Claude'un custom connector özelliği sunucuya Anthropic'in sunucularından bağlanır; yerel veya güvenlik
+  duvarı arkasındaki siteler için rehberdeki Claude Desktop (STDIO) yolu kullanılmalı.
+- Oturumsuz taşıyıcı sunucudan istemciye bildirim (SSE) göndermez; salt okuma araçları için gerekmiyor.
+- `StatelessHttpTransport`, MCP Adapter 0.6.1'in yönlendiricisine dayanır; paket güncellenirken yeniden sınanmalı.
+- Müsaitlik cevabı yalnızca ilandaki bilgiye dayanır (stok veya teslim süresi yoksa `unknown`).
+
 ## [0.10.0] - 2026-09-27
 
 ### Eklendi

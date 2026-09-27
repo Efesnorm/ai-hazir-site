@@ -3,7 +3,7 @@
 Sitenin "ne satıyorum, ne arıyorum, ne tedarik edebilirim" bilgisini AI agentların okuyup
 kullanabileceği biçimde yayınlayan WordPress eklentisi.
 
-> Sürüm 0.10.0: AI bot ve yönlendirme ölçümü (A0), AI uyum taraması (U1), veri modeli ve yönetim formları (A1), AI bot erişim ayarları (U2), Schema.org yapılandırılmış veri (A2), llms.txt ve AI katalog sayfası (A3), sektör şablonları (A4), AI uyum sihirbazı (U3), REST API (A5). Ayrıntılar: [CHANGELOG.md](CHANGELOG.md).
+> Sürüm 0.11.0: AI bot ve yönlendirme ölçümü (A0), AI uyum taraması (U1), veri modeli ve yönetim formları (A1), AI bot erişim ayarları (U2), Schema.org yapılandırılmış veri (A2), llms.txt ve AI katalog sayfası (A3), sektör şablonları (A4), AI uyum sihirbazı (U3), REST API (A5), Abilities API ve MCP (A6). Ayrıntılar: [CHANGELOG.md](CHANGELOG.md).
 
 - En düşük sürümler: PHP 8.1, WordPress 6.9
 - Lisans: GPL-2.0-or-later
@@ -82,6 +82,12 @@ açıklama gösterilir. "Bitir ve yeniden tara" önce/sonra puanını gösterir.
 curl "http://localhost:8888/wp-json/aihs/v1/listings?type=offer&per_page=10"
 ```
 
+## Abilities API ve MCP (A6)
+
+`abilities` anahtarı açıkken katalog dört salt okuma yeteneği olarak (WordPress Abilities API) kaydedilir;
+`mcp` de açıkken bunlar `/wp-json/aihs/mcp` adresinde herkese açık bir MCP sunucusu olarak yayınlanır
+(resmi MCP Adapter 0.6.1). Claude'a bağlanma adımları: [docs/kullanim/mcp-baglanti.md](docs/kullanim/mcp-baglanti.md).
+
 ## AI Katalog (A1)
 
 `catalog` anahtarı açıkken **AI Katalog** menüsünden satılan, aranan ve tedarik edilebilen ilanlar ile
@@ -147,12 +153,14 @@ src/Core/                  Platformdan bağımsız çekirdek (WordPress fonksiyo
   Compliance/              U1: Site, Html, Robots, Scanner, ScoreReport, ScanStore, Checks/ (7 kontrol)
     Wizard/                U3: FixStep, SiteState, StepPlanner, Wizard, WizardJournal
   Catalog/                 A1: Listing, CompanyProfile, doğrulayıcılar, ListingValidity, CatalogService (tek yazma noktası)
+    Query/                 A6: ListingSearch, CatalogQuery (tek okuma yolu), Availability
   Access/                  U2: BotPolicy, Presets, RobotsRules, PolicyStore
   Templates/               A4: Template, TemplateField, TemplateRegistry, TemplateValidator, Freshness
 src/Adapters/              AI kanalı üreticileri (platformdan bağımsız)
   Schema/                  A2: SchemaMap, SchemaBuilder, SchemaValidator, SchemaCache
   Llms/                    A3: LlmsTxtBuilder, LlmsCache
   Rest/                    A5: RestResponder, RestSchemas, ListingsQuery
+  Abilities/               A6: AbilitySchemas
 src/WordPress/             WordPress adaptörü
   Plugin, Lifecycle, Uninstaller, Requirements, Module
   Platform/                Arayüz uygulamaları: WpSettings, WpCache, WpHttpClient, WpPageFetcher, WpClock, WpSecret
@@ -166,6 +174,8 @@ src/WordPress/             WordPress adaptörü
   Schema/                  SchemaModule (ana sayfa JSON-LD), CatalogPage (/ai-katalog/), SeoConflict
   Llms/                    LlmsModule (/llms.txt)
   Rest/                    RestModule (aihs/v1 rotaları, önbellek başlıkları, hız sınırı, keşif)
+  Abilities/               AbilitiesModule (aihs/ yetenekleri)
+  Mcp/                     McpModule, StatelessHttpTransport, McpObservability (/wp-json/aihs/mcp)
   Templates/               TemplatesModule (kayıt defteri, aihs_template_dirs, hatalı dosya uyarısı)
 data/                      Düzenlenebilir bot ve yönlendirme listeleri, templates/ (sektör şablonları)
 docs/                      PRD, görevler, mimari kararlar (ADR)
@@ -179,7 +189,7 @@ tests/Support/             Bellek içi test adaptörleri
 
 | Seçenek | Anlamı |
 | --- | --- |
-| `aihs_features` | Özellik anahtarları (`measurement`, `compliance_scan`, `catalog`, `bot_access`, `schema_output`, `llms_txt`, `templates`, `compliance_wizard`, `rest_api`); `measurement` dışında hepsi varsayılan kapalı |
+| `aihs_features` | Özellik anahtarları (`measurement`, `compliance_scan`, `catalog`, `bot_access`, `schema_output`, `llms_txt`, `templates`, `compliance_wizard`, `rest_api`, `abilities`, `mcp`); `measurement` dışında hepsi varsayılan kapalı |
 | `aihs_db_version` | Uygulanan son geçiş sürümü |
 | `aihs_delete_data_on_uninstall` | Açıksa eklenti silinirken tüm verisi (tablo dahil) silinir |
 | `aihs_ip_ranges` | Botların yayınlanmış IP listeleri önbelleği (otomatik yüklenmez) |
