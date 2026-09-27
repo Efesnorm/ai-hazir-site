@@ -9,7 +9,8 @@
 declare(strict_types=1);
 
 // The integration tests also run in the development container: leave e-mail to the test suite's mock mailer there.
-if ( defined( 'WP_TESTS_DOMAIN' ) ) {
+// WP_TESTS_DOMAIN is not a signal: wp-env defines it in the development site's wp-config.php too.
+if ( defined( 'DIR_TESTDATA' ) || defined( 'WP_TESTS_CONFIG_FILE_PATH' ) ) {
 	return;
 }
 
