@@ -3,6 +3,59 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [0.12.0] - 2026-09-27
+
+### Eklendi
+- **A7 Teklif kutusu ve güvenlik katmanı** (`inquiries` anahtarı, varsayılan kapalı; açarken uyarı ve onay).
+  - Çekirdek `src/Core/Inquiry/`: `Inquiry` (kaynak ai/human/unknown; tür teklif isteği/teklif/yönlendirme
+    talebi; durum new/approved/rejected/quarantine; spam skoru), `InquiryService` tek yazma noktası
+    (hız sınırı → doğrulama → spam skoru → kayıt → denetim → site sahibine bildirim), `InquiryRepository`.
+  - `src/Core/Security/`: `TokenBucketLimiter` (A5'in `RateLimiter` arayüzü; istemci başına dakikada 3,
+    günde 20, ayarlanabilir), `SpamScorer` (sık gönderim, boş/anlamsız içerik, bağlantı yoğunluğu, ilanla
+    alakasızlık; eşik 50 → karantina), `AuditLog` (her yazma denemesi; içerik, iletişim ve ham IP yok).
+  - Kanallar: MCP yeteneği `aihs/submit-inquiry` ve REST `POST /wp-json/aihs/v1/inquiries`, aynı servis.
+    Yanıt yalnızca referans numarası; durum açıklanmaz.
+  - Hukuk gibi fiyatı yasak şablonlu sitelerde `aihs/submit-inquiry` hiç kaydedilmez; yerine
+    `aihs/request-referral`: yalnızca yönlendirme talebi, ücret dışında her konu (uzmanlık, dava türleri,
+    referans işler); ücret soran talep açıklamalı hatayla reddedilir.
+  - Veritabanı: `Migration_0_12_0` (sürüm 1200) `{prefix}aihs_inquiries` ve `{prefix}aihs_audit_log`
+    tablolarını ekler; `down()` ikisini siler.
+  - Yönetim: **AI Katalog → Teklif Kutusu**: filtreler, onayla/reddet/karantina/yeni, sil, ayarlar
+    (saklama süresi, hız sınırları, eşik), KVKK aydınlatma metni yer tutucusu, son denetim kayıtları.
+    Yeni ve karantinaya düşmeyen talepler yönetici e-postasına bildirilir (iletişim bilgisi olmadan).
+  - Günlük görev `aihs_purge_inquiries`: saklama süresi (varsayılan 180 gün) dolan talepleri ve denetim
+    kayıtlarını siler.
+  - Geliştirme ortamı: `tools/dev/aihs-dev-mail.php` yalnızca wp-env geliştirme ortamında e-postaları
+    `wp-content/mails/` klasörüne yazar (eklenti paketine girmez).
+
+### Kararlar
+- **Kişisel veri istisnası (onaylı):** Talep sahibinin iletişim bilgileri (ad, firma, e-posta, telefon), firmanın
+  dönebilmesi için saklanır. Şifreli (libsodium secretbox, anahtar sitenin `AUTH` tuzundan türetilir), süre
+  sonunda ve talep üzerine silinir, bildirim e-postasına konmaz. IP adresi saklanmaz (tuzlu HMAC).
+- Hiçbir yol talebi otomatik onaylamaz: onay yalnızca yönetim ekranından (mimari testiyle denetlenir);
+  talep sahibine hiçbir otomatik yanıt gönderilmez.
+- MCP sunucusunun tek yazma aracı talep aracıdır (`readOnlyHint: false`); sunucu açıklaması buna göre değişir.
+- Onaylı test güncellemesi: `HitsTableTest` ve `UpgradeFrom020Test`'teki sabit veritabanı sürümü (200) en son
+  geçişe göre güncellendi; geçiş listesi tam olarak `[200, 1200]` olarak denetleniyor.
+
+### Uçtan uca deneme (geliştirme sitesi, `curl`)
+```
+tools/list → … aihs-submit-inquiry (readOnlyHint false)
+tools/call aihs-submit-inquiry {quote_request, ilan 6, iletişim e-posta} → {"received":true,"reference":1,…}
+POST /wp-json/aihs/v1/inquiries {referral, telefon, source human} → 201, reference 2
+wp-content/mails/ → "[ai-hazir-site] Yeni AI Katalog talebi #1" ve "#2" (iletişim bilgisi yok, panel bağlantısı var)
+Panel verisi → #1 quote_request ai/mcp new (alici@ornek.example), #2 referral human/rest new (+90 212 555 11 22)
+Denetim → mcp submit accepted, mcp notify notified, rest submit accepted, rest notify notified
+```
+Claude ile elle deneme: **bekliyor** (teklif bırakma → e-posta → panel).
+
+### Bilinen sınırlar
+- KVKK aydınlatma metni yalnızca yer tutucudur; hukuki metin site sahibinin sorumluluğundadır.
+- Site tuzları (`AUTH_KEY` / `AUTH_SALT`) değişirse eski iletişim bilgileri çözülemez ("çözülemedi" görünür).
+- Spam kuralları basittir; eşik ve sınırlar ayarlardan değiştirilebilir. Hız sayacı atomik değildir.
+- Yerel sitede alan adı `localhost` olduğu için WordPress'in varsayılan gönderen adresi geçersizdir; gerçek
+  gönderim yayındaki sitede denenmelidir (geliştirmede e-postalar dosyaya yazılır).
+
 ## [0.11.0] - 2026-09-27
 
 ### Eklendi

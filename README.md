@@ -3,7 +3,7 @@
 Sitenin "ne satıyorum, ne arıyorum, ne tedarik edebilirim" bilgisini AI agentların okuyup
 kullanabileceği biçimde yayınlayan WordPress eklentisi.
 
-> Sürüm 0.11.0: AI bot ve yönlendirme ölçümü (A0), AI uyum taraması (U1), veri modeli ve yönetim formları (A1), AI bot erişim ayarları (U2), Schema.org yapılandırılmış veri (A2), llms.txt ve AI katalog sayfası (A3), sektör şablonları (A4), AI uyum sihirbazı (U3), REST API (A5), Abilities API ve MCP (A6). Ayrıntılar: [CHANGELOG.md](CHANGELOG.md).
+> Sürüm 0.12.0: AI bot ve yönlendirme ölçümü (A0), AI uyum taraması (U1), veri modeli ve yönetim formları (A1), AI bot erişim ayarları (U2), Schema.org yapılandırılmış veri (A2), llms.txt ve AI katalog sayfası (A3), sektör şablonları (A4), AI uyum sihirbazı (U3), REST API (A5), Abilities API ve MCP (A6), teklif kutusu ve güvenlik katmanı (A7). Ayrıntılar: [CHANGELOG.md](CHANGELOG.md).
 
 - En düşük sürümler: PHP 8.1, WordPress 6.9
 - Lisans: GPL-2.0-or-later
@@ -88,6 +88,14 @@ curl "http://localhost:8888/wp-json/aihs/v1/listings?type=offer&per_page=10"
 `mcp` de açıkken bunlar `/wp-json/aihs/mcp` adresinde herkese açık bir MCP sunucusu olarak yayınlanır
 (resmi MCP Adapter 0.6.1). Claude'a bağlanma adımları: [docs/kullanim/mcp-baglanti.md](docs/kullanim/mcp-baglanti.md).
 
+## Teklif kutusu (A7)
+
+**AI Katalog → Teklif Kutusu** ekranındaki uyarıyı onaylayıp `inquiries` anahtarını açınca AI agentlar
+(MCP `aihs/submit-inquiry`) ve insanlar (REST `POST /wp-json/aihs/v1/inquiries`) firmaya talep bırakabilir.
+Hiçbir talep otomatik onaylanmaz, talep sahibine otomatik yanıt gitmez. İletişim bilgileri şifreli saklanır ve
+saklama süresi (varsayılan 180 gün) dolunca silinir. Hukuk gibi fiyatı yasak şablonlu sitelerde yalnızca
+yönlendirme talebi (`aihs/request-referral`) alınır. Yerelde e-postalar `wp-content/mails/` klasörüne yazılır.
+
 ## AI Katalog (A1)
 
 `catalog` anahtarı açıkken **AI Katalog** menüsünden satılan, aranan ve tedarik edilebilen ilanlar ile
@@ -154,13 +162,15 @@ src/Core/                  Platformdan bağımsız çekirdek (WordPress fonksiyo
     Wizard/                U3: FixStep, SiteState, StepPlanner, Wizard, WizardJournal
   Catalog/                 A1: Listing, CompanyProfile, doğrulayıcılar, ListingValidity, CatalogService (tek yazma noktası)
     Query/                 A6: ListingSearch, CatalogQuery (tek okuma yolu), Availability
+  Inquiry/                 A7: Inquiry, InquiryService (tek yazma noktası), InquiryValidator, InquirySettings
+  Security/                A7: TokenBucketLimiter, SpamScorer, AuditLog
   Access/                  U2: BotPolicy, Presets, RobotsRules, PolicyStore
   Templates/               A4: Template, TemplateField, TemplateRegistry, TemplateValidator, Freshness
 src/Adapters/              AI kanalı üreticileri (platformdan bağımsız)
   Schema/                  A2: SchemaMap, SchemaBuilder, SchemaValidator, SchemaCache
   Llms/                    A3: LlmsTxtBuilder, LlmsCache
   Rest/                    A5: RestResponder, RestSchemas, ListingsQuery
-  Abilities/               A6: AbilitySchemas
+  Abilities/               A6: AbilitySchemas; A7: InquirySchemas
 src/WordPress/             WordPress adaptörü
   Plugin, Lifecycle, Uninstaller, Requirements, Module
   Platform/                Arayüz uygulamaları: WpSettings, WpCache, WpHttpClient, WpPageFetcher, WpClock, WpSecret
@@ -176,6 +186,8 @@ src/WordPress/             WordPress adaptörü
   Rest/                    RestModule (aihs/v1 rotaları, önbellek başlıkları, hız sınırı, keşif)
   Abilities/               AbilitiesModule (aihs/ yetenekleri)
   Mcp/                     McpModule, StatelessHttpTransport, McpObservability (/wp-json/aihs/mcp)
+  Inquiry/                 InquiryModule, InquiryChannels, WpInquiryRepository (şifreli), WpAuditRepository,
+                           WpInquiryNotifier, Admin/InquiryAdmin (Teklif Kutusu)
   Templates/               TemplatesModule (kayıt defteri, aihs_template_dirs, hatalı dosya uyarısı)
 data/                      Düzenlenebilir bot ve yönlendirme listeleri, templates/ (sektör şablonları)
 docs/                      PRD, görevler, mimari kararlar (ADR)
@@ -189,7 +201,7 @@ tests/Support/             Bellek içi test adaptörleri
 
 | Seçenek | Anlamı |
 | --- | --- |
-| `aihs_features` | Özellik anahtarları (`measurement`, `compliance_scan`, `catalog`, `bot_access`, `schema_output`, `llms_txt`, `templates`, `compliance_wizard`, `rest_api`, `abilities`, `mcp`); `measurement` dışında hepsi varsayılan kapalı |
+| `aihs_features` | Özellik anahtarları (`measurement`, `compliance_scan`, `catalog`, `bot_access`, `schema_output`, `llms_txt`, `templates`, `compliance_wizard`, `rest_api`, `abilities`, `mcp`, `inquiries`); `measurement` dışında hepsi varsayılan kapalı |
 | `aihs_db_version` | Uygulanan son geçiş sürümü |
 | `aihs_delete_data_on_uninstall` | Açıksa eklenti silinirken tüm verisi (tablo dahil) silinir |
 | `aihs_ip_ranges` | Botların yayınlanmış IP listeleri önbelleği (otomatik yüklenmez) |
@@ -199,8 +211,9 @@ tests/Support/             Bellek içi test adaptörleri
 | `aihs_profile_updated` | Firma profilinin son güncellenme zamanı (otomatik yüklenmez) |
 | `aihs_schema_cache` | Son geçerli Schema.org çıktıları (otomatik yüklenmez) |
 | `aihs_schema_error` | Son Schema.org doğrulama hataları (otomatik yüklenmez) |
+| `aihs_inquiry_settings` | Teklif kutusu: saklama süresi, hız sınırları, spam eşiği |
 | `aihs_wizard` | Sihirbazın uyguladığı adımlar ve önceki değerleri, başlangıç puanı, öneri kapatıldı mı (otomatik yüklenmez) |
 | `aihs_llms_cache` | Son üretilen llms.txt metni ve girdisinin parmak izi (otomatik yüklenmez) |
 
-Veritabanı tablosu: `{prefix}aihs_hits`. Cron görevleri: `aihs_refresh_ip_ranges` (günlük),
+Veritabanı tabloları: `{prefix}aihs_hits`, `{prefix}aihs_inquiries`, `{prefix}aihs_audit_log`. Cron görevleri: `aihs_refresh_ip_ranges` (günlük),
 `aihs_prune_hits` (haftalık).

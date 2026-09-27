@@ -4,7 +4,8 @@ AI Hazır Site, firmanızın profilini ve geçerli ilanlarını **MCP (Model Con
 olarak yayınlayabilir. Claude gibi AI asistanları bu sunucuya bağlanıp kataloğunuzu doğrudan
 sorgular: "Stokta 3x2,5 kablo var mı, kaç günde gelir?" gibi soruları ilanlarınızdaki bilgiyle cevaplar.
 
-Sunucu **salt okunurdur**: yalnızca yayında olan bilgiyi (profil, geçerli ilanlar) okur, hiçbir şeyi değiştirmez.
+Katalog araçları **salt okunurdur**. Teklif kutusu açıksa (bkz. aşağıda) tek yazma aracı, firmaya talep
+bırakmaktır; talepler otomatik onaylanmaz ve talep sahibine otomatik yanıt gitmez.
 
 ## 1. Özelliği açın
 
@@ -29,6 +30,15 @@ Sunucudaki araçlar:
 | `aihs-search-listings` | Geçerli ilanları arar (tür, kategori, bölge, anahtar kelime, şablon alanları) |
 | `aihs-get-listing` | Tek ilanın ayrıntıları |
 | `aihs-check-availability` | "Bu miktar var mı, istenen günde gelir mi?" → yes / no / unknown ve gerekçe |
+| `aihs-submit-inquiry` | *(teklif kutusu açıksa)* Teklif isteği, teklif veya iletişim talebi bırakır |
+| `aihs-request-referral` | *(hukuk gibi ücretsiz bilgi verilen hizmet sitelerinde, yukarıdakinin yerine)* Yönlendirme talebi; ücret dışında her konu |
+
+### Teklif kutusu (isteğe bağlı)
+
+**AI Katalog → Teklif Kutusu** (katalog kapalıysa **Araçlar → Teklif Kutusu**) ekranındaki uyarıyı okuyup
+kutuyu açtığınızda, AI asistanları firmanıza talep bırakabilir. İletişim bilgileri şifreli saklanır, varsayılan
+180 gün sonra silinir; yeni talepler yönetici e-posta adresinize bildirilir. Talepleri bu ekrandan onaylar,
+reddeder veya silersiniz.
 
 ## 2a. Yayındaki site: Claude'a "custom connector" olarak ekleyin
 
@@ -37,7 +47,7 @@ Siteniz internetten erişilebiliyorsa (HTTPS):
 1. Claude'da **Customize → Connectors** (Team/Enterprise'da yönetici: **Organization settings → Connectors**).
 2. **+** → **Add custom connector**.
 3. Ad: `AI Katalog – Firmanız`, URL: `https://siteniz.com/wp-json/aihs/mcp`.
-4. Kimlik doğrulama gerekmez (sunucu herkese açık okumadır).
+4. Kimlik doğrulama gerekmez (sunucu herkese açıktır).
 5. Yeni bir sohbette bağlayıcıyı açın ve sorun: *"Firmanın stokta 3x2,5 kablosu var mı, 500 metre kaç günde gelir?"*
 
 Not: Claude bağlantıyı Anthropic'in sunucularından kurar; yerel (localhost) ya da güvenlik duvarı
@@ -73,7 +83,8 @@ Canlı bir sunucuda WP-CLI ile bağlanacaksanız `--user` için yalnızca okuma 
 
 ## Güvenlik ve sınırlar
 
-- Sunucu yalnızca okur; araçlar `readOnlyHint` ile işaretlidir.
+- Katalog araçları yalnızca okur (`readOnlyHint`); talep aracı yazar ama hiçbir şeyi otomatik onaylamaz.
+- Talep bırakma istemci başına dakikada 3, günde 20 ile sınırlıdır; şüpheli talepler karantinaya düşer.
 - Her istemci için dakikada 60 araç çağrısı sınırı vardır (`aihs_abilities_rate_limit` filtresi).
 - Tarayıcıdan gelen isteklerde `Origin` başlığı sitenin kendisi değilse istek reddedilir
   (başka kökenlere izin vermek için `aihs_mcp_allowed_origins` filtresi).
