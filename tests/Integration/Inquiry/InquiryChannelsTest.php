@@ -125,6 +125,13 @@ final class InquiryChannelsTest extends RestTestCase {
 	 * REST: stored as new (the posted status is ignored), receipt only, owner e-mailed without contact data.
 	 */
 	public function test_rest_accepts_and_notifies(): void {
+		$failures = array();
+		add_action(
+			'wp_mail_failed',
+			static function ( $error ) use ( &$failures ): void {
+				$failures[] = $error->get_error_message();
+			}
+		);
 		$ids      = self::catalog();
 		$response = self::post( self::body( $ids['cable'] ) );
 
@@ -134,7 +141,7 @@ final class InquiryChannelsTest extends RestTestCase {
 		$this->assertSame( array( Inquiry::STATUS_NEW, 'ai', 'rest', $ids['cable'] ), array( $stored?->status, $stored?->source, $stored?->channel, $stored?->listing_id ) );
 
 		$mail = tests_retrieve_phpmailer_instance()->get_sent( 0 );
-		$this->assertNotFalse( $mail );
+		$this->assertNotFalse( $mail, 'Audit: ' . implode( ',', array_column( ( new WpAuditRepository() )->latest(), 'outcome' ) ) . ' | wp_mail_failed: ' . implode( ' / ', $failures ) . ' | mailer: ' . get_class( tests_retrieve_phpmailer_instance() ) );
 		$this->assertSame( 'sahip@ornek.example', $mail->to[0][0] );
 		$this->assertStringContainsString( 'NYY kablo', $mail->body );
 		$this->assertStringNotContainsString( 'ayse@alici.example', $mail->body, 'No contact data in the e-mail.' );
