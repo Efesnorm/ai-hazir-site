@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace AIHazirSite\WordPress;
 
+use AIHazirSite\Core\Compliance\ScanStore;
 use AIHazirSite\Core\Features;
 use AIHazirSite\Core\Migrations\Migrator;
 use AIHazirSite\WordPress\Platform\WpSettings;
@@ -35,6 +36,7 @@ final class Uninstaller {
 			Migrator::OPTION,
 			self::DELETE_OPTION,
 			IpRanges::OPTION,
+			ScanStore::OPTION,
 		);
 	}
 

@@ -33,6 +33,11 @@ final class Features {
 	public const MEASUREMENT = 'measurement';
 
 	/**
+	 * AI compliance scan and score (0.3.0).
+	 */
+	public const COMPLIANCE_SCAN = 'compliance_scan';
+
+	/**
 	 * Approved exceptions to "disabled by default", each with a CHANGELOG rationale.
 	 *
 	 * - measurement: the "before" baseline must be collected from the moment the
@@ -63,7 +68,8 @@ final class Features {
 	 */
 	public static function defaults(): array {
 		return array(
-			self::MEASUREMENT => true,
+			self::MEASUREMENT     => true,
+			self::COMPLIANCE_SCAN => false,
 		);
 	}
 
