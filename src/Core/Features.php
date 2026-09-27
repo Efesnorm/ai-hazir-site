@@ -68,6 +68,16 @@ final class Features {
 	public const REST_API = 'rest_api';
 
 	/**
+	 * Catalog abilities (WordPress Abilities API) (0.11.0).
+	 */
+	public const ABILITIES = 'abilities';
+
+	/**
+	 * MCP server over the catalog abilities (0.11.0).
+	 */
+	public const MCP = 'mcp';
+
+	/**
 	 * Sector templates (0.8.0).
 	 */
 	public const TEMPLATES = 'templates';
@@ -112,6 +122,8 @@ final class Features {
 			self::TEMPLATES         => false,
 			self::COMPLIANCE_WIZARD => false,
 			self::REST_API          => false,
+			self::ABILITIES         => false,
+			self::MCP               => false,
 		);
 	}
 

@@ -15,6 +15,7 @@ use AIHazirSite\Adapters\Rest\RestSchemas;
 use AIHazirSite\Core\Catalog\ListingType;
 use AIHazirSite\Core\Features;
 use AIHazirSite\Core\RateLimit\FixedWindowLimiter;
+use AIHazirSite\WordPress\Catalog\CatalogReader;
 use AIHazirSite\WordPress\Catalog\WpListingRepository;
 use AIHazirSite\WordPress\Catalog\WpProfileRepository;
 use AIHazirSite\WordPress\Module;
@@ -272,6 +273,6 @@ final class RestModule implements Module {
 	 * Responder for this site.
 	 */
 	private static function responder(): RestResponder {
-		return new RestResponder( home_url( '/' ), SchemaModule::catalog_url(), TemplatesModule::registry() );
+		return CatalogReader::responder();
 	}
 }
