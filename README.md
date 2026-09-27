@@ -3,7 +3,7 @@
 Sitenin "ne satıyorum, ne arıyorum, ne tedarik edebilirim" bilgisini AI agentların okuyup
 kullanabileceği biçimde yayınlayan WordPress eklentisi.
 
-> Sürüm 0.9.0: AI bot ve yönlendirme ölçümü (A0), AI uyum taraması (U1), veri modeli ve yönetim formları (A1), AI bot erişim ayarları (U2), Schema.org yapılandırılmış veri (A2), llms.txt ve AI katalog sayfası (A3), sektör şablonları (A4), AI uyum sihirbazı (U3). Ayrıntılar: [CHANGELOG.md](CHANGELOG.md).
+> Sürüm 0.10.0: AI bot ve yönlendirme ölçümü (A0), AI uyum taraması (U1), veri modeli ve yönetim formları (A1), AI bot erişim ayarları (U2), Schema.org yapılandırılmış veri (A2), llms.txt ve AI katalog sayfası (A3), sektör şablonları (A4), AI uyum sihirbazı (U3), REST API (A5). Ayrıntılar: [CHANGELOG.md](CHANGELOG.md).
 
 - En düşük sürümler: PHP 8.1, WordPress 6.9
 - Lisans: GPL-2.0-or-later
@@ -71,6 +71,17 @@ tamamlatır: taramayı açar, firma profilini ve ilk ilanı kısa formlarla ekle
 yalnızca AI Hazır Site'nin kendi ayarlarını ve verisini değiştirir. Eklenti dışındaki eksikler için
 açıklama gösterilir. "Bitir ve yeniden tara" önce/sonra puanını gösterir.
 
+## REST API (A5)
+
+`rest_api` anahtarı açıkken katalog verisi `/wp-json/aihs/v1/` altında herkese açık, salt okunur JSON olarak sunulur:
+`/profile`, `/listings` (filtreler: `type`, `category`, `region`; sayfalama: `page`, `per_page` en fazla 50),
+`/listings/{id}`, `/templates` ve yanıt şemaları `/schema/{profile|listings|listing|templates}`. Yanıtlar
+`ETag` / `Last-Modified` taşır; istemci başına dakikada 60 istek sınırı vardır (`aihs_rest_rate_limit` filtresi).
+
+```bash
+curl "http://localhost:8888/wp-json/aihs/v1/listings?type=offer&per_page=10"
+```
+
 ## AI Katalog (A1)
 
 `catalog` anahtarı açıkken **AI Katalog** menüsünden satılan, aranan ve tedarik edilebilen ilanlar ile
@@ -128,7 +139,8 @@ ai-hazir-site.php          Eklenti başlığı, sürüm kontrolü, açılış
 uninstall.php              Silmede veri temizliği (yalnızca seçenek açıksa)
 src/Core/                  Platformdan bağımsız çekirdek (WordPress fonksiyonu kullanmaz)
   Contracts/               Arayüzler: Settings, Cache, HttpClient, PageFetcher, Clock, Secret, HitRepository,
-                           ListingRepository, ProfileRepository
+                           ListingRepository, ProfileRepository, RateLimiter
+  RateLimit/               FixedWindowLimiter
   Features.php             Özellik anahtarları
   Migrations/              MigrationInterface, Migrator
   Measurement/             A0 iş kuralları: Classifier, Verifier, IpRanges, Tracker, Report, CsvExport
@@ -140,6 +152,7 @@ src/Core/                  Platformdan bağımsız çekirdek (WordPress fonksiyo
 src/Adapters/              AI kanalı üreticileri (platformdan bağımsız)
   Schema/                  A2: SchemaMap, SchemaBuilder, SchemaValidator, SchemaCache
   Llms/                    A3: LlmsTxtBuilder, LlmsCache
+  Rest/                    A5: RestResponder, RestSchemas, ListingsQuery
 src/WordPress/             WordPress adaptörü
   Plugin, Lifecycle, Uninstaller, Requirements, Module
   Platform/                Arayüz uygulamaları: WpSettings, WpCache, WpHttpClient, WpPageFetcher, WpClock, WpSecret
@@ -152,6 +165,7 @@ src/WordPress/             WordPress adaptörü
   Access/                  robots_txt filtresi, AI Bot Erişimi sayfası
   Schema/                  SchemaModule (ana sayfa JSON-LD), CatalogPage (/ai-katalog/), SeoConflict
   Llms/                    LlmsModule (/llms.txt)
+  Rest/                    RestModule (aihs/v1 rotaları, önbellek başlıkları, hız sınırı, keşif)
   Templates/               TemplatesModule (kayıt defteri, aihs_template_dirs, hatalı dosya uyarısı)
 data/                      Düzenlenebilir bot ve yönlendirme listeleri, templates/ (sektör şablonları)
 docs/                      PRD, görevler, mimari kararlar (ADR)
@@ -165,7 +179,7 @@ tests/Support/             Bellek içi test adaptörleri
 
 | Seçenek | Anlamı |
 | --- | --- |
-| `aihs_features` | Özellik anahtarları (`measurement`, `compliance_scan`, `catalog`, `bot_access`, `schema_output`, `llms_txt`, `templates`, `compliance_wizard`); `measurement` dışında hepsi varsayılan kapalı |
+| `aihs_features` | Özellik anahtarları (`measurement`, `compliance_scan`, `catalog`, `bot_access`, `schema_output`, `llms_txt`, `templates`, `compliance_wizard`, `rest_api`); `measurement` dışında hepsi varsayılan kapalı |
 | `aihs_db_version` | Uygulanan son geçiş sürümü |
 | `aihs_delete_data_on_uninstall` | Açıksa eklenti silinirken tüm verisi (tablo dahil) silinir |
 | `aihs_ip_ranges` | Botların yayınlanmış IP listeleri önbelleği (otomatik yüklenmez) |

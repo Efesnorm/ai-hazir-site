@@ -3,6 +3,37 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [0.10.0] - 2026-09-27
+
+### Eklendi
+- **A5 REST API, yalnızca okuma** (`rest_api` anahtarı, varsayılan kapalı). Ad alanı `aihs/v1`:
+  - `GET /profile` firma profili; `GET /listings?type=&category=&region=&page=&per_page=` geçerli ilanlar
+    (en fazla 50/sayfa, varsayılan 20; `X-WP-Total`, `X-WP-TotalPages`); `GET /listings/{id}` tek ilan;
+    `GET /templates` profilin ve geçerli ilanların şablon alan tanımları; `GET /schema/{profile|listings|listing|templates}`
+    yanıtların JSON şeması.
+  - Her ilanda `updated_at` ve `valid_until` (90 günlük varsayılan dahil); süresi dolan ilan hiçbir yanıtta yok.
+    Fiyatı yasak şablonda `price` anahtarı hiç yok. Şablon alanları etiket ve birimle; tazelik süresi geçen
+    değer `verified: false`.
+  - Önbellek: `ETag`, `Last-Modified`, `Cache-Control: public, max-age=300`; eşleşen `If-None-Match` gövdesiz 304.
+  - Hız sınırı: istemci başına dakikada 60 istek (`aihs_rest_rate_limit` filtresi); aşılınca 429 ve `Retry-After`.
+    İstemci yalnızca tuzlu HMAC olarak, süreli önbellekte tutulur.
+  - Keşif: ana sayfa `<head>` içinde `rel="alternate" type="application/json"` bağlantısı; llms.txt'te API ve
+    şablon bağlantıları.
+  - Platformdan bağımsız üretim `src/Adapters/Rest/` (`RestResponder`, `RestSchemas`, `ListingsQuery`);
+    çekirdek `Contracts\RateLimiter` ve `RateLimit\FixedWindowLimiter` (A7 aynı arayüzü kullanabilir).
+
+### Kararlar
+- Tutarlar ve miktarlar yuvarlama olmasın diye ondalık metin (`"42.50"`).
+- `category` ve `region` filtreleri tam eşleşme, büyük/küçük harf ve Türkçe i/ı duyarsız.
+- Profil ve şablon yanıtlarında `valid_until` alanı `null` (yalnızca ilanlar için anlamlı).
+
+### Bilinen sınırlar
+- U1 `machine_interface` bu sürümde kısmi puan (0,5): REST keşfi WordPress'in kendi bağlantısından gelir,
+  MCP A6'da gelecek. Başka bir eklenti WordPress'in REST bağlantısını kaldırmışsa geri eklenmez.
+- Liste, ilan türü başına en fazla 200 ilanı bellekte süzer; daha büyük kataloglar için sorgu düzeyinde süzme gerekecek.
+- Hız sınırı sayacı atomik değildir; yoğun eşzamanlı yükte birkaç fazla istek geçebilir.
+- REST istekleri A0 raporunda ayrıca gösterilmiyor.
+
 ## [0.9.0] - 2026-09-27
 
 ### Eklendi
