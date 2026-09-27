@@ -12,6 +12,8 @@ namespace AIHazirSite\Adapters\Rest;
 use AIHazirSite\Core\Catalog\CompanyProfile;
 use AIHazirSite\Core\Catalog\Listing;
 use AIHazirSite\Core\Catalog\ListingValidity;
+use AIHazirSite\Core\Catalog\Query\CatalogQuery;
+use AIHazirSite\Core\Catalog\Query\ListingSearch;
 use AIHazirSite\Core\Templates\Freshness;
 use AIHazirSite\Core\Templates\Template;
 use AIHazirSite\Core\Templates\TemplateField;
@@ -65,30 +67,25 @@ final class RestResponder {
 	/**
 	 * GET /listings: current listings passing the filters, one page.
 	 *
-	 * @param Listing[]     $listings All listings.
-	 * @param ListingsQuery $query    Filters and paging.
-	 * @param string        $today    Y-m-d.
-	 * @param string        $now      ISO 8601 date-time.
+	 * @param Listing[]                   $listings All listings.
+	 * @param ListingsQuery|ListingSearch $query Filters and paging (REST parameters or core criteria).
+	 * @param string                      $today    Y-m-d.
+	 * @param string                      $now      ISO 8601 date-time.
 	 * @return array<string, mixed>
 	 *
 	 * @phpstan-param list<Listing> $listings
 	 */
-	public function listings( array $listings, ListingsQuery $query, string $today, string $now ): array {
-		$current = array_values( array_filter( $listings, static fn( Listing $l ): bool => ListingValidity::is_current( $l, $today ) ) );
-		$matches = array_values( array_filter( $current, array( $query, 'matches' ) ) );
-		usort( $matches, static fn( Listing $a, Listing $b ): int => array( (string) $b->updated_at, (int) $b->id ) <=> array( (string) $a->updated_at, (int) $a->id ) );
-
-		$dates = array_filter( array_map( static fn( Listing $l ): ?string => $l->updated_at, $current ) );
-		rsort( $dates );
-		$total = count( $matches );
+	public function listings( array $listings, ListingsQuery|ListingSearch $query, string $today, string $now ): array {
+		$search   = $query instanceof ListingsQuery ? $query->search() : $query;
+		$selected = CatalogQuery::select( $listings, $search, $today );
 
 		return array(
-			'items'       => array_map( fn( Listing $l ): array => $this->item( $l, $today, $now ), array_slice( $matches, ( $query->page - 1 ) * $query->per_page, $query->per_page ) ),
-			'page'        => $query->page,
-			'per_page'    => $query->per_page,
-			'total'       => $total,
-			'total_pages' => (int) ceil( $total / $query->per_page ),
-			'updated_at'  => $dates[0] ?? null,
+			'items'       => array_map( fn( Listing $l ): array => $this->item( $l, $today, $now ), $selected['items'] ),
+			'page'        => $search->page,
+			'per_page'    => $search->per_page,
+			'total'       => $selected['total'],
+			'total_pages' => (int) ceil( $selected['total'] / max( 1, $search->per_page ) ),
+			'updated_at'  => $selected['updated_at'],
 			'valid_until' => null,
 		);
 	}

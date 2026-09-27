@@ -11,16 +11,18 @@ namespace AIHazirSite\Adapters\Rest;
 
 use AIHazirSite\Core\Catalog\Listing;
 use AIHazirSite\Core\Catalog\ListingType;
+use AIHazirSite\Core\Catalog\Query\ListingSearch;
 
 /**
  * Filters: type (offer | demand | supply), category and region (exact, case-insensitive,
  * Turkish dotted/dotless i treated alike),
  * page (1…), per_page (1…50, default 20). Invalid input is reported, never guessed.
+ * The selection itself is the core's ListingSearch, shared with the abilities / MCP channel.
  */
 final class ListingsQuery {
 
-	public const MAX_PER_PAGE     = 50;
-	public const DEFAULT_PER_PAGE = 20;
+	public const MAX_PER_PAGE     = ListingSearch::MAX_PER_PAGE;
+	public const DEFAULT_PER_PAGE = ListingSearch::DEFAULT_PER_PAGE;
 
 	/**
 	 * Constructor.
@@ -75,17 +77,13 @@ final class ListingsQuery {
 	 * @param Listing $listing Listing.
 	 */
 	public function matches( Listing $listing ): bool {
-		return ( '' === $this->type || $this->type === $listing->type )
-			&& ( '' === $this->category || self::fold( $this->category ) === self::fold( $listing->category ) )
-			&& ( '' === $this->region || self::fold( $this->region ) === self::fold( $listing->region ) );
+		return $this->search()->matches( $listing );
 	}
 
 	/**
-	 * Case-folded text for comparison (İ, I, ı and i are the same letter here).
-	 *
-	 * @param string $text Text.
+	 * The core search criteria.
 	 */
-	private static function fold( string $text ): string {
-		return mb_strtolower( str_replace( array( 'İ', 'I', 'ı' ), 'i', trim( $text ) ) );
+	public function search(): ListingSearch {
+		return new ListingSearch( $this->type, $this->category, $this->region, '', array(), $this->page, $this->per_page );
 	}
 }
