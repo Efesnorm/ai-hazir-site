@@ -38,6 +38,11 @@ final class Features {
 	public const COMPLIANCE_SCAN = 'compliance_scan';
 
 	/**
+	 * AI catalog: listings and company profile (0.4.0).
+	 */
+	public const CATALOG = 'catalog';
+
+	/**
 	 * Approved exceptions to "disabled by default", each with a CHANGELOG rationale.
 	 *
 	 * - measurement: the "before" baseline must be collected from the moment the
@@ -70,6 +75,7 @@ final class Features {
 		return array(
 			self::MEASUREMENT     => true,
 			self::COMPLIANCE_SCAN => false,
+			self::CATALOG         => false,
 		);
 	}
 
