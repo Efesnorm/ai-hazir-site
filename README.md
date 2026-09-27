@@ -3,7 +3,7 @@
 Sitenin "ne satıyorum, ne arıyorum, ne tedarik edebilirim" bilgisini AI agentların okuyup
 kullanabileceği biçimde yayınlayan WordPress eklentisi.
 
-> Sürüm 0.8.0: AI bot ve yönlendirme ölçümü (A0), AI uyum taraması (U1), veri modeli ve yönetim formları (A1), AI bot erişim ayarları (U2), Schema.org yapılandırılmış veri (A2), llms.txt ve AI katalog sayfası (A3), sektör şablonları (A4). Ayrıntılar: [CHANGELOG.md](CHANGELOG.md).
+> Sürüm 0.9.0: AI bot ve yönlendirme ölçümü (A0), AI uyum taraması (U1), veri modeli ve yönetim formları (A1), AI bot erişim ayarları (U2), Schema.org yapılandırılmış veri (A2), llms.txt ve AI katalog sayfası (A3), sektör şablonları (A4), AI uyum sihirbazı (U3). Ayrıntılar: [CHANGELOG.md](CHANGELOG.md).
 
 - En düşük sürümler: PHP 8.1, WordPress 6.9
 - Lisans: GPL-2.0-or-later
@@ -62,6 +62,14 @@ adreslerini çeker (en fazla 10 sayfa, toplam 60 sn); kendi istekleri A0 ölçü
 
 Yerel wp-env'de WordPress kendine istek atamadığı için tarama "ölçülemedi" sonucu verir; kontrol
 mantığı birim ve entegrasyon testleriyle sınanır.
+
+## AI uyum sihirbazı (U3)
+
+`compliance_wizard` anahtarı açıkken Araçlar → **AI Uyum Sihirbazı** taramadaki eksikleri adım adım
+tamamlatır: taramayı açar, firma profilini ve ilk ilanı kısa formlarla ekler, Schema.org ve llms.txt
+çıktılarını ve AI bot erişim ayarını açar. Her adım onayla uygulanır ve tek tıkla geri alınır; sihirbaz
+yalnızca AI Hazır Site'nin kendi ayarlarını ve verisini değiştirir. Eklenti dışındaki eksikler için
+açıklama gösterilir. "Bitir ve yeniden tara" önce/sonra puanını gösterir.
 
 ## AI Katalog (A1)
 
@@ -125,6 +133,7 @@ src/Core/                  Platformdan bağımsız çekirdek (WordPress fonksiyo
   Migrations/              MigrationInterface, Migrator
   Measurement/             A0 iş kuralları: Classifier, Verifier, IpRanges, Tracker, Report, CsvExport
   Compliance/              U1: Site, Html, Robots, Scanner, ScoreReport, ScanStore, Checks/ (7 kontrol)
+    Wizard/                U3: FixStep, SiteState, StepPlanner, Wizard, WizardJournal
   Catalog/                 A1: Listing, CompanyProfile, doğrulayıcılar, ListingValidity, CatalogService (tek yazma noktası)
   Access/                  U2: BotPolicy, Presets, RobotsRules, PolicyStore
   Templates/               A4: Template, TemplateField, TemplateRegistry, TemplateValidator, Freshness
@@ -138,6 +147,7 @@ src/WordPress/             WordPress adaptörü
   Migrations/              Migration_0_2_0
   Measurement/             Kancalar (RequestListener, MeasurementModule), yönetim sayfası, WP-CLI
   Compliance/              ComplianceModule, AI Uyum sayfası, wp aihs scan
+    Wizard/                WizardModule, WizardPage (AI Uyum Sihirbazı)
   Catalog/                 aihs_listing içerik türü, WpListingRepository, WpProfileRepository, AI Katalog ekranları
   Access/                  robots_txt filtresi, AI Bot Erişimi sayfası
   Schema/                  SchemaModule (ana sayfa JSON-LD), CatalogPage (/ai-katalog/), SeoConflict
@@ -155,7 +165,7 @@ tests/Support/             Bellek içi test adaptörleri
 
 | Seçenek | Anlamı |
 | --- | --- |
-| `aihs_features` | Özellik anahtarları (`measurement`, `compliance_scan`, `catalog`, `bot_access`, `schema_output`, `llms_txt`, `templates`); `measurement` dışında hepsi varsayılan kapalı |
+| `aihs_features` | Özellik anahtarları (`measurement`, `compliance_scan`, `catalog`, `bot_access`, `schema_output`, `llms_txt`, `templates`, `compliance_wizard`); `measurement` dışında hepsi varsayılan kapalı |
 | `aihs_db_version` | Uygulanan son geçiş sürümü |
 | `aihs_delete_data_on_uninstall` | Açıksa eklenti silinirken tüm verisi (tablo dahil) silinir |
 | `aihs_ip_ranges` | Botların yayınlanmış IP listeleri önbelleği (otomatik yüklenmez) |
@@ -165,6 +175,7 @@ tests/Support/             Bellek içi test adaptörleri
 | `aihs_profile_updated` | Firma profilinin son güncellenme zamanı (otomatik yüklenmez) |
 | `aihs_schema_cache` | Son geçerli Schema.org çıktıları (otomatik yüklenmez) |
 | `aihs_schema_error` | Son Schema.org doğrulama hataları (otomatik yüklenmez) |
+| `aihs_wizard` | Sihirbazın uyguladığı adımlar ve önceki değerleri, başlangıç puanı, öneri kapatıldı mı (otomatik yüklenmez) |
 | `aihs_llms_cache` | Son üretilen llms.txt metni ve girdisinin parmak izi (otomatik yüklenmez) |
 
 Veritabanı tablosu: `{prefix}aihs_hits`. Cron görevleri: `aihs_refresh_ip_ranges` (günlük),

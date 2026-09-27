@@ -3,6 +3,47 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [0.9.0] - 2026-09-27
+
+### Eklendi
+- **U3 AI uyum sihirbazı** (`compliance_wizard` anahtarı, varsayılan kapalı). Araçlar → **AI Uyum Sihirbazı**.
+  - Çekirdek `src/Core/Compliance/Wizard/`: `StepPlanner` taramadaki her eksik kontrolü bir `FixStep`'e
+    eşler. Uygulanabilir adımlar: uyum taramasını açmak, firma profilini doldurmak, ilk ilanı eklemek,
+    Schema.org çıktısını açmak, llms.txt'yi açmak, AI bot erişim hazır ayarını seçmek. Tahmini kazanç,
+    son taramada o kontrolün eksik puanıdır (ölçülemeyen kontrolde "en fazla" ağırlığın tamamı).
+    Adımlar kazanca göre sıralanır; ön koşullar bağımlılarından önce gelir.
+  - Eklenti dışında kalan eksikler (tema ve içerik, sunucu yönlendirmesi, fiziksel robots.txt/llms.txt,
+    WordPress'in "arama motorlarını engelle" ayarı, güvenlik eklentisi/CDN, henüz yayınlanmayan REST/MCP
+    ve A2A modülleri) için yalnızca "nasıl yapılır" açıklaması gösterilir.
+  - Her adım yöneticinin onayıyla (nonce, `manage_options`) uygulanır. `Wizard` önce değiştireceği değerleri
+    `aihs_wizard` günlüğüne yazar; "Geri al" tam olarak onları geri koyar (anahtar bazında özellik
+    kayıtları, profil ve kayıt zamanı, bot ayarı, eklenen ilan). Bağımlı adım uygulanmışken ön koşulu
+    geri alınamaz.
+  - "Bitir ve yeniden tara" yeniden tarar ve başlangıç puanıyla yeni puanı kontrol bazında gösterir.
+  - Anahtar açıksa ve sihirbaz hiç başlatılmamışsa yönetim panelinde kapatılabilir bir öneri çıkar.
+- `Features::stored()` ve `Features::restore()`, `ProfileRepository::restore_profile()`,
+  `CatalogService::revert_profile()` ve `profile_state()` (geri alma için; yazma yine yalnızca
+  `CatalogService` üzerinden).
+
+### Kararlar
+- Sihirbaz yalnızca `aihs_` seçeneklerine ve AI Hazır Site ilanlarına yazar. Mimari test çekirdek
+  sihirbazın yazdığı her anahtarın `aihs_` ile başladığını ve sihirbaz kodunda doğrudan seçenek, tema,
+  gönderi, eklenti veya dosya yazıcısı çağrılmadığını denetler. Entegrasyon testi tam bir turdan sonra
+  eklenti dışındaki bütün seçeneklerin, tema ayarlarının, diğer gönderilerin ve kök dizin dosyalarının
+  aynı kaldığını denetler. Onaylı istisnalar: `rewrite_rules` (WordPress'in hesapladığı önbellek; /ai-katalog/
+  kuralını katalog sayfası modülü ekler) ve geçici önbellek kayıtları.
+- Anahtar kurala uygun olarak varsayılan kapalıdır; ilk kurulum önerisi anahtar açıldıktan sonra görünür.
+- Bot erişim adımı yalnızca AI Bot Erişimi ayarı engeli gerçekten kaldıracaksa önerilir.
+
+### Bilinen sınırlar
+- Tahmini kazanç bir üst sınırdır: örneğin yapılandırılmış veri kontrolü, taranan diğer sayfalarda şema
+  yoksa tam puana ulaşmaz.
+- Başka bir eklenti veya tema robots.txt'de bir AI botunu adıyla `Disallow: /` ile engelliyorsa AI Bot
+  Erişimi ayarının "izin ver" bloğu bu engeli kaldırmaz (blokta `Allow: /` satırı yok; U2 davranışı,
+  kapsam dışı not). Sihirbaz bu durumu elle yapılacaklarda açıklar.
+- Yerel wp-env'de WordPress kendine istek atamadığı için tarama "ölçülemedi" sonucu verir; sihirbazın akışı
+  entegrasyon testlerinde sitenin gerçek çıktılarıyla sınanır.
+
 ## [0.8.0] - 2026-09-27
 
 ### Eklendi
