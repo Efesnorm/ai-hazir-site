@@ -54,6 +54,9 @@ final class LlmsTxtBuilder {
 		'phone'             => 'Telefon',
 		'catalog'           => 'AI Katalog',
 		'catalog_note'      => 'Tüm geçerli ilanların sade HTML listesi',
+		'api'               => 'AI Katalog API (JSON)',
+		'api_note'          => 'Geçerli ilanlar, sayfalı; şema: %s',
+		'api_templates'     => 'Şablon alan tanımları (JSON)',
 		'unverified'        => '%1$s (doğrulanmadı, son güncelleme %2$s)',
 	);
 
@@ -72,13 +75,15 @@ final class LlmsTxtBuilder {
 	 * @param string                $site_name   Used when the profile has no name.
 	 * @param array<string, string> $labels      Translated texts (keys of self::LABELS).
 	 * @param TemplateRegistry|null $templates   Sector templates; null = every listing is "general".
+	 * @param string                $api_url     REST API base URL with trailing slash ('' when the API is off).
 	 */
 	public function __construct(
 		private readonly string $site_url,
 		private readonly string $catalog_url,
 		private readonly string $site_name,
 		array $labels = array(),
-		private readonly ?TemplateRegistry $templates = null
+		private readonly ?TemplateRegistry $templates = null,
+		private readonly string $api_url = ''
 	) {
 		$this->labels = array_merge( self::LABELS, $labels );
 	}
@@ -134,7 +139,12 @@ final class LlmsTxtBuilder {
 			static fn( string $value ): bool => '' !== $value
 		);
 		$blocks[] = '## ' . $this->labels['contact'] . "\n\n" . self::link( $this->labels['website'], $this->site_url, $this->pairs( $contact ) );
-		$blocks[] = "## Optional\n\n" . self::link( $this->labels['catalog'], $this->catalog_url, $this->labels['catalog_note'] );
+		$optional = array( self::link( $this->labels['catalog'], $this->catalog_url, $this->labels['catalog_note'] ) );
+		if ( '' !== $this->api_url ) {
+			$optional[] = self::link( $this->labels['api'], $this->api_url . 'listings', sprintf( $this->labels['api_note'], $this->api_url . 'schema/listings' ) );
+			$optional[] = self::link( $this->labels['api_templates'], $this->api_url . 'templates', '' );
+		}
+		$blocks[] = "## Optional\n\n" . implode( "\n", $optional );
 
 		return implode( "\n\n", $blocks ) . "\n";
 	}

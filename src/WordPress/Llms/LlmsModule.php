@@ -17,6 +17,7 @@ use AIHazirSite\WordPress\Catalog\WpProfileRepository;
 use AIHazirSite\WordPress\Module;
 use AIHazirSite\WordPress\Platform\WpClock;
 use AIHazirSite\WordPress\Platform\WpSettings;
+use AIHazirSite\WordPress\Rest\RestModule;
 use AIHazirSite\WordPress\Schema\SchemaModule;
 use AIHazirSite\WordPress\Templates\TemplatesModule;
 
@@ -103,7 +104,8 @@ final class LlmsModule implements Module {
 		$today    = ( new WpClock() )->today();
 		$modified = (string) SchemaModule::last_modified( $listings );
 		$registry = TemplatesModule::registry();
-		$builder  = new LlmsTxtBuilder( home_url( '/' ), SchemaModule::catalog_url(), (string) get_bloginfo( 'name' ), self::labels(), $registry );
+		$api_url  = Features::is_enabled( Features::REST_API ) ? RestModule::url() : '';
+		$builder  = new LlmsTxtBuilder( home_url( '/' ), SchemaModule::catalog_url(), (string) get_bloginfo( 'name' ), self::labels(), $registry, $api_url );
 		$now      = TemplatesModule::now();
 
 		// Short-lived values can turn stale within a day: then the text depends on the hour too.
@@ -119,7 +121,7 @@ final class LlmsModule implements Module {
 			'hour'     => $hourly ? substr( $now, 0, 13 ) : '',
 			'template' => null === $registry ? array() : array_map( static fn( $t ): array => array( $t->id, $t->version ), array_values( $registry->all() ) ),
 			'modified' => $modified,
-			'site'     => array( home_url( '/' ), SchemaModule::catalog_url(), get_bloginfo( 'name' ) ),
+			'site'     => array( home_url( '/' ), SchemaModule::catalog_url(), get_bloginfo( 'name' ), $api_url ),
 			'labels'   => self::labels(),
 		);
 
@@ -194,6 +196,10 @@ final class LlmsModule implements Module {
 			'phone'             => __( 'Telefon', 'ai-hazir-site' ),
 			'catalog'           => __( 'AI Katalog', 'ai-hazir-site' ),
 			'catalog_note'      => __( 'Tüm geçerli ilanların sade HTML listesi', 'ai-hazir-site' ),
+			'api'               => __( 'AI Katalog API (JSON)', 'ai-hazir-site' ),
+			/* translators: %s: JSON schema URL. */
+			'api_note'          => __( 'Geçerli ilanlar, sayfalı; şema: %s', 'ai-hazir-site' ),
+			'api_templates'     => __( 'Şablon alan tanımları (JSON)', 'ai-hazir-site' ),
 		);
 	}
 }

@@ -63,6 +63,11 @@ final class Features {
 	public const COMPLIANCE_WIZARD = 'compliance_wizard';
 
 	/**
+	 * Read-only REST API (0.10.0).
+	 */
+	public const REST_API = 'rest_api';
+
+	/**
 	 * Sector templates (0.8.0).
 	 */
 	public const TEMPLATES = 'templates';
@@ -106,6 +111,7 @@ final class Features {
 			self::LLMS_TXT          => false,
 			self::TEMPLATES         => false,
 			self::COMPLIANCE_WIZARD => false,
+			self::REST_API          => false,
 		);
 	}
 

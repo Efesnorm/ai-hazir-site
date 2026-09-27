@@ -18,6 +18,7 @@ use AIHazirSite\WordPress\Compliance\ComplianceModule;
 use AIHazirSite\WordPress\Compliance\Wizard\WizardModule;
 use AIHazirSite\WordPress\Llms\LlmsModule;
 use AIHazirSite\WordPress\Measurement\MeasurementModule;
+use AIHazirSite\WordPress\Rest\RestModule;
 use AIHazirSite\WordPress\Schema\SchemaModule;
 use AIHazirSite\WordPress\Templates\TemplatesModule;
 use AIHazirSite\WordPress\Platform\WpSettings;
@@ -67,6 +68,7 @@ final class Plugin {
 			new AccessModule(),
 			new SchemaModule(),
 			new LlmsModule(),
+			new RestModule(),
 		);
 	}
 
