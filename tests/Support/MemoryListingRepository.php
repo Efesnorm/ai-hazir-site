@@ -57,7 +57,7 @@ final class MemoryListingRepository implements ListingRepository {
 	 *
 	 * @param Listing $listing Listing.
 	 */
-	public function save_listing( Listing $listing ): Listing {
+	public function store_listing( Listing $listing ): Listing {
 		$id                    = $listing->id ?? $this->next++;
 		$this->listings[ $id ] = $listing->stored( $id, '2026-09-27T12:00:00Z' );
 		return $this->listings[ $id ];
@@ -68,7 +68,7 @@ final class MemoryListingRepository implements ListingRepository {
 	 *
 	 * @param int $id Id.
 	 */
-	public function delete_listing( int $id ): bool {
+	public function remove_listing( int $id ): bool {
 		$found = isset( $this->listings[ $id ] );
 		unset( $this->listings[ $id ] );
 		return $found;

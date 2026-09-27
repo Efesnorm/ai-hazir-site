@@ -53,7 +53,7 @@ final class CatalogService {
 			return $result;
 		}
 
-		return $result->with_value( $this->listings->save_listing( $listing ) );
+		return $result->with_value( $this->listings->store_listing( $listing ) );
 	}
 
 	/**
@@ -67,7 +67,7 @@ final class CatalogService {
 		if ( null === $existing || ( null !== $type && $existing->type !== $type ) ) {
 			return false;
 		}
-		return $this->listings->delete_listing( $id );
+		return $this->listings->remove_listing( $id );
 	}
 
 	/**
@@ -79,7 +79,7 @@ final class CatalogService {
 		$result  = ( new ProfileValidator() )->validate( $input );
 		$profile = $result->profile();
 		if ( null !== $profile ) {
-			$this->profiles->save_profile( $profile );
+			$this->profiles->store_profile( $profile );
 		}
 		return $result;
 	}
@@ -92,9 +92,9 @@ final class CatalogService {
 	public function purge(): int {
 		$deleted = 0;
 		foreach ( $this->listings->ids() as $id ) {
-			$deleted += (int) $this->listings->delete_listing( $id );
+			$deleted += (int) $this->listings->remove_listing( $id );
 		}
-		$this->profiles->delete_profile();
+		$this->profiles->remove_profile();
 		return $deleted;
 	}
 }

@@ -82,7 +82,7 @@ final class WpListingRepository implements ListingRepository {
 	 * @param Listing $listing Valid listing.
 	 * @throws RuntimeException When WordPress refuses the write.
 	 */
-	public function save_listing( Listing $listing ): Listing {
+	public function store_listing( Listing $listing ): Listing {
 		$post = array(
 			'post_type'    => PostType::NAME,
 			'post_status'  => 'publish',
@@ -121,7 +121,7 @@ final class WpListingRepository implements ListingRepository {
 	 *
 	 * @param int $id Post id.
 	 */
-	public function delete_listing( int $id ): bool {
+	public function remove_listing( int $id ): bool {
 		if ( null === $this->find( $id ) ) {
 			return false;
 		}

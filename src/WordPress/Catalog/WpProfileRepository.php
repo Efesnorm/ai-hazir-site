@@ -41,14 +41,14 @@ final class WpProfileRepository implements ProfileRepository {
 	 *
 	 * @param CompanyProfile $profile Profile.
 	 */
-	public function save_profile( CompanyProfile $profile ): void {
+	public function store_profile( CompanyProfile $profile ): void {
 		$this->settings->set( self::OPTION, $profile->to_array(), false );
 	}
 
 	/**
 	 * Removes the profile.
 	 */
-	public function delete_profile(): void {
+	public function remove_profile(): void {
 		$this->settings->delete( self::OPTION );
 	}
 }

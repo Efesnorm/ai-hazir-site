@@ -36,14 +36,14 @@ final class MemoryProfileRepository implements ProfileRepository {
 	 *
 	 * @param CompanyProfile $profile Profile.
 	 */
-	public function save_profile( CompanyProfile $profile ): void {
+	public function store_profile( CompanyProfile $profile ): void {
 		$this->profile = $profile;
 	}
 
 	/**
 	 * Removes.
 	 */
-	public function delete_profile(): void {
+	public function remove_profile(): void {
 		$this->profile = null;
 	}
 }

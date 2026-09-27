@@ -12,8 +12,8 @@ namespace AIHazirSite\Core\Contracts;
 use AIHazirSite\Core\Catalog\Listing;
 
 /**
- * Stores listings. Write methods are called only by CatalogService
- * (guarded by CatalogWritesOnlyThroughServiceTest).
+ * Stores listings. The write methods (store_listing, remove_listing) are called only by
+ * CatalogService (guarded by CatalogWritesOnlyThroughServiceTest).
  */
 interface ListingRepository {
 
@@ -38,14 +38,14 @@ interface ListingRepository {
 	 *
 	 * @param Listing $listing Valid listing.
 	 */
-	public function save_listing( Listing $listing ): Listing;
+	public function store_listing( Listing $listing ): Listing;
 
 	/**
 	 * Deletes a listing permanently.
 	 *
 	 * @param int $id Id.
 	 */
-	public function delete_listing( int $id ): bool;
+	public function remove_listing( int $id ): bool;
 
 	/**
 	 * Ids of all listings of every type.

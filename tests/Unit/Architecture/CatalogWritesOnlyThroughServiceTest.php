@@ -26,10 +26,10 @@ final class CatalogWritesOnlyThroughServiceTest extends TestCase {
 	 * Repository write methods → files allowed to call them.
 	 */
 	private const METHOD_CALLS = array(
-		'save_listing'   => array( 'Core/Catalog/CatalogService.php' ),
-		'delete_listing' => array( 'Core/Catalog/CatalogService.php' ),
-		'save_profile'   => array( 'Core/Catalog/CatalogService.php' ),
-		'delete_profile' => array( 'Core/Catalog/CatalogService.php' ),
+		'store_listing'  => array( 'Core/Catalog/CatalogService.php' ),
+		'remove_listing' => array( 'Core/Catalog/CatalogService.php' ),
+		'store_profile'  => array( 'Core/Catalog/CatalogService.php' ),
+		'remove_profile' => array( 'Core/Catalog/CatalogService.php' ),
 	);
 
 	/**
@@ -98,12 +98,12 @@ final class CatalogWritesOnlyThroughServiceTest extends TestCase {
 	 * The scanner itself recognizes method and function calls, and ignores declarations.
 	 */
 	public function test_scanner(): void {
-		$code = '<?php function save_listing() {} $repo->save_listing( $x ); Foo::delete_listing(1); \\wp_insert_post( array() ); update_post_meta( 1, "a", 2 ); $o->update_post_meta();';
+		$code = '<?php function store_listing() {} $repo->store_listing( $x ); Foo::remove_listing(1); \\wp_insert_post( array() ); update_post_meta( 1, "a", 2 ); $o->update_post_meta();';
 
 		$this->assertSame(
 			array(
-				'save_listing'     => 1,
-				'delete_listing'   => 1,
+				'store_listing'    => 1,
+				'remove_listing'   => 1,
 				'update_post_meta' => 1,
 			),
 			self::calls( $code, true )

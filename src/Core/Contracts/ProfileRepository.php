@@ -26,10 +26,10 @@ interface ProfileRepository {
 	 *
 	 * @param CompanyProfile $profile Valid profile.
 	 */
-	public function save_profile( CompanyProfile $profile ): void;
+	public function store_profile( CompanyProfile $profile ): void;
 
 	/**
 	 * Removes the profile.
 	 */
-	public function delete_profile(): void;
+	public function remove_profile(): void;
 }

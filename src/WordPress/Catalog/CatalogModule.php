@@ -10,6 +10,8 @@ declare(strict_types=1);
 namespace AIHazirSite\WordPress\Catalog;
 
 use AIHazirSite\Core\Catalog\CatalogService;
+use AIHazirSite\Core\Features;
+use AIHazirSite\WordPress\Catalog\Admin\CatalogAdmin;
 use AIHazirSite\WordPress\Module;
 use AIHazirSite\WordPress\Platform\WpClock;
 
@@ -24,6 +26,10 @@ final class CatalogModule implements Module {
 	 */
 	public function register(): void {
 		PostType::register();
+
+		if ( Features::is_enabled( Features::CATALOG ) && is_admin() ) {
+			( new CatalogAdmin() )->register();
+		}
 	}
 
 	/**
