@@ -15,11 +15,12 @@ use AIHazirSite\Core\Contracts\Settings;
 use AIHazirSite\WordPress\Platform\WpSettings;
 
 /**
- * Stores the company profile in one option.
+ * Stores the company profile in one option and its save time in another.
  */
 final class WpProfileRepository implements ProfileRepository {
 
-	public const OPTION = 'aihs_profile';
+	public const OPTION         = 'aihs_profile';
+	public const UPDATED_OPTION = 'aihs_profile_updated';
 
 	/**
 	 * Constructor.
@@ -37,12 +38,13 @@ final class WpProfileRepository implements ProfileRepository {
 	}
 
 	/**
-	 * Replaces the profile.
+	 * Replaces the profile and records the time.
 	 *
 	 * @param CompanyProfile $profile Profile.
 	 */
 	public function store_profile( CompanyProfile $profile ): void {
 		$this->settings->set( self::OPTION, $profile->to_array(), false );
+		$this->settings->set( self::UPDATED_OPTION, gmdate( 'Y-m-d\TH:i:s\Z' ), false );
 	}
 
 	/**
@@ -50,5 +52,14 @@ final class WpProfileRepository implements ProfileRepository {
 	 */
 	public function remove_profile(): void {
 		$this->settings->delete( self::OPTION );
+		$this->settings->delete( self::UPDATED_OPTION );
+	}
+
+	/**
+	 * Last save time.
+	 */
+	public function updated_at(): ?string {
+		$value = $this->settings->get( self::UPDATED_OPTION, '' );
+		return is_string( $value ) && '' !== $value ? $value : null;
 	}
 }

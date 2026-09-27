@@ -46,4 +46,11 @@ final class MemoryProfileRepository implements ProfileRepository {
 	public function remove_profile(): void {
 		$this->profile = null;
 	}
+
+	/**
+	 * Fixed save time when a profile exists.
+	 */
+	public function updated_at(): ?string {
+		return null === $this->profile ? null : '2026-09-27T12:00:00Z';
+	}
 }

@@ -48,6 +48,11 @@ final class Features {
 	public const BOT_ACCESS = 'bot_access';
 
 	/**
+	 * Schema.org JSON-LD output (0.6.0).
+	 */
+	public const SCHEMA_OUTPUT = 'schema_output';
+
+	/**
 	 * Approved exceptions to "disabled by default", each with a CHANGELOG rationale.
 	 *
 	 * - measurement: the "before" baseline must be collected from the moment the
@@ -82,6 +87,7 @@ final class Features {
 			self::COMPLIANCE_SCAN => false,
 			self::CATALOG         => false,
 			self::BOT_ACCESS      => false,
+			self::SCHEMA_OUTPUT   => false,
 		);
 	}
 

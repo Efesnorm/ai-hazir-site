@@ -32,4 +32,9 @@ interface ProfileRepository {
 	 * Removes the profile.
 	 */
 	public function remove_profile(): void;
+
+	/**
+	 * When the profile was last saved (ISO 8601 UTC), or null.
+	 */
+	public function updated_at(): ?string;
 }

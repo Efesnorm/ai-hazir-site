@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace AIHazirSite\WordPress;
 
+use AIHazirSite\Adapters\Schema\SchemaCache;
 use AIHazirSite\Core\Access\PolicyStore;
 use AIHazirSite\Core\Compliance\ScanStore;
 use AIHazirSite\Core\Features;
@@ -40,6 +41,8 @@ final class Uninstaller {
 			IpRanges::OPTION,
 			ScanStore::OPTION,
 			PolicyStore::OPTION,
+			SchemaCache::OPTION,
+			SchemaCache::ERROR_OPTION,
 		);
 	}
 

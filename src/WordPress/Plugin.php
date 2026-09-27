@@ -16,6 +16,7 @@ use AIHazirSite\WordPress\Access\AccessModule;
 use AIHazirSite\WordPress\Catalog\CatalogModule;
 use AIHazirSite\WordPress\Compliance\ComplianceModule;
 use AIHazirSite\WordPress\Measurement\MeasurementModule;
+use AIHazirSite\WordPress\Schema\SchemaModule;
 use AIHazirSite\WordPress\Platform\WpSettings;
 
 /**
@@ -59,6 +60,7 @@ final class Plugin {
 			new ComplianceModule(),
 			new CatalogModule(),
 			new AccessModule(),
+			new SchemaModule(),
 		);
 	}
 
