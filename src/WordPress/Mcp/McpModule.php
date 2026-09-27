@@ -11,6 +11,7 @@ namespace AIHazirSite\WordPress\Mcp;
 
 use AIHazirSite\Adapters\Abilities\AbilitySchemas;
 use AIHazirSite\Core\Features;
+use AIHazirSite\WordPress\Inquiry\InquiryChannels;
 use AIHazirSite\WordPress\Module;
 use WP\MCP\Core\McpAdapter;
 
@@ -74,12 +75,14 @@ final class McpModule implements Module {
 			self::NAMESPACE,
 			self::ROUTE,
 			__( 'AI Hazır Site – AI Katalog', 'ai-hazir-site' ),
-			__( 'Firmanın profili ve geçerli ilanları: arama, ilan ayrıntısı ve müsaitlik sorusu. Salt okuma.', 'ai-hazir-site' ),
+			InquiryChannels::abilities_enabled()
+				? __( 'Firmanın profili ve geçerli ilanları: arama, ilan ayrıntısı ve müsaitlik sorusu; firmaya talep bırakma (otomatik onay ve otomatik yanıt yok).', 'ai-hazir-site' )
+				: __( 'Firmanın profili ve geçerli ilanları: arama, ilan ayrıntısı ve müsaitlik sorusu. Salt okuma.', 'ai-hazir-site' ),
 			defined( 'AIHS_VERSION' ) ? (string) AIHS_VERSION : '0',
 			array( StatelessHttpTransport::class ),
 			null,
 			McpObservability::class,
-			array_keys( AbilitySchemas::all() ),
+			self::tools(),
 			array(),
 			array(),
 			array( self::class, 'allow' )
@@ -87,7 +90,20 @@ final class McpModule implements Module {
 	}
 
 	/**
-	 * Transport permission: public read (approved access model).
+	 * Tools: the four catalog abilities, plus this site's inquiry ability while the inquiry box is on.
+	 *
+	 * @return list<string>
+	 */
+	public static function tools(): array {
+		$tools = array_keys( AbilitySchemas::all() );
+		if ( InquiryChannels::abilities_enabled() ) {
+			$tools[] = InquiryChannels::ability_name();
+		}
+		return $tools;
+	}
+
+	/**
+	 * Transport permission: public (approved access model; the one writing tool is rate limited and spam checked).
 	 */
 	public static function allow(): bool {
 		return true;

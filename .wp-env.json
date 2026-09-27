@@ -7,5 +7,12 @@
 		"WP_DEBUG_LOG": true,
 		"WP_DEBUG_DISPLAY": true,
 		"SCRIPT_DEBUG": true
+	},
+	"env": {
+		"development": {
+			"mappings": {
+				"wp-content/mu-plugins/aihs-dev-mail.php": "./tools/dev/aihs-dev-mail.php"
+			}
+		}
 	}
 }

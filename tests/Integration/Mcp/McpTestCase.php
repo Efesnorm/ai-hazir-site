@@ -52,6 +52,10 @@ abstract class McpTestCase extends RestTestCase {
 		remove_all_actions( 'wp_abilities_api_categories_init' );
 		remove_all_actions( 'wp_abilities_api_init' );
 		( new AbilitiesModule() )->register();
+		if ( wp_has_ability_category( AbilitiesModule::CATEGORY ) ) {
+			// Left registered by another test class (registries live for the whole process).
+			remove_action( 'wp_abilities_api_categories_init', array( AbilitiesModule::class, 'register_category' ) );
+		}
 		do_action( 'wp_abilities_api_categories_init' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core hook.
 		do_action( 'wp_abilities_api_init' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core hook.
 	}

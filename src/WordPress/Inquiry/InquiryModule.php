@@ -16,6 +16,7 @@ use AIHazirSite\Core\Inquiry\InquirySettings;
 use AIHazirSite\Core\Security\AuditLog;
 use AIHazirSite\Core\Security\TokenBucketLimiter;
 use AIHazirSite\WordPress\Catalog\CatalogReader;
+use AIHazirSite\WordPress\Inquiry\Admin\InquiryAdmin;
 use AIHazirSite\WordPress\Module;
 use AIHazirSite\WordPress\Platform\WpCache;
 use AIHazirSite\WordPress\Platform\WpClock;
@@ -23,7 +24,9 @@ use AIHazirSite\WordPress\Platform\WpSecret;
 use AIHazirSite\WordPress\Platform\WpSettings;
 
 /**
- * While `inquiries` is on: the daily retention purge. The service is built here for every channel.
+ * The inquiry box: admin screen (always, to switch it on after a warning), channels while
+ * `inquiries` is on (MCP ability with `abilities`, REST with `rest_api`), the daily retention purge.
+ * The service is built here for every channel.
  * The purge also runs while the feature is off, so stored personal data never outlives its retention.
  */
 final class InquiryModule implements Module {
@@ -36,6 +39,15 @@ final class InquiryModule implements Module {
 	public function register(): void {
 		add_action( self::PURGE_HOOK, array( self::class, 'purge' ) );
 		add_action( 'init', array( self::class, 'schedule' ) );
+		if ( is_admin() ) {
+			( new InquiryAdmin() )->register();
+		}
+		if ( InquiryChannels::abilities_enabled() && function_exists( 'wp_register_ability' ) ) {
+			add_action( 'wp_abilities_api_init', array( InquiryChannels::class, 'register_ability' ) );
+		}
+		if ( InquiryChannels::rest_enabled() ) {
+			add_action( 'rest_api_init', array( InquiryChannels::class, 'register_route' ) );
+		}
 	}
 
 	/**
@@ -89,7 +101,7 @@ final class InquiryModule implements Module {
 				new TokenBucketLimiter( $cache, $clock, $secret, $settings->per_day, 86400, 'inquiry-day' ),
 			),
 			static fn( int $id ): ?Listing => $query->find( $id ),
-			null
+			new WpInquiryNotifier()
 		);
 	}
 }
