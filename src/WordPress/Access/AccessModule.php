@@ -13,6 +13,7 @@ use AIHazirSite\Core\Access\PolicyStore;
 use AIHazirSite\Core\Access\RobotsRules;
 use AIHazirSite\Core\Features;
 use AIHazirSite\Core\Measurement\Registry;
+use AIHazirSite\WordPress\Access\Admin\AccessPage;
 use AIHazirSite\WordPress\Module;
 use AIHazirSite\WordPress\Platform\WpSettings;
 
@@ -33,6 +34,9 @@ final class AccessModule implements Module {
 			return;
 		}
 		add_filter( 'robots_txt', array( self::class, 'filter_robots' ), self::FILTER_PRIORITY );
+		if ( is_admin() ) {
+			( new AccessPage() )->register();
+		}
 	}
 
 	/**
