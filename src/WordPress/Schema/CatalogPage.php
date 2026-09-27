@@ -9,14 +9,20 @@ declare(strict_types=1);
 
 namespace AIHazirSite\WordPress\Schema;
 
+use AIHazirSite\Adapters\Llms\LlmsTxtBuilder;
+use AIHazirSite\Core\Catalog\CompanyProfile;
 use AIHazirSite\Core\Catalog\ListingType;
+use AIHazirSite\Core\Catalog\ListingValidity;
+use AIHazirSite\Core\Features;
 use AIHazirSite\WordPress\Catalog\Admin\CatalogAdmin;
 use AIHazirSite\WordPress\Catalog\WpProfileRepository;
+use AIHazirSite\WordPress\Llms\LlmsModule;
 use AIHazirSite\WordPress\Platform\WpClock;
 
 /**
- * A minimal, JavaScript-free HTML page: the company, then its current listings by type,
- * with the DataFeed JSON-LD in the head. Expired listings are not shown.
+ * A minimal, JavaScript-free HTML page: the company, then its current listings by type
+ * (each with an "ilan-{id}" anchor that llms.txt links to), with the DataFeed JSON-LD in
+ * the head while `schema_output` is on. Expired listings are not shown (ListingValidity).
  */
 final class CatalogPage {
 
@@ -46,10 +52,11 @@ final class CatalogPage {
 			'' === $profile->name ? get_bloginfo( 'name' ) : $profile->name
 		);
 
+		$details  = new LlmsTxtBuilder( home_url( '/' ), SchemaModule::catalog_url(), '', LlmsModule::labels() );
 		$sections = '';
 		$by_type  = array_fill_keys( ListingType::ALL, array() );
 		foreach ( SchemaModule::listings() as $listing ) {
-			if ( null !== SchemaModule::builder()->entry( $listing, $today ) ) {
+			if ( ListingValidity::is_current( $listing, $today ) ) {
 				$by_type[ $listing->type ][] = $listing;
 			}
 		}
@@ -59,9 +66,13 @@ final class CatalogPage {
 			}
 			$sections .= '<section><h2>' . esc_html( $labels[ $type ] ) . '</h2><ul>';
 			foreach ( $listings as $listing ) {
-				$sections .= '<li><strong>' . esc_html( $listing->title ) . '</strong>'
+				$lines = array();
+				foreach ( $details->details( $listing, $today ) as $label => $value ) {
+					$lines[] = esc_html( $label . ': ' . $value );
+				}
+				$sections .= '<li' . ( null === $listing->id ? '' : ' id="ilan-' . (int) $listing->id . '"' ) . '><strong>' . esc_html( $listing->title ) . '</strong>'
 					. ( '' !== $listing->description ? ' – ' . esc_html( $listing->description ) : '' )
-					. '</li>';
+					. '<br><small>' . implode( '; ', $lines ) . '</small></li>';
 			}
 			$sections .= '</ul></section>';
 		}
@@ -70,9 +81,38 @@ final class CatalogPage {
 			. '<title>' . esc_html( $title ) . '</title>'
 			. '<meta name="viewport" content="width=device-width, initial-scale=1">'
 			. '<link rel="canonical" href="' . esc_url( SchemaModule::catalog_url() ) . '">'
-			. SchemaModule::script( SchemaModule::catalog_document() )
+			. ( Features::is_enabled( Features::SCHEMA_OUTPUT ) ? SchemaModule::script( SchemaModule::catalog_document() ) : '' )
 			. '</head><body><main><h1>' . esc_html( $title ) . '</h1>'
+			. self::company( $profile )
 			. ( '' === $sections ? '<p>' . esc_html__( 'Şu anda yayında ilan yok.', 'ai-hazir-site' ) . '</p>' : $sections )
 			. '</main></body></html>';
+	}
+
+	/**
+	 * Company summary and contact (empty fields left out).
+	 *
+	 * @param CompanyProfile $profile Profile.
+	 */
+	private static function company( CompanyProfile $profile ): string {
+		$labels = LlmsModule::labels();
+		$items  = array_filter(
+			array(
+				__( 'Sektör', 'ai-hazir-site' ) => $profile->sector,
+				$labels['country']              => $profile->country,
+				$labels['languages']            => implode( ', ', $profile->languages ),
+				$labels['certifications']       => implode( ', ', $profile->certifications ),
+				$labels['email']                => $profile->contact_email,
+				$labels['phone']                => $profile->contact_phone,
+			),
+			static fn( string $value ): bool => '' !== $value
+		);
+		if ( array() === $items ) {
+			return '';
+		}
+		$html = '';
+		foreach ( $items as $label => $value ) {
+			$html .= '<li>' . esc_html( $label . ': ' . $value ) . '</li>';
+		}
+		return '<ul>' . $html . '</ul>';
 	}
 }

@@ -137,6 +137,25 @@ final class LlmsTxtBuilder {
 	 * @param string  $today   Y-m-d.
 	 */
 	private function listing_line( Listing $listing, string $today ): string {
+		$details = array();
+		foreach ( $this->details( $listing, $today ) as $label => $value ) {
+			$details[] = $label . ': ' . $value;
+		}
+
+		$text = '' !== $listing->description ? rtrim( self::inline( $listing->description ), '.' ) . '. ' : '';
+		$url  = $this->catalog_url . ( null === $listing->id ? '' : '#ilan-' . $listing->id );
+
+		return self::link( $listing->title, $url, $text . implode( '; ', $details ) );
+	}
+
+	/**
+	 * A listing's details as label → single-line value (also shown on the catalog page).
+	 *
+	 * @param Listing $listing Listing.
+	 * @param string  $today   Y-m-d.
+	 * @return array<string, string>
+	 */
+	public function details( Listing $listing, string $today ): array {
 		$notes = array();
 		if ( '' !== $listing->category ) {
 			$notes['category'] = $listing->category;
@@ -159,10 +178,11 @@ final class LlmsTxtBuilder {
 			$notes['attributes'] = implode( ', ', array_map( static fn( string $k, string $v ): string => $k . ' ' . $v, array_keys( $listing->attributes ), $listing->attributes ) );
 		}
 
-		$text = '' !== $listing->description ? rtrim( self::inline( $listing->description ), '.' ) . '. ' : '';
-		$url  = $this->catalog_url . ( null === $listing->id ? '' : '#ilan-' . $listing->id );
-
-		return self::link( $listing->title, $url, $text . $this->pairs( $notes ) );
+		$details = array();
+		foreach ( $notes as $key => $value ) {
+			$details[ $this->labels[ $key ] ] = self::inline( $value );
+		}
+		return $details;
 	}
 
 	/**

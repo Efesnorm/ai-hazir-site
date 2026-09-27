@@ -11,6 +11,7 @@ namespace AIHazirSite\WordPress\Schema;
 
 use AIHazirSite\Adapters\Schema\SchemaBuilder;
 use AIHazirSite\Adapters\Schema\SchemaCache;
+use AIHazirSite\Core\Catalog\Listing;
 use AIHazirSite\Core\Catalog\ListingType;
 use AIHazirSite\Core\Features;
 use AIHazirSite\WordPress\Catalog\WpListingRepository;
@@ -22,6 +23,8 @@ use AIHazirSite\WordPress\Platform\WpSettings;
 /**
  * Publishes Organization + WebPage on the home page and a DataFeed on /ai-katalog/ while
  * `schema_output` is on. Invalid output is never published (SchemaCache serves the last valid one).
+ * The /ai-katalog/ page itself is served while `schema_output` or `llms_txt` is on
+ * (llms.txt links to it); its JSON-LD only with `schema_output`.
  */
 final class SchemaModule implements Module {
 
@@ -34,11 +37,13 @@ final class SchemaModule implements Module {
 	 */
 	public function register(): void {
 		add_action( 'init', array( self::class, 'rewrite' ), 20 );
+		if ( self::catalog_enabled() ) {
+			add_filter( 'query_vars', array( self::class, 'query_vars' ) );
+			add_action( 'template_redirect', array( CatalogPage::class, 'maybe_render' ) );
+		}
 		if ( ! Features::is_enabled( Features::SCHEMA_OUTPUT ) ) {
 			return;
 		}
-		add_filter( 'query_vars', array( self::class, 'query_vars' ) );
-		add_action( 'template_redirect', array( CatalogPage::class, 'maybe_render' ) );
 		add_action( 'wp_head', array( self::class, 'print_home' ), 20 );
 		add_action( 'admin_notices', array( self::class, 'admin_notice' ) );
 	}
@@ -51,10 +56,17 @@ final class SchemaModule implements Module {
 	}
 
 	/**
-	 * Adds (feature on) or drops (feature off) the /ai-katalog/ rule; flushes only when it changes.
+	 * Whether the /ai-katalog/ page is served.
+	 */
+	public static function catalog_enabled(): bool {
+		return Features::is_enabled( Features::SCHEMA_OUTPUT ) || Features::is_enabled( Features::LLMS_TXT );
+	}
+
+	/**
+	 * Adds (page on) or drops (page off) the /ai-katalog/ rule; flushes only when it changes.
 	 */
 	public static function rewrite(): void {
-		$enabled = Features::is_enabled( Features::SCHEMA_OUTPUT );
+		$enabled = self::catalog_enabled();
 		if ( $enabled ) {
 			add_rewrite_rule( self::REWRITE, 'index.php?' . self::QUERY_VAR . '=1', 'top' );
 		}
@@ -120,12 +132,22 @@ final class SchemaModule implements Module {
 		if ( null !== SeoConflict::detect() ) {
 			return null;
 		}
-		$profiles = new WpProfileRepository();
-		$dates    = array_filter( array_merge( array( $profiles->updated_at() ), array_map( static fn( $l ): ?string => $l->updated_at, self::listings() ) ) );
-		rsort( $dates );
-		$modified = $dates[0] ?? gmdate( 'Y-m-d\TH:i:s\Z' );
+		$modified = self::last_modified( self::listings() ) ?? gmdate( 'Y-m-d\TH:i:s\Z' );
 
-		return self::cache()->publish( 'home', self::builder()->home( $profiles->get(), (string) $modified ), gmdate( 'Y-m-d\TH:i:s\Z' ) );
+		return self::cache()->publish( 'home', self::builder()->home( ( new WpProfileRepository() )->get(), $modified ), gmdate( 'Y-m-d\TH:i:s\Z' ) );
+	}
+
+	/**
+	 * Latest change of the profile or of any listing (ISO 8601), or null when unknown.
+	 *
+	 * @param Listing[] $listings Listings.
+	 *
+	 * @phpstan-param list<Listing> $listings
+	 */
+	public static function last_modified( array $listings ): ?string {
+		$dates = array_filter( array_merge( array( ( new WpProfileRepository() )->updated_at() ), array_map( static fn( $l ): ?string => $l->updated_at, $listings ) ) );
+		rsort( $dates );
+		return isset( $dates[0] ) ? (string) $dates[0] : null;
 	}
 
 	/**

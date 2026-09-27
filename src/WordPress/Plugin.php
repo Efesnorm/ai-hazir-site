@@ -15,6 +15,7 @@ use AIHazirSite\WordPress\Migrations\Migration_0_2_0;
 use AIHazirSite\WordPress\Access\AccessModule;
 use AIHazirSite\WordPress\Catalog\CatalogModule;
 use AIHazirSite\WordPress\Compliance\ComplianceModule;
+use AIHazirSite\WordPress\Llms\LlmsModule;
 use AIHazirSite\WordPress\Measurement\MeasurementModule;
 use AIHazirSite\WordPress\Schema\SchemaModule;
 use AIHazirSite\WordPress\Platform\WpSettings;
@@ -61,6 +62,7 @@ final class Plugin {
 			new CatalogModule(),
 			new AccessModule(),
 			new SchemaModule(),
+			new LlmsModule(),
 		);
 	}
 

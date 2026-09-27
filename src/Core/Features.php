@@ -53,6 +53,11 @@ final class Features {
 	public const SCHEMA_OUTPUT = 'schema_output';
 
 	/**
+	 * The llms.txt file and the AI catalog page (0.7.0).
+	 */
+	public const LLMS_TXT = 'llms_txt';
+
+	/**
 	 * Approved exceptions to "disabled by default", each with a CHANGELOG rationale.
 	 *
 	 * - measurement: the "before" baseline must be collected from the moment the
@@ -88,6 +93,7 @@ final class Features {
 			self::CATALOG         => false,
 			self::BOT_ACCESS      => false,
 			self::SCHEMA_OUTPUT   => false,
+			self::LLMS_TXT        => false,
 		);
 	}
 
