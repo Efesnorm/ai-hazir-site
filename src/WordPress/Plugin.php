@@ -12,6 +12,8 @@ namespace AIHazirSite\WordPress;
 use AIHazirSite\Core\Features;
 use AIHazirSite\Core\Migrations\MigrationInterface;
 use AIHazirSite\WordPress\Migrations\Migration_0_2_0;
+use AIHazirSite\WordPress\Migrations\Migration_0_12_0;
+use AIHazirSite\WordPress\Inquiry\InquiryModule;
 use AIHazirSite\WordPress\Access\AccessModule;
 use AIHazirSite\WordPress\Catalog\CatalogModule;
 use AIHazirSite\WordPress\Compliance\ComplianceModule;
@@ -73,6 +75,7 @@ final class Plugin {
 			new RestModule(),
 			new AbilitiesModule(),
 			new McpModule(),
+			new InquiryModule(),
 		);
 	}
 
@@ -84,6 +87,7 @@ final class Plugin {
 	public static function migrations(): array {
 		return array(
 			new Migration_0_2_0(),
+			new Migration_0_12_0(),
 		);
 	}
 }

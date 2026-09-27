@@ -78,6 +78,11 @@ final class Features {
 	public const MCP = 'mcp';
 
 	/**
+	 * Inquiry box (0.12.0).
+	 */
+	public const INQUIRIES = 'inquiries';
+
+	/**
 	 * Sector templates (0.8.0).
 	 */
 	public const TEMPLATES = 'templates';
@@ -124,6 +129,7 @@ final class Features {
 			self::REST_API          => false,
 			self::ABILITIES         => false,
 			self::MCP               => false,
+			self::INQUIRIES         => false,
 		);
 	}
 

@@ -41,7 +41,7 @@ final class UpgradeFrom020Test extends WP_UnitTestCase {
 		$this->assertSame( 'aihs_prune_hits', MeasurementModule::PRUNE_HOOK );
 		$this->assertSame( 'aihs-measurement', ReportPage::SLUG );
 		$this->assertSame( array( 'bot', 'referral' ), array( Hit::KIND_BOT, Hit::KIND_REFERRAL ) );
-		$this->assertSame( 200, max( array_map( static fn( $m ): int => $m->version(), Plugin::migrations() ) ), 'No new migration in 0.2.1.' );
+		$this->assertSame( array( 200, 1200 ), array_map( static fn( $m ): int => $m->version(), Plugin::migrations() ), '0.2.0 migration kept as is; later ones only added (0.12.0: inquiry tables).' );
 	}
 
 	/**
@@ -76,7 +76,7 @@ final class UpgradeFrom020Test extends WP_UnitTestCase {
 		Lifecycle::maybe_upgrade();
 		( new MeasurementModule() )->schedule_events();
 
-		$this->assertSame( 200, (int) get_option( 'aihs_db_version' ), 'No migration re-run.' );
+		$this->assertSame( 1200, (int) get_option( 'aihs_db_version' ), 'Only the new migration ran; 0.2.0 was not re-run.' );
 		$this->assertFalse( Features::is_enabled( Features::MEASUREMENT ), 'Owner choice kept.' );
 		$this->assertTrue( MeasurementModule::ip_ranges()->contains( 'https://openai.com/gptbot.json', '20.125.66.81' ), 'IP lists kept.' );
 		$this->assertSame( $refresh_at, wp_next_scheduled( 'aihs_refresh_ip_ranges' ), 'Event not rescheduled.' );

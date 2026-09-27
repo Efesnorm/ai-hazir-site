@@ -17,6 +17,8 @@ use AIHazirSite\WordPress\Storage\WpdbHitRepository;
 use AIHazirSite\WordPress\Uninstaller;
 use AIHazirSite\Core\Measurement\IpRanges;
 use AIHazirSite\WordPress\Platform\WpSettings;
+use AIHazirSite\WordPress\Plugin;
+use AIHazirSite\WordPress\Inquiry\WpInquiryRepository;
 use WP_UnitTestCase;
 
 /**
@@ -66,7 +68,7 @@ final class HitsTableTest extends WP_UnitTestCase {
 	 */
 	public function test_table_is_created_on_load(): void {
 		$this->assertTrue( $this->table_exists() );
-		$this->assertSame( 200, ( new Migrator( array( new Migration_0_2_0() ), new WpSettings() ) )->current_version() );
+		$this->assertSame( self::latest_version(), ( new Migrator( array( new Migration_0_2_0() ), new WpSettings() ) )->current_version() );
 	}
 
 	/**
@@ -98,7 +100,16 @@ final class HitsTableTest extends WP_UnitTestCase {
 		Lifecycle::maybe_upgrade();
 
 		$this->assertTrue( $this->table_exists() );
-		$this->assertSame( 200, (int) get_option( Migrator::OPTION ) );
+		$this->assertSame( self::latest_version(), (int) get_option( Migrator::OPTION ) );
+		global $wpdb;
+		$this->assertSame( WpInquiryRepository::table(), $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', WpInquiryRepository::table() ) ), 'Later migrations ran too.' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+	}
+
+	/**
+	 * Version of the newest migration (the database version after a full migration).
+	 */
+	private static function latest_version(): int {
+		return max( array_map( static fn( $m ): int => $m->version(), Plugin::migrations() ) );
 	}
 
 	/**
