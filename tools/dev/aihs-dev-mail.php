@@ -8,6 +8,11 @@
 
 declare(strict_types=1);
 
+// The integration tests also run in the development container: leave e-mail to the test suite's mock mailer there.
+if ( defined( 'WP_TESTS_DOMAIN' ) ) {
+	return;
+}
+
 add_filter(
 	'pre_wp_mail',
 	static function ( $short_circuit, array $atts ) {
