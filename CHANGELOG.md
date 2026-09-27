@@ -3,6 +3,33 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [0.3.0] - 2026-09-27
+
+### Eklendi
+- **U1 AI uyum taraması ve puan** (`compliance_scan` anahtarı, varsayılan kapalı).
+  - Yedi kontrol, PRD ağırlıklarıyla (toplam 100): yapılandırılmış veri 20, içerik okunabilirliği 20,
+    makine arayüzü 20, AI bot erişimi 15, llms.txt 10, tazelik 10, ileri standartlar 5.
+  - Dayanılan standartlar: Google yapılandırılmış veri kuralları (Product, Offer, LocalBusiness,
+    Organization), RFC 9309 (robots.txt), WordPress REST keşfi, WordPress MCP Adapter varsayılan uç noktası,
+    llmstxt.org (zorunlu H1), A2A 1.0.0 Agent Card (`/.well-known/agent-card.json`, §4.4.1).
+  - Puan = 100 × Σ(ağırlık × oran) / Σ(ölçülen ağırlık); erişilemeyen kontroller "ölçülemedi" olur ve
+    puandan düşülmez. `score_version` (1) her rapora yazılır.
+  - En fazla 10 örnek sayfa (ana sayfa, menü bağlantıları, site haritası), istek başına 5 sn, toplam 60 sn.
+  - Araçlar → AI Uyum: "Şimdi tara", puan, en çok puan kazandıracak eksik en üstte, önceki taramayla
+    karşılaştırma, geçmiş. WP-CLI: `wp aihs scan [--format=table|json]`.
+  - Son 20 tarama `aihs_scans` seçeneğinde (otomatik yüklenmez; silme seçeneği açıksa kaldırmada silinir).
+- Çekirdek: `PageFetcher` arayüzü (durum kodu ve başlıklarla HTTP), `Site`, `Html`, `Robots`, `Scanner`.
+
+### Değişti
+- A0 ölçümü, taramanın kendi isteklerini saymaz: tarayıcı site sırrıyla imzalı `X-AIHS-Scan` başlığı gönderir.
+
+### Bilinen sınırlar
+- Tarama sitenin kendine istek atmasına (loopback) dayanır; bunu engelleyen sunucularda kontroller
+  "ölçülemedi" görünür ve sayfada uyarı çıkar. Yerel wp-env'de de loopback çalışmaz.
+- JavaScript çalıştırılmaz; yalnızca JavaScript ile oluşan içerik ve WebMCP görülmez.
+- MCP Server Card (`/.well-known/mcp/server-cards.json`) taslak olduğu için yalnızca bilgi olarak gösterilir.
+- Tarama yönetim sayfasında eşzamanlı çalışır (en fazla ~60 sn).
+
 ## [0.2.1] - 2026-09-27
 
 Kullanıcı açısından değişiklik yok; iç yapı çoklu platforma hazırlandı
