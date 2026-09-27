@@ -160,6 +160,13 @@ final class ReportPage {
 			array_map( static fn( array $r ): array => array( $r['path'], $r['verified'], $r['unverified'], $r['total'] ), Report::section( $rows, Report::SECTION_AI_FILES ) )
 		);
 
+		$html .= self::table(
+			'mcp',
+			__( 'MCP çağrıları (AI agentların araç kullanımı)', 'ai-hazir-site' ),
+			array( __( 'Araç', 'ai-hazir-site' ), __( 'Çağrı', 'ai-hazir-site' ) ),
+			array_map( static fn( array $r ): array => array( $r['source'], $r['total'] ), Report::section( $rows, Report::SECTION_MCP ) )
+		);
+
 		return $html;
 	}
 
@@ -228,6 +235,7 @@ final class ReportPage {
 			Report::SECTION_PAGES     => __( 'Sayfa', 'ai-hazir-site' ),
 			Report::SECTION_REFERRALS => __( 'Yönlendirme', 'ai-hazir-site' ),
 			Report::SECTION_AI_FILES  => __( 'AI dosyası', 'ai-hazir-site' ),
+			Report::SECTION_MCP       => __( 'MCP', 'ai-hazir-site' ),
 		);
 	}
 

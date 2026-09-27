@@ -26,6 +26,7 @@ final class Report {
 	public const SECTION_PAGES     = 'pages';
 	public const SECTION_REFERRALS = 'referrals';
 	public const SECTION_AI_FILES  = 'ai_files';
+	public const SECTION_MCP       = 'mcp';
 
 	public const TOP_PAGES = 10;
 
@@ -84,6 +85,9 @@ final class Report {
 			if ( in_array( $totals['key'], self::AI_FILES, true ) ) {
 				$rows[] = $this->row( self::SECTION_AI_FILES, '', $totals['key'], $totals );
 			}
+		}
+		foreach ( $this->hits->totals( Hit::KIND_MCP, $since, HitRepository::GROUP_SOURCE ) as $totals ) {
+			$rows[] = $this->row( self::SECTION_MCP, $totals['key'], '', $totals );
 		}
 
 		return $rows;

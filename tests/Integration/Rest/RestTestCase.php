@@ -96,16 +96,17 @@ abstract class RestTestCase extends WP_UnitTestCase {
 
 		$ids['cable']   = $save(
 			array(
-				'type'       => 'offer',
-				'title'      => 'NYY kablo',
-				'category'   => 'Kablo',
-				'region'     => 'Türkiye',
-				'quantity'   => '1500',
-				'unit'       => 'm',
-				'price_min'  => '42,50',
-				'currency'   => 'TRY',
-				'template'   => 'product',
-				'attributes' => array( 'kesit' => '2,5' ),
+				'type'           => 'offer',
+				'title'          => 'NYY kablo',
+				'category'       => 'Kablo',
+				'region'         => 'Türkiye',
+				'quantity'       => '1500',
+				'unit'           => 'm',
+				'lead_time_days' => '7',
+				'price_min'      => '42,50',
+				'currency'       => 'TRY',
+				'template'       => 'product',
+				'attributes'     => array( 'kesit' => '2,5' ),
 			)
 		);
 		$ids['service'] = $save(

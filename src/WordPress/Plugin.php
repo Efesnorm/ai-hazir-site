@@ -19,6 +19,7 @@ use AIHazirSite\WordPress\Compliance\Wizard\WizardModule;
 use AIHazirSite\WordPress\Llms\LlmsModule;
 use AIHazirSite\WordPress\Measurement\MeasurementModule;
 use AIHazirSite\WordPress\Abilities\AbilitiesModule;
+use AIHazirSite\WordPress\Mcp\McpModule;
 use AIHazirSite\WordPress\Rest\RestModule;
 use AIHazirSite\WordPress\Schema\SchemaModule;
 use AIHazirSite\WordPress\Templates\TemplatesModule;
@@ -71,6 +72,7 @@ final class Plugin {
 			new LlmsModule(),
 			new RestModule(),
 			new AbilitiesModule(),
+			new McpModule(),
 		);
 	}
 

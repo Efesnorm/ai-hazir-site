@@ -29,7 +29,9 @@ require_once __DIR__ . '/src/WordPress/Requirements.php';
 
 ( new \AIHazirSite\WordPress\Requirements( PHP_VERSION, (string) get_bloginfo( 'version' ) ) )->run(
 	static function () {
-		require_once __DIR__ . '/vendor/autoload.php';
+		// Jetpack Autoloader (used by the bundled MCP Adapter) keeps a single, newest copy of shared
+		// packages when several plugins bundle them; plain Composer autoloading otherwise.
+		require_once is_readable( __DIR__ . '/vendor/autoload_packages.php' ) ? __DIR__ . '/vendor/autoload_packages.php' : __DIR__ . '/vendor/autoload.php';
 
 		\AIHazirSite\WordPress\Lifecycle::register( AIHS_FILE );
 		\AIHazirSite\WordPress\Plugin::boot();
