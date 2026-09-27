@@ -12,6 +12,7 @@ namespace AIHazirSite\WordPress;
 use AIHazirSite\Core\Compliance\ScanStore;
 use AIHazirSite\Core\Features;
 use AIHazirSite\Core\Migrations\Migrator;
+use AIHazirSite\WordPress\Catalog\CatalogModule;
 use AIHazirSite\WordPress\Platform\WpSettings;
 use AIHazirSite\Core\Measurement\IpRanges;
 
@@ -58,6 +59,9 @@ final class Uninstaller {
 		}
 
 		( new Migrator( Plugin::migrations(), new WpSettings() ) )->rollback( 0 );
+
+		// Listings and the company profile go through the catalog's single write point.
+		CatalogModule::service()->purge();
 
 		foreach ( self::options() as $option ) {
 			delete_option( $option );

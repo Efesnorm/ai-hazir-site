@@ -3,7 +3,7 @@
 Sitenin "ne satıyorum, ne arıyorum, ne tedarik edebilirim" bilgisini AI agentların okuyup
 kullanabileceği biçimde yayınlayan WordPress eklentisi.
 
-> Sürüm 0.3.0: AI bot ve yönlendirme ölçümü (A0), AI uyum taraması ve puan (U1). Ayrıntılar: [CHANGELOG.md](CHANGELOG.md).
+> Sürüm 0.4.0: AI bot ve yönlendirme ölçümü (A0), AI uyum taraması (U1), veri modeli ve yönetim formları (A1). Ayrıntılar: [CHANGELOG.md](CHANGELOG.md).
 
 - En düşük sürümler: PHP 8.1, WordPress 6.9
 - Lisans: GPL-2.0-or-later
@@ -63,6 +63,13 @@ adreslerini çeker (en fazla 10 sayfa, toplam 60 sn); kendi istekleri A0 ölçü
 Yerel wp-env'de WordPress kendine istek atamadığı için tarama "ölçülemedi" sonucu verir; kontrol
 mantığı birim ve entegrasyon testleriyle sınanır.
 
+## AI Katalog (A1)
+
+`catalog` anahtarı açıkken **AI Katalog** menüsünden satılan, aranan ve tedarik edilebilen ilanlar ile
+firma profili girilir. Sonraki AI çıktıları (Schema.org, llms.txt, REST, MCP) bu veriden üretilecek.
+Tüm yazmalar `CatalogService` üzerinden geçer ve önce doğrulanır. İlanlar `aihs_listing` içerik türünde
+tutulur; sitenin ön yüzünde görünmez.
+
 ## Klasör yapısı
 
 ```
@@ -74,6 +81,7 @@ src/Core/                  Platformdan bağımsız çekirdek (WordPress fonksiyo
   Migrations/              MigrationInterface, Migrator
   Measurement/             A0 iş kuralları: Classifier, Verifier, IpRanges, Tracker, Report, CsvExport
   Compliance/              U1: Site, Html, Robots, Scanner, ScoreReport, ScanStore, Checks/ (7 kontrol)
+  Catalog/                 A1: Listing, CompanyProfile, doğrulayıcılar, CatalogService (tek yazma noktası)
 src/WordPress/             WordPress adaptörü
   Plugin, Lifecycle, Uninstaller, Requirements, Module
   Platform/                Arayüz uygulamaları: WpSettings, WpCache, WpHttpClient, WpPageFetcher, WpClock, WpSecret
@@ -81,6 +89,7 @@ src/WordPress/             WordPress adaptörü
   Migrations/              Migration_0_2_0
   Measurement/             Kancalar (RequestListener, MeasurementModule), yönetim sayfası, WP-CLI
   Compliance/              ComplianceModule, AI Uyum sayfası, wp aihs scan
+  Catalog/                 aihs_listing içerik türü, WpListingRepository, WpProfileRepository, AI Katalog ekranları
 data/                      Düzenlenebilir bot ve yönlendirme listeleri
 docs/                      PRD, görevler, mimari kararlar (ADR)
 tests/Unit/                Birim testleri (WordPress'siz; bellek içi adaptörler)
@@ -92,11 +101,12 @@ tests/Support/             Bellek içi test adaptörleri
 
 | Seçenek | Anlamı |
 | --- | --- |
-| `aihs_features` | Özellik anahtarları (`measurement`, `compliance_scan`); `measurement` dışında hepsi varsayılan kapalı |
+| `aihs_features` | Özellik anahtarları (`measurement`, `compliance_scan`, `catalog`); `measurement` dışında hepsi varsayılan kapalı |
 | `aihs_db_version` | Uygulanan son geçiş sürümü |
 | `aihs_delete_data_on_uninstall` | Açıksa eklenti silinirken tüm verisi (tablo dahil) silinir |
 | `aihs_ip_ranges` | Botların yayınlanmış IP listeleri önbelleği (otomatik yüklenmez) |
 | `aihs_scans` | Son 20 uyum taraması (otomatik yüklenmez) |
+| `aihs_profile` | Firma profili (otomatik yüklenmez) |
 
 Veritabanı tablosu: `{prefix}aihs_hits`. Cron görevleri: `aihs_refresh_ip_ranges` (günlük),
 `aihs_prune_hits` (haftalık).

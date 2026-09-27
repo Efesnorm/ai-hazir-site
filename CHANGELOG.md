@@ -3,6 +3,28 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [0.4.0] - 2026-09-27
+
+### Eklendi
+- **A1 veri modeli ve yönetim formları** (`catalog` anahtarı, varsayılan kapalı).
+  - Çekirdek: `Listing` (satılan / aranan / tedarik edilebilen; 14 alan, fiyat ve miktar ondalık metin),
+    `CompanyProfile` (kişisel veri alanı yok), `ListingValidator`, `ProfileValidator`,
+    `ListingRepository` ve `ProfileRepository` arayüzleri.
+  - `CatalogService` tek yazma noktası: önce doğrular (zorunlu başlık, fiyat aralığı, ISO 4217 para birimi,
+    geçmiş geçerlilik tarihi yasak), sonra yazar. Mimari testi başka yerden yazılmasını engeller.
+  - WordPress: `aihs_listing` içerik türü (herkese açık adres, arşiv, arama, REST ve çekirdek düzenleme
+    ekranı yok), alanlar `_aihs_` önekli korumalı meta; profil `aihs_profile` seçeneğinde.
+  - AI Katalog menüsü: Satılanlar, Arananlar, Tedarik Edilebilenler (tür, geçerlilik, son güncelleme
+    sütunları; süresi dolanlar işaretlenir, silinmez) ve Firma Profili. Nonce, `manage_options`,
+    girdi temizleme ve çıktı kaçışlama. Kişisel görünen e-posta için uyarı.
+- Kaldırmada, silme seçeneği açıksa ilanlar ve profil de `CatalogService` üzerinden silinir.
+
+### Bilinen sınırlar
+- Liste sayfaları sayfalamasız en fazla 200 kayıt gösterir.
+- Özellikler serbest anahtar–değer; şablonla doğrulama A4'te.
+- Silme kalıcıdır (çöp kutusu yok); onay penceresi ve nonce ile korunur.
+- Özel yetki yerine `manage_options` kullanılır.
+
 ## [0.3.0] - 2026-09-27
 
 ### Eklendi
