@@ -3,7 +3,7 @@
 Sitenin "ne satıyorum, ne arıyorum, ne tedarik edebilirim" bilgisini AI agentların okuyup
 kullanabileceği biçimde yayınlayan WordPress eklentisi.
 
-> Sürüm 0.7.0: AI bot ve yönlendirme ölçümü (A0), AI uyum taraması (U1), veri modeli ve yönetim formları (A1), AI bot erişim ayarları (U2), Schema.org yapılandırılmış veri (A2), llms.txt ve AI katalog sayfası (A3). Ayrıntılar: [CHANGELOG.md](CHANGELOG.md).
+> Sürüm 0.8.0: AI bot ve yönlendirme ölçümü (A0), AI uyum taraması (U1), veri modeli ve yönetim formları (A1), AI bot erişim ayarları (U2), Schema.org yapılandırılmış veri (A2), llms.txt ve AI katalog sayfası (A3), sektör şablonları (A4). Ayrıntılar: [CHANGELOG.md](CHANGELOG.md).
 
 - En düşük sürümler: PHP 8.1, WordPress 6.9
 - Lisans: GPL-2.0-or-later
@@ -97,6 +97,22 @@ Metin yalnızca veri değişince yeniden üretilir. Sitenin kök dizininde fizik
 dokunulmaz ve yönetim panelinde uyarı çıkar. Botların bu dosyaları okuması AI Ölçüm sayfasında
 "AI dosyaları" tablosunda görünür.
 
+## Sektör şablonları (A4)
+
+`templates` anahtarı açıkken Firma Profili'nden bir sektör şablonu seçilir; yeni ilan formları o şablonun
+alanlarını gösterir ve Schema.org, llms.txt ve AI katalog çıktıları şablonun eşlemesini kullanır.
+Şablonlar [data/templates/](data/templates/) altında JSON dosyalarıdır: yeni bir sektör için yeni bir dosya
+eklemek yeterlidir. Başka bir klasör eklemek için:
+
+```php
+add_filter( 'aihs_template_dirs', fn( $dirs ) => array_merge( $dirs, array( WP_CONTENT_DIR . '/aihs-templates' ) ) );
+```
+
+Alan tanımı: `name`, `label`, `type` (text, integer, decimal, date, enum, list), isteğe bağlı `unit`,
+`unit_code` (UN/CEFACT), `required`, `allowed`, `pattern`, `case` (upper/lower), `help`, `llms`,
+`fresh_hours` ve `schema` (`node`: item/deal, `property`, `as`: text, number, date, country, quantity,
+min_quantity, property). Şablonun `price` değeri `false` ise fiyat girilemez ve yayınlanmaz.
+
 ## Klasör yapısı
 
 ```
@@ -111,6 +127,7 @@ src/Core/                  Platformdan bağımsız çekirdek (WordPress fonksiyo
   Compliance/              U1: Site, Html, Robots, Scanner, ScoreReport, ScanStore, Checks/ (7 kontrol)
   Catalog/                 A1: Listing, CompanyProfile, doğrulayıcılar, ListingValidity, CatalogService (tek yazma noktası)
   Access/                  U2: BotPolicy, Presets, RobotsRules, PolicyStore
+  Templates/               A4: Template, TemplateField, TemplateRegistry, TemplateValidator, Freshness
 src/Adapters/              AI kanalı üreticileri (platformdan bağımsız)
   Schema/                  A2: SchemaMap, SchemaBuilder, SchemaValidator, SchemaCache
   Llms/                    A3: LlmsTxtBuilder, LlmsCache
@@ -125,11 +142,12 @@ src/WordPress/             WordPress adaptörü
   Access/                  robots_txt filtresi, AI Bot Erişimi sayfası
   Schema/                  SchemaModule (ana sayfa JSON-LD), CatalogPage (/ai-katalog/), SeoConflict
   Llms/                    LlmsModule (/llms.txt)
-data/                      Düzenlenebilir bot ve yönlendirme listeleri
+  Templates/               TemplatesModule (kayıt defteri, aihs_template_dirs, hatalı dosya uyarısı)
+data/                      Düzenlenebilir bot ve yönlendirme listeleri, templates/ (sektör şablonları)
 docs/                      PRD, görevler, mimari kararlar (ADR)
 tests/Unit/                Birim testleri (WordPress'siz; bellek içi adaptörler)
 tests/Integration/         Entegrasyon testleri (WordPress test paketi)
-tests/Snapshots/           Anlık görüntü dosyaları (ör. robots.txt, Schema.org ve llms.txt çıktıları)
+tests/Snapshots/           Anlık görüntü dosyaları (ör. robots.txt, Schema.org, llms.txt ve şablon formları)
 tests/Support/             Bellek içi test adaptörleri
 ```
 
@@ -137,7 +155,7 @@ tests/Support/             Bellek içi test adaptörleri
 
 | Seçenek | Anlamı |
 | --- | --- |
-| `aihs_features` | Özellik anahtarları (`measurement`, `compliance_scan`, `catalog`, `bot_access`, `schema_output`, `llms_txt`); `measurement` dışında hepsi varsayılan kapalı |
+| `aihs_features` | Özellik anahtarları (`measurement`, `compliance_scan`, `catalog`, `bot_access`, `schema_output`, `llms_txt`, `templates`); `measurement` dışında hepsi varsayılan kapalı |
 | `aihs_db_version` | Uygulanan son geçiş sürümü |
 | `aihs_delete_data_on_uninstall` | Açıksa eklenti silinirken tüm verisi (tablo dahil) silinir |
 | `aihs_ip_ranges` | Botların yayınlanmış IP listeleri önbelleği (otomatik yüklenmez) |

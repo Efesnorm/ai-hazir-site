@@ -3,6 +3,50 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [0.8.0] - 2026-09-27
+
+### Eklendi
+- **A4 sektör şablonları** (`templates` anahtarı, varsayılan kapalı).
+  - Şablonlar kodda değil, `data/templates/*.json` dosyalarında: kimlik, sürüm, ad, öğe türü (Product,
+    Service, TouristTrip), fiyat kuralı ve alanlar (ad, etiket, tür, birim, UN/CEFACT birim kodu, zorunlu,
+    izin verilen değerler, desen, llms.txt'te görünür mü, tazelik süresi, Schema.org eşlemesi).
+  - Başlangıç şablonları (alanlar taslak, pilot firmalarla doğrulanacak): `product` (kablo),
+    `export_product` (GTİP, menşe, Incoterms 2020, hedef pazarlar, sertifikalar, MOQ), `service` (hukuk;
+    **fiyat yok**), `tour` (başlangıç, süre, kontenjan, kalan yer, dahil olanlar, iptal koşulu, buluşma
+    noktası) ve alansız `general`.
+  - Yeni sektör = yeni JSON dosyası; kod değişikliği gerekmez. Başka klasörler `aihs_template_dirs`
+    filtresiyle eklenebilir. Okunamayan dosyalar atlanır ve yöneticiye nedeniyle gösterilir.
+  - Firma Profili'nde sektör şablonu seçimi; yeni ilan formu şablonun alanlarını türüne uygun girdilerle
+    gösterir. Şablonda olmayan ek özellikler serbest satırlar olarak kalır.
+  - Çekirdek `TemplateRegistry` ve `TemplateValidator`; `ListingValidator` şablon doğrulamasını çağırır
+    (zorunlu, tür, izin verilen değer, desen, fiyat yasağı). Mevcut kurallar değişmedi.
+  - JSON-LD: öğe türü şablondan; alanlar eşlendikleri özelliğe (ör. `material`, `color`,
+    `countryOfOrigin`, `eligibleRegion`, `eligibleQuantity`, `serviceType`, `departureTime`,
+    `inventoryLevel`), diğerleri birim koduyla `PropertyValue` olarak. llms.txt ve AI katalog sayfası
+    şablon alanlarını etiket ve birimleriyle gösterir.
+  - `service` şablonunda fiyat girilemez ve kayıtta olsa bile hiçbir çıktıda yayınlanmaz.
+  - `tour` şablonunda kalan yer, ilan son kaydedildikten 24 saat sonra AI çıktılarında
+    "doğrulanmadı" diye işaretlenir (JSON-LD'de `inventoryLevel` yerine açıklamalı `PropertyValue`).
+- Veri: ilanın şablonu `_aihs_template` post meta alanında, profilinki `aihs_profile` içinde. Tablo
+  değişikliği yok. Bu alan olmayan eski ilanlar "genel" sayılır ve olduğu gibi çalışır.
+
+### Değişti
+- `Listing` ve `CompanyProfile` veri modellerine `template` alanı eklendi; alan listesini sabitleyen
+  test onayla güncellendi (kişisel veri denetimi aynen).
+
+### Kararlar
+- `Service`, `TouristTrip` ve `Demand` türlerinde `additionalProperty` yok (schema.org); bu yüzden
+  hizmet ve turların ek özellikleri teklifin (`Offer`) üzerine yazılır.
+- İlanın şablonu, türü gibi sonradan değiştirilemez.
+- Tazelik ilanın son kaydıyla ölçülür; formu yeniden kaydetmek müsaitliği onaylar.
+- Şablonlar kapalıyken her şey 0.7.0'daki gibi çalışır; kayıtlı şablon seçimleri korunur.
+
+### Bilinen sınırlar
+- Aranan (Demand) bir hizmet veya turun ek özellikleri JSON-LD'de yer almaz; llms.txt ve katalog
+  sayfasında görünür.
+- Şablon alan etiketleri JSON dosyasındaki metindir; çevirisi A8 çoklu dil görevinde.
+- Başlangıç şablonlarının alanları taslaktır; pilot sonrası değişebilir (sürüm numarası artırılarak).
+
 ## [0.7.0] - 2026-09-27
 
 ### Eklendi
