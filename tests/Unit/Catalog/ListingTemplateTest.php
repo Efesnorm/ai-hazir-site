@@ -169,12 +169,15 @@ final class ListingTemplateTest extends TestCase {
 	}
 
 	/**
-	 * Profile: known template stored; unknown refused; a form without the choice keeps the stored one.
+	 * Profile: known template stored; unknown refused; a form without the choice keeps the stored one;
+	 * with templates off the stored choice is kept.
 	 */
 	public function test_profile_template(): void {
 		$this->assertSame( 'tour', $this->service()->save_profile( array( 'name' => 'Tur A.Ş.', 'template' => 'tour' ) )->profile()?->template ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
 		$this->assertSame( 'tour', $this->service()->save_profile( array( 'name' => 'Tur A.Ş.' ) )->profile()?->template );
 		$this->assertSame( 'Bilinmeyen sektör şablonu.', $this->service()->save_profile( array( 'name' => 'Tur A.Ş.', 'template' => 'yok' ) )->errors['template'] ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
-		$this->assertSame( 'general', $this->service( false )->save_profile( array( 'name' => 'Tur A.Ş.', 'template' => 'tour' ) )->profile()?->template ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
+		// Templates off: the choice is neither shown nor changed; the stored one survives any input.
+		$this->assertSame( 'tour', $this->service( false )->save_profile( array( 'name' => 'Tur A.Ş.', 'template' => 'product' ) )->profile()?->template ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
+		$this->assertSame( 'general', ( new MemoryProfileRepository() )->get()->template );
 	}
 }

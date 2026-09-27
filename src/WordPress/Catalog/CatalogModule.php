@@ -14,6 +14,7 @@ use AIHazirSite\Core\Features;
 use AIHazirSite\WordPress\Catalog\Admin\CatalogAdmin;
 use AIHazirSite\WordPress\Module;
 use AIHazirSite\WordPress\Platform\WpClock;
+use AIHazirSite\WordPress\Templates\TemplatesModule;
 
 /**
  * The post type is always registered so stored listings stay intact;
@@ -42,6 +43,6 @@ final class CatalogModule implements Module {
 	 * The catalog write service with the WordPress adapters.
 	 */
 	public static function service(): CatalogService {
-		return new CatalogService( new WpListingRepository(), new WpProfileRepository(), new WpClock() );
+		return new CatalogService( new WpListingRepository(), new WpProfileRepository(), new WpClock(), TemplatesModule::registry() );
 	}
 }

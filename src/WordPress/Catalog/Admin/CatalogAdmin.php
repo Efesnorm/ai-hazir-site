@@ -13,10 +13,13 @@ use AIHazirSite\Core\Catalog\CompanyProfile;
 use AIHazirSite\Core\Catalog\Listing;
 use AIHazirSite\Core\Catalog\ListingType;
 use AIHazirSite\Core\Catalog\ProfileValidator;
+use AIHazirSite\Core\Templates\Template;
+use AIHazirSite\Core\Templates\TemplateField;
 use AIHazirSite\WordPress\Catalog\CatalogModule;
 use AIHazirSite\WordPress\Catalog\PostType;
 use AIHazirSite\WordPress\Catalog\WpListingRepository;
 use AIHazirSite\WordPress\Catalog\WpProfileRepository;
+use AIHazirSite\WordPress\Templates\TemplatesModule;
 use AIHazirSite\WordPress\Platform\WpClock;
 
 /**
@@ -187,10 +190,13 @@ final class CatalogAdmin {
 	 * @param array{errors: array<string, string>, input: array<string, mixed>, warnings: list<string>} $state Carried-over state.
 	 */
 	public static function render_form( string $type, ?Listing $listing, array $state ): string {
-		$labels = self::type_labels();
-		$values = null === $listing ? array() : $listing->to_array();
+		$labels   = self::type_labels();
+		$registry = TemplatesModule::registry();
+		$template = self::listing_template( $listing, $state['input'] );
+		$values   = null === $listing ? array() : $listing->to_array();
 		if ( null !== $listing ) {
-			$values['attributes'] = self::attributes_text( $listing->attributes );
+			$values['attributes'] = self::attributes_text( array_diff_key( $listing->attributes, self::field_names( $template ) ) );
+			$values['attr']       = array_intersect_key( $listing->attributes, self::field_names( $template ) );
 		}
 		$values = array_merge( $values, $state['input'] );
 		$errors = $state['errors'];
@@ -201,8 +207,17 @@ final class CatalogAdmin {
 			. '<input type="hidden" name="action" value="' . esc_attr( self::SAVE_LISTING ) . '">'
 			. '<input type="hidden" name="type" value="' . esc_attr( $type ) . '">'
 			. '<input type="hidden" name="id" value="' . esc_attr( null === $listing ? '' : (string) $listing->id ) . '">'
+			. ( null !== $registry && null === $listing ? '<input type="hidden" name="template" value="' . esc_attr( $template->id ) . '">' : '' )
 			. wp_nonce_field( self::SAVE_LISTING, '_wpnonce', true, false )
 			. '<table class="form-table" role="presentation"><tbody>';
+
+		if ( null !== $registry ) {
+			$html .= '<tr><th scope="row">' . esc_html__( 'Sektör şablonu', 'ai-hazir-site' ) . '</th><td><strong id="aihs-template-name">' . esc_html( $template->name ) . '</strong>'
+				. ( '' !== $template->description ? '<p class="description">' . esc_html( $template->description ) . '</p>' : '' )
+				. ( null === $listing ? '<p class="description">' . esc_html__( 'Yeni ilanlar Firma Profili\'nde seçilen şablonu kullanır; ilanın şablonu sonradan değiştirilemez.', 'ai-hazir-site' ) . '</p>' : '' )
+				. ( '' !== ( $errors['template'] ?? '' ) ? '<p class="aihs-field-error" style="color:#b32d2e">' . esc_html( $errors['template'] ) . '</p>' : '' )
+				. '</td></tr>';
+		}
 
 		$fields = array(
 			'title'          => array( __( 'Başlık', 'ai-hazir-site' ), 'text', __( 'Zorunlu.', 'ai-hazir-site' ) ),
@@ -216,9 +231,18 @@ final class CatalogAdmin {
 			'region'         => array( __( 'Bölge', 'ai-hazir-site' ), 'text', '' ),
 			'lead_time_days' => array( __( 'Teslim süresi (gün)', 'ai-hazir-site' ), 'number', '' ),
 			'valid_until'    => array( __( 'Geçerlilik tarihi', 'ai-hazir-site' ), 'date', '' ),
-			'attributes'     => array( __( 'Özellikler', 'ai-hazir-site' ), 'textarea', __( 'Her satıra bir "anahtar: değer" (anahtar: küçük harf, rakam, alt çizgi).', 'ai-hazir-site' ) ),
+			'attributes'     => array( array() === $template->fields ? __( 'Özellikler', 'ai-hazir-site' ) : __( 'Ek özellikler', 'ai-hazir-site' ), 'textarea', __( 'Her satıra bir "anahtar: değer" (anahtar: küçük harf, rakam, alt çizgi).', 'ai-hazir-site' ) ),
 		);
+		if ( ! $template->price ) {
+			unset( $fields['price_min'], $fields['price_max'], $fields['currency'] );
+		}
 		foreach ( $fields as $name => [ $label, $kind, $help ] ) {
+			if ( 'attributes' === $name ) {
+				$attr = is_array( $values['attr'] ?? null ) ? $values['attr'] : array();
+				foreach ( $template->fields as $field ) {
+					$html .= self::template_row( $field, $attr[ $field->name ] ?? '', $errors[ 'attributes.' . $field->name ] ?? '' );
+				}
+			}
 			$html .= self::field_row( $name, $label, $kind, $values[ $name ] ?? '', $help, $errors[ $name ] ?? '' );
 		}
 
@@ -282,6 +306,19 @@ final class CatalogAdmin {
 			$html .= self::field_row( $name, $label, $kind, $values[ $name ] ?? '', $help, $state['errors'][ $name ] ?? '' );
 		}
 
+		$registry = TemplatesModule::registry();
+		if ( null !== $registry ) {
+			$options = '';
+			foreach ( $registry->all() as $template ) {
+				$options .= '<option value="' . esc_attr( $template->id ) . '"' . selected( (string) $values['template'], $template->id, false ) . '>' . esc_html( $template->name ) . '</option>';
+			}
+			$error = $state['errors']['template'] ?? '';
+			$html .= '<tr><th scope="row"><label for="aihs-template">' . esc_html__( 'Sektör şablonu', 'ai-hazir-site' ) . '</label></th><td>'
+				. '<select id="aihs-template" name="template">' . $options . '</select>'
+				. ( '' !== $error ? '<p class="aihs-field-error" style="color:#b32d2e">' . esc_html( $error ) . '</p>' : '' )
+				. '<p class="description">' . esc_html__( 'Yeni ilan formları bu şablonun alanlarını gösterir. Mevcut ilanlar kendi şablonunu korur.', 'ai-hazir-site' ) . '</p></td></tr>';
+		}
+
 		return $html . '</tbody></table>' . get_submit_button( __( 'Kaydet', 'ai-hazir-site' ) ) . '</form>';
 	}
 
@@ -328,8 +365,27 @@ final class CatalogAdmin {
 		}
 		$input['description'] = sanitize_textarea_field( self::text( $post, 'description' ) );
 		$input['attributes']  = sanitize_textarea_field( self::text( $post, 'attributes' ) );
+		$input['attr']        = array();
+		foreach ( isset( $post['attr'] ) && is_array( $post['attr'] ) ? $post['attr'] : array() as $key => $value ) {
+			if ( is_scalar( $value ) ) {
+				$input['attr'][ sanitize_key( (string) $key ) ] = sanitize_text_field( (string) $value );
+			}
+		}
+		if ( null !== TemplatesModule::registry() && $id <= 0 ) {
+			$input['template'] = sanitize_key( self::text( $post, 'template' ) );
+		}
 
-		$result = CatalogModule::service()->save_listing( $input, $id > 0 ? $id : null );
+		// Template fields come last so they win over a same-named line in the free text.
+		$save               = $input;
+		$save['attributes'] = $input['attributes'];
+		foreach ( $input['attr'] as $key => $value ) {
+			if ( '' !== $value ) {
+				$save['attributes'] .= "\n" . $key . ': ' . $value;
+			}
+		}
+		unset( $save['attr'] );
+
+		$result = CatalogModule::service()->save_listing( $save, $id > 0 ? $id : null );
 		if ( $result->is_valid() ) {
 			return self::page_url( $type, array( 'message' => 'saved' ) );
 		}
@@ -369,6 +425,9 @@ final class CatalogAdmin {
 		}
 		$input['contact_email']  = sanitize_email( self::text( $post, 'contact_email' ) );
 		$input['certifications'] = sanitize_textarea_field( self::text( $post, 'certifications' ) );
+		if ( null !== TemplatesModule::registry() ) {
+			$input['template'] = sanitize_key( self::text( $post, 'template' ) );
+		}
 
 		$result = CatalogModule::service()->save_profile( $input );
 		if ( $result->is_valid() ) {
@@ -449,6 +508,75 @@ final class CatalogAdmin {
 		$input = 'textarea' === $kind
 			? '<textarea class="large-text" rows="4"' . $attrs . '>' . esc_textarea( $value ) . '</textarea>'
 			: '<input type="' . esc_attr( $kind ) . '" class="regular-text"' . $attrs . ' value="' . esc_attr( $value ) . '">';
+
+		return '<tr><th scope="row"><label for="' . esc_attr( $id ) . '">' . esc_html( $label ) . '</label></th><td>' . $input
+			. ( '' !== $error ? '<p class="aihs-field-error" id="' . esc_attr( $id ) . '-error" style="color:#b32d2e">' . esc_html( $error ) . '</p>' : '' )
+			. ( '' !== $help ? '<p class="description">' . esc_html( $help ) . '</p>' : '' )
+			. '</td></tr>';
+	}
+
+	/**
+	 * The template a listing form shows: the listing's own, else the requested one, else the profile's.
+	 *
+	 * @param Listing|null         $listing Listing being edited.
+	 * @param array<string, mixed> $input   Carried-over input.
+	 */
+	public static function listing_template( ?Listing $listing, array $input = array() ): Template {
+		$registry = TemplatesModule::registry();
+		if ( null === $registry ) {
+			return Template::general();
+		}
+		if ( null !== $listing ) {
+			return $registry->get( $listing->template );
+		}
+		$requested = isset( $input['template'] ) && is_string( $input['template'] ) ? $input['template'] : '';
+		return $registry->get( '' !== $requested ? $requested : ( new WpProfileRepository() )->get()->template );
+	}
+
+	/**
+	 * Field names of a template as keys.
+	 *
+	 * @param Template $template Template.
+	 * @return array<string, true>
+	 */
+	private static function field_names( Template $template ): array {
+		return array_fill_keys( array_map( static fn( TemplateField $f ): string => $f->name, $template->fields ), true );
+	}
+
+	/**
+	 * Form row of a template field (input named attr[<field>]).
+	 *
+	 * @param TemplateField $field Field.
+	 * @param mixed         $value Value.
+	 * @param string        $error Error message.
+	 */
+	private static function template_row( TemplateField $field, mixed $value, string $error ): string {
+		$id    = 'aihs-attr-' . str_replace( '_', '-', $field->name );
+		$value = is_scalar( $value ) ? (string) $value : '';
+		$attrs = ' id="' . esc_attr( $id ) . '" name="' . esc_attr( 'attr[' . $field->name . ']' ) . '"'
+			. ( $field->required ? ' required' : '' )
+			. ( '' !== $error ? ' aria-invalid="true" aria-describedby="' . esc_attr( $id ) . '-error"' : '' );
+
+		if ( 'enum' === $field->type ) {
+			$options = '<option value="">' . esc_html__( '— Seçin —', 'ai-hazir-site' ) . '</option>';
+			foreach ( $field->allowed as $allowed ) {
+				$options .= '<option value="' . esc_attr( $allowed ) . '"' . selected( $value, $allowed, false ) . '>' . esc_html( $allowed ) . '</option>';
+			}
+			$input = '<select' . $attrs . '>' . $options . '</select>';
+		} else {
+			$kind  = 'date' === $field->type ? 'date' : 'text';
+			$mode  = in_array( $field->type, array( 'integer', 'decimal' ), true ) ? ' inputmode="' . ( 'integer' === $field->type ? 'numeric' : 'decimal' ) . '"' : '';
+			$input = '<input type="' . $kind . '" class="regular-text"' . $attrs . $mode . ' value="' . esc_attr( $value ) . '">';
+		}
+
+		$help = $field->help;
+		if ( 'list' === $field->type ) {
+			$help = trim( $help . ' ' . ( array() === $field->allowed ? __( 'Virgülle ayırın.', 'ai-hazir-site' ) : sprintf( /* translators: %s: allowed values. */ __( 'Virgülle ayırın; izin verilenler: %s.', 'ai-hazir-site' ), implode( ', ', $field->allowed ) ) ) );
+		}
+		if ( null !== $field->fresh_hours ) {
+			$help = trim( $help . ' ' . sprintf( /* translators: %d: hours. */ __( 'Kaydettikten %d saat sonra AI çıktılarında "doğrulanmadı" diye işaretlenir; güncel tutmak için ilanı yeniden kaydedin.', 'ai-hazir-site' ), $field->fresh_hours ) );
+		}
+		$label = $field->label . ( '' !== $field->unit ? ' (' . $field->unit . ')' : '' ) . ( $field->required ? ' *' : '' );
 
 		return '<tr><th scope="row"><label for="' . esc_attr( $id ) . '">' . esc_html( $label ) . '</label></th><td>' . $input
 			. ( '' !== $error ? '<p class="aihs-field-error" id="' . esc_attr( $id ) . '-error" style="color:#b32d2e">' . esc_html( $error ) . '</p>' : '' )

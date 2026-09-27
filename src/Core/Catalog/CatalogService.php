@@ -79,9 +79,10 @@ final class CatalogService {
 	 * @param array<string, mixed> $input Raw input.
 	 */
 	public function save_profile( array $input ): ValidationResult {
-		// A form without the template choice (templates off) keeps the stored one.
-		if ( ! isset( $input['template'] ) ) {
-			$input['template'] = null === $this->templates ? '' : $this->profiles->get()->template;
+		// Templates off: the stored choice is kept (it is not shown, so it cannot be changed).
+		// Templates on: a form without the choice keeps the stored one too.
+		if ( null === $this->templates || ! isset( $input['template'] ) ) {
+			$input['template'] = $this->profiles->get()->template;
 		}
 		$result  = ( new ProfileValidator( $this->templates ) )->validate( $input );
 		$profile = $result->profile();

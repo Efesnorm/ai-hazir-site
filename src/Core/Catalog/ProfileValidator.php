@@ -28,7 +28,8 @@ final class ProfileValidator {
 	/**
 	 * Constructor.
 	 *
-	 * @param TemplateRegistry|null $templates Known sector templates; null when templates are off (always "general").
+	 * @param TemplateRegistry|null $templates Known sector templates; null when templates are off
+	 *                                         (the id is then only format-checked, so a stored choice survives).
 	 */
 	public function __construct( private readonly ?TemplateRegistry $templates = null ) {
 	}
@@ -83,7 +84,7 @@ final class ProfileValidator {
 
 		$template = '' === $text( 'template' ) ? Template::GENERAL : $text( 'template' );
 		if ( null === $this->templates ) {
-			$template = Template::GENERAL;
+			$template = preg_match( Template::ID, $template ) ? $template : Template::GENERAL;
 		} elseif ( ! $this->templates->has( $template ) ) {
 			$errors['template'] = 'Bilinmeyen sektör şablonu.';
 		}

@@ -31,6 +31,28 @@ final class TemplatesModule implements Module {
 	 * Registers hooks.
 	 */
 	public function register(): void {
+		if ( Features::is_enabled( Features::TEMPLATES ) ) {
+			add_action( 'admin_notices', array( self::class, 'admin_notice' ) );
+		}
+	}
+
+	/**
+	 * Lists template files that could not be loaded (they are skipped until fixed).
+	 */
+	public static function admin_notice(): void {
+		$registry = self::registry();
+		if ( null === $registry || array() === $registry->errors() || ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+		$items = '';
+		foreach ( $registry->errors() as $file => $error ) {
+			$items .= '<li><code>' . esc_html( basename( $file ) ) . '</code>: ' . esc_html( $error ) . '</li>';
+		}
+		printf(
+			'<div class="notice notice-error"><p>%s</p><ul>%s</ul></div>',
+			esc_html__( 'AI Hazır Site: Bazı sektör şablonu dosyaları okunamadı; düzeltilene kadar kullanılmıyorlar.', 'ai-hazir-site' ),
+			$items // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Each part escaped above.
+		);
 	}
 
 	/**
