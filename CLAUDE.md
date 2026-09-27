@@ -39,6 +39,7 @@ Ayrıntı: `docs/mimari/ADR-001-coklu-platform.md`. Hedef: WordPress dışındak
 - Her geçiş `MigrationInterface`'i uygulayan sürümlü bir sınıftır ve `down()` metodu vardır
   (WordPress: `src/WordPress/Migrations/`).
 - Kişisel veri (ham IP, e-posta vb.) saklanmaz. Gerekirse tuzlu hash kullan.
+- İstisna (0.12.0, onaylı): teklif kutusunda talep sahibinin iletişim bilgisi şifreli saklanır, saklama süresi sonunda ve talep üzerine silinir.
 
 ## Kod standartları
 - PSR-4 otomatik yükleme (Composer). `declare(strict_types=1);` her dosyada.

@@ -47,7 +47,13 @@ wp-content/mails/ → "[ai-hazir-site] Yeni AI Katalog talebi #1" ve "#2" (ileti
 Panel verisi → #1 quote_request ai/mcp new (alici@ornek.example), #2 referral human/rest new (+90 212 555 11 22)
 Denetim → mcp submit accepted, mcp notify notified, rest submit accepted, rest notify notified
 ```
-Claude ile elle deneme: **bekliyor** (teklif bırakma → e-posta → panel).
+Claude ile elle deneme (28.09.2026, Claude Desktop, yerel site): kullanıcı Claude'dan NYY 3x2,5 kablo ilanı
+için 500 metrelik teklif isteği bırakmasını istedi. Claude `aihs-submit-inquiry` aracını kullandı; talep #5 olarak
+`quote_request`, kaynak `ai` / kanal `mcp`, durum `new`, spam skoru 0, ilan #6 ile kaydedildi. Bildirim e-postası
+"[ai-hazir-site] Yeni AI Katalog talebi #5" yazıldı (iletişim bilgisi yok, panel bağlantısı var); talep panelde
+iletişim bilgileriyle (Deneme Alıcı) göründü. Sonuç doğru.
+
+`CLAUDE.md`'ye (onaylı) kişisel veri istisnası satırı eklendi.
 
 ### Bilinen sınırlar
 - KVKK aydınlatma metni yalnızca yer tutucudur; hukuki metin site sahibinin sorumluluğundadır.
