@@ -15,6 +15,7 @@ use AIHazirSite\WordPress\Migrations\Migration_0_2_0;
 use AIHazirSite\WordPress\Migrations\Migration_0_12_0;
 use AIHazirSite\WordPress\Inquiry\InquiryModule;
 use AIHazirSite\WordPress\Report\ReportModule;
+use AIHazirSite\WordPress\Report\BadgeModule;
 use AIHazirSite\WordPress\Access\AccessModule;
 use AIHazirSite\WordPress\Catalog\CatalogModule;
 use AIHazirSite\WordPress\Compliance\ComplianceModule;
@@ -78,6 +79,7 @@ final class Plugin {
 			new McpModule(),
 			new InquiryModule(),
 			new ReportModule(),
+			new BadgeModule(),
 		);
 	}
 

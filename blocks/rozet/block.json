@@ -1,0 +1,17 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "ai-hazir-site/rozet",
+	"version": "1.0.0",
+	"title": "AI Hazır rozeti",
+	"category": "widgets",
+	"icon": "awards",
+	"description": "Uyum puanı eşiğin üstündeyse sitenin AI Hazır rozetini ve doğrulama bağlantısını gösterir; altındaysa hiçbir şey göstermez.",
+	"keywords": [ "ai", "rozet", "uyum" ],
+	"textdomain": "ai-hazir-site",
+	"supports": {
+		"html": false,
+		"align": [ "left", "center", "right" ]
+	},
+	"editorScript": "file:./editor.js"
+}
