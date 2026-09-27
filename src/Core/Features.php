@@ -83,6 +83,11 @@ final class Features {
 	public const INQUIRIES = 'inquiries';
 
 	/**
+	 * Compliance report and badge (1.0.0).
+	 */
+	public const COMPLIANCE_REPORT = 'compliance_report';
+
+	/**
 	 * Sector templates (0.8.0).
 	 */
 	public const TEMPLATES = 'templates';
@@ -130,6 +135,7 @@ final class Features {
 			self::ABILITIES         => false,
 			self::MCP               => false,
 			self::INQUIRIES         => false,
+			self::COMPLIANCE_REPORT => false,
 		);
 	}
 

@@ -173,7 +173,7 @@ final class WizardFlowTest extends WizardTestCase {
 		$rows    = $wpdb->get_results( "SELECT option_name, option_value FROM {$wpdb->options} WHERE option_name LIKE 'aihs\\_%' ORDER BY option_name", ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		$options = array();
 		foreach ( (array) $rows as $row ) {
-			if ( ! in_array( $row['option_name'], array( 'aihs_wizard', 'aihs_scans', 'aihs_llms_cache', 'aihs_schema_cache', 'aihs_schema_error' ), true ) ) {
+			if ( ! in_array( $row['option_name'], array( 'aihs_wizard', 'aihs_scans', 'aihs_first_scan', 'aihs_llms_cache', 'aihs_schema_cache', 'aihs_schema_error' ), true ) ) {
 				$options[ $row['option_name'] ] = maybe_unserialize( $row['option_value'] );
 			}
 		}
