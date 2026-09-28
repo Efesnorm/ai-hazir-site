@@ -157,10 +157,17 @@ final class RestResponder {
 		$ids = array( Template::GENERAL => true );
 		if ( null !== $this->templates ) {
 			$ids[ $this->templates->get( $profile->template )->id ] = true;
+			// The listings' templates in id order, so the answer does not depend on the listing order
+			// (listings saved in the same second may come back in either order).
+			$others = array();
 			foreach ( $listings as $listing ) {
 				if ( ListingValidity::is_current( $listing, $today ) ) {
-					$ids[ $this->templates->get( $listing->template )->id ] = true;
+					$others[] = $this->templates->get( $listing->template )->id;
 				}
+			}
+			sort( $others );
+			foreach ( $others as $id ) {
+				$ids[ $id ] = true;
 			}
 		}
 		return array_map( fn( string $id ): Template => $this->template_by_id( $id ), array_keys( $ids ) );

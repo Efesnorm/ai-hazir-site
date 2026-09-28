@@ -3,6 +3,13 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.0.1] - 2026-09-28 (onay bekliyor: `duzeltme-sablon-sirasi` dalı)
+
+### Düzeltildi
+- REST `GET /templates`: şablon sırası artık ilanların sırasına bağlı değil (genel, profilin şablonu, sonra ilanların
+  şablonları kimliğe göre). Aynı saniyede kaydedilen ilanlarda sıra değişiyor ve `RestContractTest::test_full_catalog`
+  ara sıra kırılıyordu (Görev 10'dan beri). Mevcut testler değişmedi; yeni birim testi `TemplateOrderTest`.
+
 ## [1.0.0] - 2026-09-28
 
 İlk kararlı sürüm (MVP).
