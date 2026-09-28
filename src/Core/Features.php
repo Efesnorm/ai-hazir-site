@@ -98,6 +98,16 @@ final class Features {
 	public const PORTAL_MODE = 'portal_mode';
 
 	/**
+	 * Updates from our update server, canary channels, rollback (1.3.0).
+	 */
+	public const REMOTE_UPDATES = 'remote_updates';
+
+	/**
+	 * Weekly summary to the report panel; also needs the site owner's explicit consent (1.3.0).
+	 */
+	public const TELEMETRY = 'telemetry';
+
+	/**
 	 * Sector templates (0.8.0).
 	 */
 	public const TEMPLATES = 'templates';
@@ -148,6 +158,8 @@ final class Features {
 			self::COMPLIANCE_REPORT => false,
 			self::MULTILINGUAL      => false,
 			self::PORTAL_MODE       => false,
+			self::REMOTE_UPDATES    => false,
+			self::TELEMETRY         => false,
 		);
 	}
 
