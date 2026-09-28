@@ -32,9 +32,10 @@ final class TelemetrySendsOnlyWithConsentTest extends TestCase {
 	private const POSTERS = array( 'Core/Telemetry/TelemetryService.php' );
 
 	/**
-	 * The only HttpPoster implementation.
+	 * The only HttpPoster implementation, and the A2A outbox (1.6.0: sends only ApprovedRequest, guarded
+	 * by A2ASendsOnlyWithApprovalTest).
 	 */
-	private const WP_POSTERS = array( 'WordPress/Platform/WpHttpPoster.php' );
+	private const WP_POSTERS = array( 'WordPress/Platform/WpHttpPoster.php', 'WordPress/A2A/A2AOutbox.php' );
 
 	/**
 	 * No other file posts.
