@@ -84,3 +84,9 @@ iki dalda `composer check` temiz (PHP 8.1 + WordPress 7.1.2; 339 birim ve 174 en
     temiz, `RestContractTest` arka arkaya 5 kez geçti.
   - Birleştirme sırası: önce bu dal (1.0.1), sonra `gorev-14`. `gorev-14`'te CHANGELOG ve sürüm satırlarında basit
     çakışma çıkar (1.1.0 girdisi 1.0.1'in üstüne gelir).
+
+## PRD: ikinci ürün adayı UCP
+- [ ] `prd-ucp` dalı (`main` üzerine, yalnızca `docs/PRD.md`): UCP özeti, ürünümüze uyum tablosu, önerilen artımlar
+      (C1 profil + katalog, C2 WooCommerce checkout, C3 sipariş ve kimlik bağlama, C4 AP2 ve konaklama, U6 uyum
+      kontrolü), riskler ve açık kararlar. Görev dosyası oluşturulmadı.
+- [ ] "Walkthrough planı" hangi belge? UCP oraya da eklenecek.
