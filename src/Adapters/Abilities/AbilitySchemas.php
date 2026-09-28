@@ -21,11 +21,40 @@ use AIHazirSite\Core\Catalog\Query\ListingSearch;
 final class AbilitySchemas {
 
 	/**
-	 * Ability names → [input schema, output schema].
+	 * Ability names → [input schema, output schema]. With published languages (1.1.0, two or more)
+	 * the catalog reads take an optional `lang` and their outputs carry the translation markers.
+	 *
+	 * @param string[] $languages Published languages, default first; empty = single-language output.
+	 * @return array<string, array{input: array<string, mixed>, output: array<string, mixed>}>
+	 *
+	 * @phpstan-param list<string> $languages
+	 */
+	public static function all( array $languages = array() ): array {
+		$all = self::base();
+		if ( count( $languages ) < 2 ) {
+			return $all;
+		}
+		$lang = array(
+			'type'        => 'string',
+			'enum'        => $languages,
+			'description' => 'Cevap dili (ISO 639-1). Çevirisi olmayan alanlar ' . $languages[0] . ' dilinde döner ve translation.missing içinde listelenir.',
+		);
+		foreach ( array( 'aihs/get-profile', 'aihs/search-listings', 'aihs/get-listing' ) as $name ) {
+			$all[ $name ]['input']['properties']           = array_merge( $all[ $name ]['input']['properties'] ?? array(), array( 'lang' => $lang ) );
+			$all[ $name ]['input']['additionalProperties'] = false;
+		}
+		$all['aihs/get-profile']['output']     = self::strip( RestSchemas::get( 'profile', true ) );
+		$all['aihs/search-listings']['output'] = self::strip( RestSchemas::get( 'listings', true ) );
+		$all['aihs/get-listing']['output']     = RestSchemas::with_languages( 'listing', RestSchemas::listing() );
+		return $all;
+	}
+
+	/**
+	 * Single-language schemas.
 	 *
 	 * @return array<string, array{input: array<string, mixed>, output: array<string, mixed>}>
 	 */
-	public static function all(): array {
+	private static function base(): array {
 		return array(
 			'aihs/get-profile'        => array(
 				'input'  => self::input( array() ),

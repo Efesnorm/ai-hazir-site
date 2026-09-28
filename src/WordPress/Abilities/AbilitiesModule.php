@@ -10,6 +10,8 @@ declare(strict_types=1);
 namespace AIHazirSite\WordPress\Abilities;
 
 use AIHazirSite\Adapters\Abilities\AbilitySchemas;
+use AIHazirSite\Adapters\Rest\RestResponder;
+use AIHazirSite\Core\Catalog\CompanyProfile;
 use AIHazirSite\Core\Catalog\Query\Availability;
 use AIHazirSite\Core\Catalog\Query\ListingSearch;
 use AIHazirSite\Core\Features;
@@ -17,6 +19,7 @@ use AIHazirSite\Core\RateLimit\FixedWindowLimiter;
 use AIHazirSite\Core\Templates\Template;
 use AIHazirSite\WordPress\Catalog\CatalogReader;
 use AIHazirSite\WordPress\Catalog\WpProfileRepository;
+use AIHazirSite\WordPress\I18n\Multilingual;
 use AIHazirSite\WordPress\Module;
 use AIHazirSite\WordPress\Platform\WpCache;
 use AIHazirSite\WordPress\Platform\WpClock;
@@ -78,7 +81,7 @@ final class AbilitiesModule implements Module {
 			'aihs/check-availability' => array( __( 'Müsaitlik sor', 'ai-hazir-site' ), __( 'Bir ilan için "bu miktar var mı, istenen günde gelir mi?" sorusuna yes / no / unknown ve gerekçeleriyle cevap verir. Yalnızca ilandaki bilgiye dayanır; kesin teklif için firmayla iletişime geçin.', 'ai-hazir-site' ), array( self::class, 'check_availability' ) ),
 		);
 
-		foreach ( AbilitySchemas::all() as $name => $schemas ) {
+		foreach ( AbilitySchemas::all( Multilingual::active() ? Multilingual::settings()->languages : array() ) as $name => $schemas ) {
 			wp_register_ability(
 				$name,
 				array(
@@ -133,15 +136,33 @@ final class AbilitiesModule implements Module {
 	/**
 	 * `aihs/get-profile`.
 	 *
+	 * @param mixed $input Validated input (1.1.0: optional lang).
 	 * @return array<string, mixed>|WP_Error
 	 */
-	public static function get_profile(): array|WP_Error {
+	public static function get_profile( mixed $input = null ): array|WP_Error {
 		$limited = self::limited();
 		if ( null !== $limited ) {
 			return $limited;
 		}
 		$profiles = new WpProfileRepository();
-		return CatalogReader::responder()->profile( $profiles->get(), $profiles->updated_at() );
+		$language = self::language( $input );
+		if ( null === $language ) {
+			return CatalogReader::responder()->profile( $profiles->get(), $profiles->updated_at() );
+		}
+		$localized = Multilingual::profile( $profiles->get(), $language );
+		$record    = $localized->record instanceof CompanyProfile ? $localized->record : $profiles->get();
+		return RestResponder::translated( CatalogReader::responder()->profile( $record, $profiles->updated_at() ), $language, array( 'profile' => $localized->marker() ) );
+	}
+
+	/**
+	 * Answer language from the input, or null while multilingual output is inactive. Agents choose
+	 * explicitly; without `lang` the default language is used.
+	 *
+	 * @param mixed $input Validated input.
+	 */
+	private static function language( mixed $input ): ?string {
+		$requested = is_array( $input ) && is_string( $input['lang'] ?? null ) ? $input['lang'] : null;
+		return Multilingual::language( $requested );
 	}
 
 	/**
@@ -161,7 +182,7 @@ final class AbilitiesModule implements Module {
 		foreach ( is_array( $input['attributes'] ?? null ) ? $input['attributes'] : array() as $key => $value ) {
 			$attributes[ (string) $key ] = is_scalar( $value ) ? (string) $value : '';
 		}
-		$search = new ListingSearch(
+		$search   = new ListingSearch(
 			$text( 'type' ),
 			$text( 'category' ),
 			$text( 'region' ),
@@ -170,7 +191,12 @@ final class AbilitiesModule implements Module {
 			max( 1, (int) ( $input['page'] ?? 1 ) ),
 			min( ListingSearch::MAX_PER_PAGE, max( 1, (int) ( $input['per_page'] ?? ListingSearch::DEFAULT_PER_PAGE ) ) )
 		);
-		return CatalogReader::responder()->listings( CatalogReader::query()->all(), $search, ( new WpClock() )->today(), TemplatesModule::now() );
+		$language = self::language( $input );
+		if ( null === $language ) {
+			return CatalogReader::responder()->listings( CatalogReader::query()->all(), $search, ( new WpClock() )->today(), TemplatesModule::now() );
+		}
+		[ $listings, $markers ] = CatalogReader::localized( CatalogReader::query()->all(), $language );
+		return RestResponder::translated( CatalogReader::responder()->listings( $listings, $search, ( new WpClock() )->today(), TemplatesModule::now() ), $language, $markers );
 	}
 
 	/**
@@ -184,9 +210,18 @@ final class AbilitiesModule implements Module {
 		if ( null !== $limited ) {
 			return $limited;
 		}
-		$id      = is_array( $input ) ? absint( $input['id'] ?? 0 ) : 0;
-		$listing = CatalogReader::query()->find( $id );
-		$body    = null === $listing ? null : CatalogReader::responder()->listing( $listing, ( new WpClock() )->today(), TemplatesModule::now() );
+		$id       = is_array( $input ) ? absint( $input['id'] ?? 0 ) : 0;
+		$listing  = CatalogReader::query()->find( $id );
+		$language = self::language( $input );
+		$markers  = array();
+		if ( null !== $listing && null !== $language ) {
+			[ $records, $markers ] = CatalogReader::localized( array( $listing ), $language );
+			$listing               = $records[0] ?? $listing;
+		}
+		$body = null === $listing ? null : CatalogReader::responder()->listing( $listing, ( new WpClock() )->today(), TemplatesModule::now() );
+		if ( null !== $body && null !== $language ) {
+			$body = RestResponder::translated( $body, $language, $markers );
+		}
 		return $body ?? new WP_Error( 'aihs_listing_not_found', __( 'İlan bulunamadı veya süresi doldu.', 'ai-hazir-site' ), array( 'status' => 404 ) );
 	}
 

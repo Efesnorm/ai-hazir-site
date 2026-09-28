@@ -11,9 +11,12 @@ namespace AIHazirSite\WordPress\Llms;
 
 use AIHazirSite\Adapters\Llms\LlmsCache;
 use AIHazirSite\Adapters\Llms\LlmsTxtBuilder;
+use AIHazirSite\Core\Catalog\CompanyProfile;
 use AIHazirSite\Core\Catalog\ListingType;
 use AIHazirSite\Core\Features;
+use AIHazirSite\WordPress\Catalog\CatalogReader;
 use AIHazirSite\WordPress\Catalog\WpProfileRepository;
+use AIHazirSite\WordPress\I18n\Multilingual;
 use AIHazirSite\WordPress\Module;
 use AIHazirSite\WordPress\Platform\WpClock;
 use AIHazirSite\WordPress\Platform\WpSettings;
@@ -70,6 +73,10 @@ final class LlmsModule implements Module {
 		foreach ( self::HEADERS as $header ) {
 			header( $header );
 		}
+		$language = self::language_of( $uri );
+		if ( null !== $language ) {
+			header( 'Content-Language: ' . $language );
+		}
 		echo $text; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Plain text (text/plain), not HTML.
 		exit;
 	}
@@ -84,7 +91,61 @@ final class LlmsModule implements Module {
 		if ( ! is_string( $path ) || self::path() !== $path || null !== self::physical_file() ) {
 			return null;
 		}
-		return self::text();
+		$language = self::language_of( $uri );
+		return null === $language ? self::text() : self::text_in( $language );
+	}
+
+	/**
+	 * Language of the text for a request URI (?lang=, else the default language), or null while
+	 * multilingual output is inactive. Only the explicit parameter chooses: the file keeps one
+	 * address per language.
+	 *
+	 * @param string $uri Request URI.
+	 */
+	public static function language_of( string $uri ): ?string {
+		$query = wp_parse_url( $uri, PHP_URL_QUERY );
+		$args  = array();
+		parse_str( is_string( $query ) ? $query : '', $args );
+		$requested = isset( $args['lang'] ) && is_string( $args['lang'] ) ? sanitize_text_field( $args['lang'] ) : null;
+		return Multilingual::language( $requested );
+	}
+
+	/**
+	 * The llms.txt text in a language (1.1.0): translated values, fallback fields named, other
+	 * languages linked. Built on request (the single-language text keeps its cache).
+	 *
+	 * @param string $language Language.
+	 */
+	public static function text_in( string $language ): string {
+		$profile                = Multilingual::profile( ( new WpProfileRepository() )->get(), $language );
+		$original               = SchemaModule::listings();
+		[ $listings, $markers ] = CatalogReader::localized( $original, $language );
+		$api_url                = Features::is_enabled( Features::REST_API ) ? RestModule::url() : '';
+		$builder                = new LlmsTxtBuilder( home_url( '/' ), SchemaModule::catalog_url(), (string) get_bloginfo( 'name' ), self::labels(), TemplatesModule::registry(), $api_url );
+		$settings               = Multilingual::settings();
+		$alternates             = array();
+		foreach ( $settings->languages as $code ) {
+			$alternates[ $code ] = $code === $settings->default ? home_url( '/' . self::FILE ) : add_query_arg( 'lang', $code, home_url( '/' . self::FILE ) );
+		}
+		$missing = array( 'profile' => $profile->missing );
+		foreach ( $markers as $id => $marker ) {
+			$missing[ $id ] = $marker['missing'];
+		}
+		$record = $profile->record instanceof CompanyProfile ? $profile->record : ( new WpProfileRepository() )->get();
+
+		return $builder->build(
+			$record,
+			$listings,
+			( new WpClock() )->today(),
+			(string) SchemaModule::last_modified( $original ),
+			TemplatesModule::now(),
+			array(
+				'language'   => $language,
+				'fallback'   => $settings->default,
+				'missing'    => $missing,
+				'alternates' => $alternates,
+			)
+		);
 	}
 
 	/**

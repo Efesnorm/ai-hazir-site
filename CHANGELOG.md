@@ -3,6 +3,30 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.1.0] - 2026-09-28
+
+### Eklendi
+- **A8 Çoklu dil** (`multilingual` anahtarı, varsayılan kapalı). Plan ve onay bekleyen kararlar: `docs/planlar/gorev-14.md`.
+  - Çekirdek `src/Core/I18n/`: `LanguageSettings` (ISO 639-1, varsayılan dil ilk), `LanguageNegotiator`
+    (açık parametre → `Accept-Language` q değerleri, RFC 9110 §12.5.4 / RFC 4647 lookup → varsayılan dil),
+    `Localizer` (yalnızca girilmiş çeviriler; eksik alan varsayılan dilde kalır ve bildirilir).
+  - Çevrilen alanlar: ilan `title`, `description`, `category`, `region`; profil `sector`.
+  - Yazma tek noktadan: `CatalogService::save_listing_translation()` / `save_profile_translation()`;
+    yeni mimari testi `TranslationWritesOnlyThroughServiceTest`.
+  - Saklama: ilan çevirileri ilan kaydının meta verisinde (`_aihs_translations`, ilanla silinir), profil çevirisi
+    `aihs_profile_translations`, dil ayarı `aihs_languages`. Yeni tablo yok.
+  - Polylang (`pll_*` fonksiyonları) veya WPML (`wpml_*` süzgeçleri) varsa dil listesi onlardan okunur.
+  - **AI Katalog → Çeviriler**: dil ayarı, profil çevirisi, ilan başına dil formu ve dil bazında durum.
+  - Kanallar: REST (`?lang=` / `Accept-Language`, `Content-Language`, `Vary`), Abilities/MCP (`lang` girdisi),
+    `/llms.txt?lang=`, `/ai-katalog/?lang=` (`hreflang`, `lang` özniteliği, JSON-LD `inLanguage`). Her yanıtta
+    `translation {language, missing, fallback_language}` işareti.
+- Belgeler: `docs/kullanim/coklu-dil.md`; bilinen sınırlar güncellendi.
+
+### Değişmeyen
+- Anahtar kapalıyken veya tek dil tanımlıyken tüm çıktılar 1.0.0 ile birebir aynı (geriye uyumluluk testi).
+
+### Test güncellemesi (onaylı)
+- `FeaturesTest::test_mvp_feature_defaults` anahtar listesine `multilingual => false` eklendi (gevşetme değil).
 ## [1.0.1] - 2026-09-28
 
 ### Düzeltildi

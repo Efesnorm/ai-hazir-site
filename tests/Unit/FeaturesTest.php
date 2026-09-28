@@ -99,7 +99,7 @@ final class FeaturesTest extends UnitTestCase {
 	}
 
 	/**
-	 * 1.0.0 (MVP) final check: the complete key list with its shipped defaults, as stored names.
+	 * Complete key list with its shipped defaults, as stored names (1.0.0 MVP check; later keys appended).
 	 * A fresh install enables only measurement; every key is still read with the same name.
 	 */
 	public function test_mvp_feature_defaults(): void {
@@ -118,6 +118,7 @@ final class FeaturesTest extends UnitTestCase {
 				'mcp'               => false,
 				'inquiries'         => false,
 				'compliance_report' => false,
+				'multilingual'      => false,
 			),
 			Features::defaults()
 		);

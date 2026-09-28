@@ -11,13 +11,19 @@ namespace AIHazirSite\WordPress\Catalog;
 
 use AIHazirSite\Core\Catalog\Listing;
 use AIHazirSite\Core\Contracts\ListingRepository;
+use AIHazirSite\Core\Contracts\ListingTranslationRepository;
 use RuntimeException;
 use WP_Post;
 
 /**
  * The only code that writes listing posts and their meta.
  */
-final class WpListingRepository implements ListingRepository {
+final class WpListingRepository implements ListingRepository, ListingTranslationRepository {
+
+	/**
+	 * Post meta holding the entered translations (1.1.0); removed with the listing.
+	 */
+	public const TRANSLATIONS_META = '_aihs_translations';
 
 	/**
 	 * Listing by id (null for other post types).
@@ -145,5 +151,38 @@ final class WpListingRepository implements ListingRepository {
 			)
 		);
 		return array_values( array_map( 'intval', $ids ) );
+	}
+
+	/**
+	 * Stored translations of a listing.
+	 *
+	 * @param int $id Listing id.
+	 * @return array<string, array<string, string>>
+	 */
+	public function translations( int $id ): array {
+		$stored = get_post_meta( $id, self::TRANSLATIONS_META, true );
+		$clean  = array();
+		foreach ( is_array( $stored ) ? $stored : array() as $language => $fields ) {
+			foreach ( is_array( $fields ) ? $fields : array() as $field => $text ) {
+				if ( is_string( $text ) ) {
+					$clean[ (string) $language ][ (string) $field ] = $text;
+				}
+			}
+		}
+		return $clean;
+	}
+
+	/**
+	 * Replaces the translations of a listing (called only by CatalogService).
+	 *
+	 * @param int                                  $id           Listing id.
+	 * @param array<string, array<string, string>> $translations Clean translations.
+	 */
+	public function store_translations( int $id, array $translations ): void {
+		if ( array() === $translations ) {
+			delete_post_meta( $id, self::TRANSLATIONS_META );
+		} else {
+			update_post_meta( $id, self::TRANSLATIONS_META, wp_slash( $translations ) );
+		}
 	}
 }
