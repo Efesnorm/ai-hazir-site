@@ -14,6 +14,7 @@ use AIHazirSite\Core\Catalog\Listing;
 use AIHazirSite\Core\Catalog\ListingValidity;
 use AIHazirSite\Core\Catalog\Query\CatalogQuery;
 use AIHazirSite\Core\Catalog\Query\ListingSearch;
+use AIHazirSite\Core\Portal\Business;
 use AIHazirSite\Core\Templates\Freshness;
 use AIHazirSite\Core\Templates\Template;
 use AIHazirSite\Core\Templates\TemplateField;
@@ -87,6 +88,61 @@ final class RestResponder {
 			$body['translation'] = $markers['profile'];
 		}
 		return $body;
+	}
+
+	/**
+	 * Adds each listing's business (1.2.0 portal mode): `business {id, slug, name, url}`, or null
+	 * for the portal's own listings.
+	 *
+	 * @param array<string, mixed>                                                $body   Body from listings() or listing().
+	 * @param array<int, array{id: int, slug: string, name: string, url: string}> $owners Listing id → business reference.
+	 * @return array<string, mixed>
+	 */
+	public static function with_business( array $body, array $owners ): array {
+		if ( isset( $body['items'] ) && is_array( $body['items'] ) ) {
+			foreach ( $body['items'] as $i => $item ) {
+				if ( is_array( $item ) ) {
+					$body['items'][ $i ]['business'] = $owners[ (int) ( $item['id'] ?? 0 ) ] ?? null;
+				}
+			}
+		} elseif ( isset( $body['id'] ) ) {
+			$body['business'] = $owners[ (int) $body['id'] ] ?? null;
+		}
+		return $body;
+	}
+
+	/**
+	 * GET /businesses (1.2.0 portal mode).
+	 *
+	 * @param Business[] $businesses Businesses.
+	 * @param callable   $url_of     fn( Business ): string, the business catalog page.
+	 * @return array<string, mixed>
+	 *
+	 * @phpstan-param list<Business> $businesses
+	 * @phpstan-param callable(Business): string $url_of
+	 */
+	public function businesses( array $businesses, callable $url_of ): array {
+		$dates = array_filter( array_map( static fn( Business $b ): ?string => $b->updated_at, $businesses ) );
+		rsort( $dates );
+		return array(
+			'items'       => array_map(
+				static fn( Business $b ): array => array(
+					'id'             => (int) $b->id,
+					'slug'           => $b->slug,
+					'name'           => $b->profile->name,
+					'sector'         => $b->profile->sector,
+					'country'        => $b->profile->country,
+					'languages'      => $b->profile->languages,
+					'certifications' => $b->profile->certifications,
+					'contact_email'  => $b->profile->contact_email,
+					'contact_phone'  => $b->profile->contact_phone,
+					'catalog_url'    => $url_of( $b ),
+				),
+				$businesses
+			),
+			'updated_at'  => $dates[0] ?? null,
+			'valid_until' => null,
+		);
 	}
 
 	/**

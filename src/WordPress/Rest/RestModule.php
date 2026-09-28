@@ -24,6 +24,7 @@ use AIHazirSite\WordPress\Module;
 use AIHazirSite\WordPress\Platform\WpCache;
 use AIHazirSite\WordPress\Platform\WpClock;
 use AIHazirSite\WordPress\Platform\WpSecret;
+use AIHazirSite\WordPress\Portal\Portal;
 use AIHazirSite\WordPress\Schema\SchemaModule;
 use AIHazirSite\WordPress\Templates\TemplatesModule;
 use WP_REST_Request;
@@ -100,6 +101,10 @@ final class RestModule implements Module {
 		register_rest_route( self::NAMESPACE, '/listings/(?P<id>\d+)', $get( array( self::class, 'get_listing' ) ) );
 		register_rest_route( self::NAMESPACE, '/templates', $get( array( self::class, 'get_templates' ) ) );
 		register_rest_route( self::NAMESPACE, '/schema/(?P<name>' . implode( '|', RestSchemas::NAMES ) . ')', $get( array( self::class, 'get_schema' ) ) );
+		if ( Portal::active() ) {
+			register_rest_route( self::NAMESPACE, '/businesses', $get( array( self::class, 'get_businesses' ) ) );
+			register_rest_route( self::NAMESPACE, '/schema/businesses', $get( static fn( WP_REST_Request $request ): WP_REST_Response => self::respond( $request, RestSchemas::with_portal( 'businesses', array() ), null ) ) );
+		}
 	}
 
 	/**
@@ -141,13 +146,24 @@ final class RestModule implements Module {
 
 		$language = self::language( $request );
 		$listings = SchemaModule::listings();
+		$all      = $listings;
 		$markers  = array();
 		if ( null !== $language ) {
 			[ $listings, $markers ] = CatalogReader::localized( $listings, $language );
 		}
+		$slug = $request->get_param( 'business' );
+		if ( Portal::active() && is_string( $slug ) && '' !== $slug ) {
+			$listings = Portal::filter( $listings, sanitize_title( $slug ) );
+			if ( null === $listings ) {
+				return self::error( 'aihs_business_not_found', __( 'İşletme bulunamadı.', 'ai-hazir-site' ), 404 );
+			}
+		}
 		$body = self::responder()->listings( $listings, $query, ( new WpClock() )->today(), TemplatesModule::now() );
 		if ( null !== $language ) {
 			$body = RestResponder::translated( $body, $language, $markers );
+		}
+		if ( Portal::active() ) {
+			$body = RestResponder::with_business( $body, Portal::references( $all ) );
 		}
 		$response = self::respond( $request, $body, $body['updated_at'] );
 		$response->header( 'X-WP-Total', (string) $body['total'] );
@@ -176,6 +192,9 @@ final class RestModule implements Module {
 		if ( null === $body ) {
 			return self::error( 'aihs_listing_not_found', __( 'İlan bulunamadı veya süresi doldu.', 'ai-hazir-site' ), 404 );
 		}
+		if ( Portal::active() ) {
+			$body = RestResponder::with_business( $body, Portal::references( array( $listing ) ) );
+		}
 		if ( null === $language ) {
 			return self::respond( $request, $body, $body['updated_at'] );
 		}
@@ -203,7 +222,23 @@ final class RestModule implements Module {
 	 * @param WP_REST_Request $request Request.
 	 */
 	public static function get_schema( WP_REST_Request $request ): WP_REST_Response {
-		return self::respond( $request, RestSchemas::get( (string) $request->get_param( 'name' ), Multilingual::active() ), null );
+		$name   = (string) $request->get_param( 'name' );
+		$schema = RestSchemas::get( $name, Multilingual::active() );
+		return self::respond( $request, Portal::active() ? RestSchemas::with_portal( $name, $schema ) : $schema, null );
+	}
+
+	/**
+	 * GET /businesses (1.2.0 portal mode).
+	 *
+	 * @param WP_REST_Request $request Request.
+	 */
+	public static function get_businesses( WP_REST_Request $request ): WP_REST_Response {
+		$limited = self::limited();
+		if ( null !== $limited ) {
+			return $limited;
+		}
+		$body = self::responder()->businesses( Portal::businesses()->businesses(), array( Portal::class, 'page_url' ) );
+		return self::respond( $request, $body, $body['updated_at'] );
 	}
 
 	/**

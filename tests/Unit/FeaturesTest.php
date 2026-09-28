@@ -119,6 +119,7 @@ final class FeaturesTest extends UnitTestCase {
 				'inquiries'         => false,
 				'compliance_report' => false,
 				'multilingual'      => false,
+				'portal_mode'       => false,
 			),
 			Features::defaults()
 		);

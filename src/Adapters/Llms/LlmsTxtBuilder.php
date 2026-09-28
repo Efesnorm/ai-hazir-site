@@ -66,6 +66,8 @@ final class LlmsTxtBuilder {
 		'field_category'    => 'kategori',
 		'field_region'      => 'bölge',
 		'field_sector'      => 'sektör',
+		'businesses'        => 'İşletmeler',
+		'business'          => 'İşletme',
 	);
 
 	/**
@@ -81,6 +83,13 @@ final class LlmsTxtBuilder {
 	 * @var array{language: string, fallback: string, missing: array<int|string, list<string>>, alternates: array<string, string>}|null
 	 */
 	private ?array $i18n = null;
+
+	/**
+	 * Portal context of the text being built (1.2.0), null for a single company.
+	 *
+	 * @var array{businesses: list<array{name: string, url: string, sector: string}>, owners: array<int, string>}|null
+	 */
+	private ?array $portal = null;
 
 	/**
 	 * Constructor.
@@ -114,14 +123,18 @@ final class LlmsTxtBuilder {
 	 * @param array|null     $i18n          Language context (1.1.0): language, fallback (default language),
 	 *                                      missing (listing id or 'profile' → fields shown in the fallback
 	 *                                      language), alternates (language → URL). Null = unchanged output.
+	 * @param array|null     $portal        Portal context (1.2.0): businesses (name, url, sector) and owners
+	 *                                      (listing id → business name). Null = unchanged output.
 	 *
 	 * @phpstan-param list<Listing> $listings
 	 * @phpstan-param array{language: string, fallback: string, missing: array<int|string, list<string>>, alternates: array<string, string>}|null $i18n
+	 * @phpstan-param array{businesses: list<array{name: string, url: string, sector: string}>, owners: array<int, string>}|null $portal
 	 */
-	public function build( CompanyProfile $profile, array $listings, string $today, string $date_modified, ?string $now = null, ?array $i18n = null ): string {
-		$this->i18n = $i18n;
-		$name       = self::inline( '' === $profile->name ? $this->site_name : $profile->name );
-		$blocks     = array(
+	public function build( CompanyProfile $profile, array $listings, string $today, string $date_modified, ?string $now = null, ?array $i18n = null, ?array $portal = null ): string {
+		$this->i18n   = $i18n;
+		$this->portal = $portal;
+		$name         = self::inline( '' === $profile->name ? $this->site_name : $profile->name );
+		$blocks       = array(
 			'# ' . $name,
 			'> ' . sprintf( $this->labels['summary'], $name . ( '' !== $profile->sector ? ' (' . self::inline( $profile->sector ) . ')' : '' ) ),
 		);
@@ -138,6 +151,10 @@ final class LlmsTxtBuilder {
 		);
 		if ( array() !== $details ) {
 			$blocks[] = implode( "\n", array_map( fn( string $key, string $value ): string => '- ' . $this->labels[ $key ] . ': ' . self::inline( $value ), array_keys( $details ), $details ) );
+		}
+
+		if ( null !== $portal && array() !== $portal['businesses'] ) {
+			$blocks[] = '## ' . $this->labels['businesses'] . "\n\n" . implode( "\n", array_map( static fn( array $b ): string => self::link( $b['name'], $b['url'], self::inline( $b['sector'] ) ), $portal['businesses'] ) );
 		}
 
 		foreach ( ListingType::ALL as $type ) {
@@ -186,6 +203,9 @@ final class LlmsTxtBuilder {
 		$details = array();
 		foreach ( $this->details( $listing, $today, $now ) as $label => $value ) {
 			$details[] = $label . ': ' . $value;
+		}
+		if ( null !== $listing->id && isset( $this->portal['owners'][ $listing->id ] ) ) {
+			$details[] = $this->labels['business'] . ': ' . self::inline( $this->portal['owners'][ $listing->id ] );
 		}
 
 		$text = '' !== $listing->description ? rtrim( self::inline( $listing->description ), '.' ) . '. ' : '';

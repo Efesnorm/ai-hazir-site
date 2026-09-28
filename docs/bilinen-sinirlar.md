@@ -1,4 +1,4 @@
-# Bilinen sınırlar (1.1.0)
+# Bilinen sınırlar (1.2.0)
 
 Bu liste MVP sürümünde bilerek bırakılan veya henüz çözülmemiş konuları toplar. Her madde ileride bir görevle ele alınabilir.
 
@@ -50,8 +50,19 @@ Bu liste MVP sürümünde bilerek bırakılan veya henüz çözülmemiş konular
 - Şifreleme anahtarı sitenin `AUTH_SALT` / `AUTH_KEY` değerinden türetilir. Bu değerler değiştirilirse eski
   taleplerin iletişim bilgileri okunamaz.
 
+## Portal modu (1.2.0)
+
+- İşletmeler bir seçenekte (`aihs_businesses`) tutulur; yüzlerce işletmeye kadar uygundur.
+- İşletme bazlı ölçümde yalnızca işletme sayfası (`/ai-katalog/isletme/{kısaltma}/`) okumaları ve talepler sayılır;
+  REST ve MCP çağrıları işletmeye atfedilemez.
+- İşletme profilleri çevrilmez (çoklu dil yalnızca portalın kendi profiline ve ilanlara uygulanır).
+- İşletme yetkilisinin formu ilan türünü, başlığı, açıklamayı ve temel alanları içerir; sektör şablonu alanları
+  yalnızca yönetici formundadır.
+
 ## Bilinen hata
 
 - AI bot erişimi (U2): robots.txt'ye eklenen izin grubunda yalnızca WordPress'in `/wp-admin/` kuralları var, açık
   `Allow: /` satırı yok. Kurallar yine doğru yorumlanır (engellenmeyen yol izinlidir), ancak bazı denetim araçları
   izni açıkça görmek ister.
+- REST `/templates` (Görev 10'dan beri): şablonların sırası ilanların güncellenme zamanına bağlı; aynı saniyede
+  kaydedilen ilanlarda sıra değişebilir. `RestContractTest::test_full_catalog` bu yüzden ara sıra kırılır.

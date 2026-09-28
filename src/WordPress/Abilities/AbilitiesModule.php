@@ -24,6 +24,7 @@ use AIHazirSite\WordPress\Module;
 use AIHazirSite\WordPress\Platform\WpCache;
 use AIHazirSite\WordPress\Platform\WpClock;
 use AIHazirSite\WordPress\Platform\WpSecret;
+use AIHazirSite\WordPress\Portal\Portal;
 use AIHazirSite\WordPress\Templates\TemplatesModule;
 use WP_Error;
 
@@ -81,7 +82,9 @@ final class AbilitiesModule implements Module {
 			'aihs/check-availability' => array( __( 'Müsaitlik sor', 'ai-hazir-site' ), __( 'Bir ilan için "bu miktar var mı, istenen günde gelir mi?" sorusuna yes / no / unknown ve gerekçeleriyle cevap verir. Yalnızca ilandaki bilgiye dayanır; kesin teklif için firmayla iletişime geçin.', 'ai-hazir-site' ), array( self::class, 'check_availability' ) ),
 		);
 
-		foreach ( AbilitySchemas::all( Multilingual::active() ? Multilingual::settings()->languages : array() ) as $name => $schemas ) {
+		$texts['aihs/list-businesses'] = array( __( 'İşletmeleri listele', 'ai-hazir-site' ), __( 'Portaldaki işletmeler: ad, sektör, ülke, diller, sertifikalar, kurumsal iletişim ve işletmenin AI katalog sayfası. Bir işletmenin ilanları için aihs/search-listings girdisinde business kullanın.', 'ai-hazir-site' ), array( self::class, 'list_businesses' ) );
+
+		foreach ( self::schemas() as $name => $schemas ) {
 			wp_register_ability(
 				$name,
 				array(
@@ -103,6 +106,31 @@ final class AbilitiesModule implements Module {
 				)
 			);
 		}
+	}
+
+	/**
+	 * Ability schemas for this site: languages (1.1.0) and portal mode (1.2.0) included.
+	 *
+	 * @return array<string, array{input: array<string, mixed>, output: array<string, mixed>}>
+	 */
+	public static function schemas(): array {
+		return AbilitySchemas::all(
+			Multilingual::active() ? Multilingual::settings()->languages : array(),
+			Portal::active() ? array_map( static fn( $b ): string => $b->slug, Portal::businesses()->businesses() ) : null
+		);
+	}
+
+	/**
+	 * `aihs/list-businesses` (1.2.0 portal mode).
+	 *
+	 * @return array<string, mixed>|WP_Error
+	 */
+	public static function list_businesses(): array|WP_Error {
+		$limited = self::limited();
+		if ( null !== $limited ) {
+			return $limited;
+		}
+		return CatalogReader::responder()->businesses( Portal::businesses()->businesses(), array( Portal::class, 'page_url' ) );
 	}
 
 	/**
@@ -192,11 +220,23 @@ final class AbilitiesModule implements Module {
 			min( ListingSearch::MAX_PER_PAGE, max( 1, (int) ( $input['per_page'] ?? ListingSearch::DEFAULT_PER_PAGE ) ) )
 		);
 		$language = self::language( $input );
-		if ( null === $language ) {
-			return CatalogReader::responder()->listings( CatalogReader::query()->all(), $search, ( new WpClock() )->today(), TemplatesModule::now() );
+		$all      = CatalogReader::query()->all();
+		$listings = $all;
+		$markers  = array();
+		if ( null !== $language ) {
+			[ $listings, $markers ] = CatalogReader::localized( $all, $language );
 		}
-		[ $listings, $markers ] = CatalogReader::localized( CatalogReader::query()->all(), $language );
-		return RestResponder::translated( CatalogReader::responder()->listings( $listings, $search, ( new WpClock() )->today(), TemplatesModule::now() ), $language, $markers );
+		if ( Portal::active() && '' !== $text( 'business' ) ) {
+			$listings = Portal::filter( $listings, $text( 'business' ) );
+			if ( null === $listings ) {
+				return new WP_Error( 'aihs_business_not_found', __( 'İşletme bulunamadı.', 'ai-hazir-site' ), array( 'status' => 404 ) );
+			}
+		}
+		$body = CatalogReader::responder()->listings( $listings, $search, ( new WpClock() )->today(), TemplatesModule::now() );
+		if ( null !== $language ) {
+			$body = RestResponder::translated( $body, $language, $markers );
+		}
+		return Portal::active() ? RestResponder::with_business( $body, Portal::references( $all ) ) : $body;
 	}
 
 	/**
@@ -221,6 +261,9 @@ final class AbilitiesModule implements Module {
 		$body = null === $listing ? null : CatalogReader::responder()->listing( $listing, ( new WpClock() )->today(), TemplatesModule::now() );
 		if ( null !== $body && null !== $language ) {
 			$body = RestResponder::translated( $body, $language, $markers );
+		}
+		if ( null !== $body && null !== $listing && Portal::active() ) {
+			$body = RestResponder::with_business( $body, Portal::references( array( $listing ) ) );
 		}
 		return $body ?? new WP_Error( 'aihs_listing_not_found', __( 'İlan bulunamadı veya süresi doldu.', 'ai-hazir-site' ), array( 'status' => 404 ) );
 	}

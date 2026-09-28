@@ -50,6 +50,64 @@ final class RestSchemas {
 	}
 
 	/**
+	 * Portal mode (1.2.0): listings carry `business` (reference or null); GET /businesses.
+	 *
+	 * @param string               $name   One of self::NAMES or 'businesses'.
+	 * @param array<string, mixed> $schema Schema from get() (ignored for 'businesses').
+	 * @return array<string, mixed>
+	 */
+	public static function with_portal( string $name, array $schema ): array {
+		$reference = array(
+			'type'                 => array( 'object', 'null' ),
+			'properties'           => array(
+				'id'   => self::integer( 1 ),
+				'slug' => self::string(),
+				'name' => self::string(),
+				'url'  => self::string(),
+			),
+			'required'             => array( 'id', 'slug', 'name', 'url' ),
+			'additionalProperties' => false,
+		);
+		switch ( $name ) {
+			case 'listing':
+				$schema['properties']['business'] = $reference;
+				break;
+			case 'listings':
+				$schema['properties']['items']['items']['properties']['business'] = $reference;
+				break;
+			case 'businesses':
+				$schema = self::document(
+					'aihs-businesses',
+					self::object(
+						array(
+							'items'       => array(
+								'type'  => 'array',
+								'items' => self::object(
+									array(
+										'id'             => self::integer( 1 ),
+										'slug'           => self::string(),
+										'name'           => self::string(),
+										'sector'         => self::string(),
+										'country'        => self::string(),
+										'languages'      => self::strings(),
+										'certifications' => self::strings(),
+										'contact_email'  => self::string(),
+										'contact_phone'  => self::string(),
+										'catalog_url'    => self::string(),
+									)
+								),
+							),
+							'updated_at'  => self::nullable_datetime(),
+							'valid_until' => array( 'type' => 'null' ),
+						)
+					)
+				);
+				break;
+		}
+		return $schema;
+	}
+
+	/**
 	 * A document schema with the optional multilingual keys (1.1.0): `language` on the document
 	 * and `translation` on the profile and on every listing. Single-language sites never get them.
 	 *
