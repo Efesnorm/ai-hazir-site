@@ -37,3 +37,10 @@ Anahtar: `matching` (varsayılan kapalı).
 2. Fiyat örtüşmesi: aralıklar kesişiyorsa 1; kesişmiyorsa aradaki farkın bütçenin üst sınırına oranıyla azalır.
 3. Bölge: iki tarafta da doluysa aynı olmalı (kesin süzgeç); boşsa elenmez.
 4. Eşleşmeler yalnızca yönetim ekranında; REST/MCP'ye açılmadı.
+5. Mevcut bir testte değişiklik: `FeaturesTest::test_mvp_feature_defaults` anahtar listesine `matching => false`.
+
+## 5. Sonuç (uygulandı)
+- 2 işleme: çekirdek (+ birim kabul testleri) → WordPress ekranı, ortak siteler, belgeler, sürüm 1.5.0.
+- `composer check` temiz: 334 birim, 171 entegrasyon testi.
+- Kabul: veri setinde beklenen eşleşmeler beklenen sırada; kesin süzgece uymayan hiçbir sonuç yok; açıklama puanla
+  tutarlı; ortak site erişilemezken yerel eşleştirme sürüyor (birim + entegrasyon, HTTP taklidiyle).

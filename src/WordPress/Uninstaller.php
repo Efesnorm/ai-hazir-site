@@ -23,6 +23,7 @@ use AIHazirSite\WordPress\I18n\LanguageSource;
 use AIHazirSite\WordPress\Portal\Portal;
 use AIHazirSite\WordPress\Portal\WpBusinessRepository;
 use AIHazirSite\WordPress\Updates\UpdateModule;
+use AIHazirSite\WordPress\Matching\MatchingModule;
 use AIHazirSite\Core\Telemetry\TelemetryService;
 use AIHazirSite\WordPress\Platform\WpSettings;
 use AIHazirSite\Core\Measurement\IpRanges;
@@ -61,6 +62,7 @@ final class Uninstaller {
 			WpBusinessRepository::OPTION,
 			UpdateModule::SETTINGS,
 			TelemetryService::OPTION,
+			MatchingModule::OPTION,
 		);
 	}
 
