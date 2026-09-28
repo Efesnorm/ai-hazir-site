@@ -3,6 +3,22 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.4.0] - 2026-09-28
+
+### Eklendi
+- **U5 Yeni standartlar araştırması** (`docs/planlar/gorev-17.md`): WebMCP, IETF AIPREF ve Content Signals henüz
+  kararlı değil, puanlamaya eklenmedi; A2A v1.0 kararlı ve mevcut `advanced` kontrolüyle zaten denetleniyor;
+  llms.txt ağırlığı için öneri (uygulanmadı).
+- **AI bot listesi** 12 → 18 (resmi belgelerden): MistralAI-Training, MistralAI-Index, MistralAI-User, DuckAssistBot,
+  meta-externalfetcher, meta-webindexer. Mistral ve DuckDuckGo botları resmi IP listeleriyle doğrulanır.
+
+### Değişti
+- Puanlama sürümü 3 (bot erişimi oranı yeni bot sayısıyla hesaplanır). Eski taramalar kendi sürümüyle gösterilir.
+
+### Test güncellemesi (onaylı)
+- robots.txt hazır ayar anlık görüntüleri (yalnızca yeni bot satırları), bot sayısına bağlı 3 oran, `SCORE_VERSION`
+  3, puanlama sürümü metni, indirilen IP listesi sayısı (8 → 11). Ayrıntı: `docs/planlar/gorev-17.md` §3.
+
 ## [1.3.0] - 2026-09-28
 
 ### Eklendi

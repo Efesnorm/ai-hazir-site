@@ -90,7 +90,7 @@ final class VerificationTest extends WP_UnitTestCase {
 
 		$this->assertSame( 1, $result[ self::OPENAI_GPTBOT ] );
 		$this->assertSame( array_unique( $requested ), $requested, 'Shared lists are downloaded once.' );
-		$this->assertCount( 8, $requested );
+		$this->assertCount( 11, $requested, '1.4.0: + Mistral index, Mistral user, DuckAssistBot lists.' );
 		$this->assertFalse( wp_load_alloptions()[ IpRanges::OPTION ] ?? false, 'IP lists are not autoloaded.' );
 
 		$tracker = MeasurementModule::tracker();
