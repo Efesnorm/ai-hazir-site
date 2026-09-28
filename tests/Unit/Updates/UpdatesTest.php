@@ -35,7 +35,7 @@ final class UpdatesTest extends UnitTestCase {
 	 * A manifest with three valid releases and invalid entries.
 	 */
 	public static function manifest(): string {
-		return (string) json_encode(
+		return (string) json_encode( // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Unit test without WordPress.
 			array(
 				'slug'     => 'ai-hazir-site',
 				'releases' => array(
