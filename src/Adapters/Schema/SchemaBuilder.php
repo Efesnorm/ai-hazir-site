@@ -112,13 +112,15 @@ final class SchemaBuilder {
 	 * @param string         $today       Y-m-d.
 	 * @param string         $catalog_url Catalog page URL.
 	 * @param string|null    $now         ISO 8601 date-time for freshness (default: start of today).
+	 * @param callable|null  $seller_of   fn( Listing ): ?array, the seller node of a listing (1.2.0 portal:
+	 *                                    the business's Organization); null or a null result = the company.
 	 * @return array<string, mixed>
 	 */
-	public function catalog( CompanyProfile $profile, array $listings, string $today, string $catalog_url, ?string $now = null ): array {
+	public function catalog( CompanyProfile $profile, array $listings, string $today, string $catalog_url, ?string $now = null, ?callable $seller_of = null ): array {
 		$entries  = array();
 		$modified = array();
 		foreach ( $listings as $listing ) {
-			$entry = $this->entry( $listing, $today, $profile, $now );
+			$entry = $this->entry( $listing, $today, $profile, $now, null === $seller_of ? null : $seller_of( $listing ) );
 			if ( null !== $entry ) {
 				$entries[]  = $entry;
 				$modified[] = (string) $entry['dateModified'];
@@ -146,9 +148,12 @@ final class SchemaBuilder {
 	 * @param string              $today   Y-m-d.
 	 * @param CompanyProfile|null $profile Profile (named seller when another plugin owns Organization).
 	 * @param string|null         $now     ISO 8601 date-time for freshness (default: start of today).
+	 * @param array|null          $seller  Seller node instead of the company (1.2.0 portal), or null.
 	 * @return array<string, mixed>|null
+	 *
+	 * @phpstan-param array<string, mixed>|null $seller
 	 */
-	public function entry( Listing $listing, string $today, ?CompanyProfile $profile = null, ?string $now = null ): ?array {
+	public function entry( Listing $listing, string $today, ?CompanyProfile $profile = null, ?string $now = null, ?array $seller = null ): ?array {
 		$updated     = $listing->updated_at ?? $today . 'T00:00:00Z';
 		$valid_until = ListingValidity::valid_until( $listing, $today );
 		if ( ! ListingValidity::is_current( $listing, $today ) || ! isset( SchemaMap::DEAL_TYPE[ $listing->type ] ) ) {
@@ -192,7 +197,7 @@ final class SchemaBuilder {
 		}
 
 		if ( 'Offer' === $deal_type ) {
-			$nodes['deal']['seller'] = $this->organization_reference( $profile );
+			$nodes['deal']['seller'] = $seller ?? $this->organization_reference( $profile );
 			$nodes['item']['offers'] = $nodes['deal'];
 			$item                    = $nodes['item'];
 		} else {

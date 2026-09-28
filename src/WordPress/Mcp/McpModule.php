@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace AIHazirSite\WordPress\Mcp;
 
-use AIHazirSite\Adapters\Abilities\AbilitySchemas;
+use AIHazirSite\WordPress\Abilities\AbilitiesModule;
 use AIHazirSite\Core\Features;
 use AIHazirSite\WordPress\Inquiry\InquiryChannels;
 use AIHazirSite\WordPress\Module;
@@ -95,7 +95,7 @@ final class McpModule implements Module {
 	 * @return list<string>
 	 */
 	public static function tools(): array {
-		$tools = array_keys( AbilitySchemas::all() );
+		$tools = array_keys( AbilitiesModule::schemas() );
 		if ( InquiryChannels::abilities_enabled() ) {
 			$tools[] = InquiryChannels::ability_name();
 		}

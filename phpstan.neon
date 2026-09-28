@@ -6,3 +6,4 @@ parameters:
 		- src
 	scanFiles:
 		- tests/stubs/wp-cli.php
+		- tests/stubs/polylang.php

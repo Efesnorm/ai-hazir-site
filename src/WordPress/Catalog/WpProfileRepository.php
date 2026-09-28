@@ -11,16 +11,22 @@ namespace AIHazirSite\WordPress\Catalog;
 
 use AIHazirSite\Core\Catalog\CompanyProfile;
 use AIHazirSite\Core\Contracts\ProfileRepository;
+use AIHazirSite\Core\Contracts\ProfileTranslationRepository;
 use AIHazirSite\Core\Contracts\Settings;
 use AIHazirSite\WordPress\Platform\WpSettings;
 
 /**
  * Stores the company profile in one option and its save time in another.
  */
-final class WpProfileRepository implements ProfileRepository {
+final class WpProfileRepository implements ProfileRepository, ProfileTranslationRepository {
 
 	public const OPTION         = 'aihs_profile';
 	public const UPDATED_OPTION = 'aihs_profile_updated';
+
+	/**
+	 * Entered translations of the profile (1.1.0).
+	 */
+	public const TRANSLATIONS_OPTION = 'aihs_profile_translations';
 
 	/**
 	 * Constructor.
@@ -81,5 +87,36 @@ final class WpProfileRepository implements ProfileRepository {
 	public function updated_at(): ?string {
 		$value = $this->settings->get( self::UPDATED_OPTION, '' );
 		return is_string( $value ) && '' !== $value ? $value : null;
+	}
+
+	/**
+	 * Stored translations of the profile.
+	 *
+	 * @return array<string, array<string, string>>
+	 */
+	public function profile_translations(): array {
+		$stored = $this->settings->get( self::TRANSLATIONS_OPTION, array() );
+		$clean  = array();
+		foreach ( is_array( $stored ) ? $stored : array() as $language => $fields ) {
+			foreach ( is_array( $fields ) ? $fields : array() as $field => $text ) {
+				if ( is_string( $text ) ) {
+					$clean[ (string) $language ][ (string) $field ] = $text;
+				}
+			}
+		}
+		return $clean;
+	}
+
+	/**
+	 * Replaces the profile translations (called only by CatalogService).
+	 *
+	 * @param array<string, array<string, string>> $translations Clean translations.
+	 */
+	public function store_profile_translations( array $translations ): void {
+		if ( array() === $translations ) {
+			$this->settings->delete( self::TRANSLATIONS_OPTION );
+		} else {
+			$this->settings->set( self::TRANSLATIONS_OPTION, $translations, false );
+		}
 	}
 }
