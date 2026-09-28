@@ -123,6 +123,7 @@ final class FeaturesTest extends UnitTestCase {
 				'remote_updates'    => false,
 				'telemetry'         => false,
 				'matching'          => false,
+				'a2a'               => false,
 			),
 			Features::defaults()
 		);
