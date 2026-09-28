@@ -18,6 +18,8 @@ use AIHazirSite\Core\Compliance\ScanStore;
 use AIHazirSite\Core\Features;
 use AIHazirSite\Core\Migrations\Migrator;
 use AIHazirSite\WordPress\Catalog\CatalogModule;
+use AIHazirSite\WordPress\Catalog\WpProfileRepository;
+use AIHazirSite\WordPress\I18n\LanguageSource;
 use AIHazirSite\WordPress\Platform\WpSettings;
 use AIHazirSite\Core\Measurement\IpRanges;
 
@@ -50,6 +52,8 @@ final class Uninstaller {
 			LlmsCache::OPTION,
 			WizardJournal::OPTION,
 			InquirySettings::OPTION,
+			LanguageSource::OPTION,
+			WpProfileRepository::TRANSLATIONS_OPTION,
 		);
 	}
 
