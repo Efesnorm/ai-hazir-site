@@ -3,6 +3,31 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.8.0] - 2026-09-28
+
+### Eklendi
+- **Araçlar → AI Hazır Entegrasyonlar**: diğer eklentilerle yapılacak işler seçenek olarak sunulur, site sahibi tek
+  tıkla açıp kapatır; hiçbiri kendiliğinden yapılmaz. Plan: `docs/planlar/1.8.0-entegrasyonlar.md`, kullanım:
+  `docs/kullanim/entegrasyonlar.md`.
+  - **AI botlarına önbellekten sayfa sunma** (`bot_cache_bypass`, varsayılan kapalı): AI bot adları WP Rocket
+    (`rocket_cache_reject_ua` + yapılandırmanın yeniden üretilmesi) ve LiteSpeed Cache (`litespeed_conf` /
+    `litespeed_save_conf`, 7.2+) "önbellek sunma" listelerine eklenir; site sahibinin kendi satırlarına dokunulmaz,
+    kapatınca yalnızca bizimkiler çıkar. makedonya.tr'de WP Rocket bot isteklerini PHP'ye ulaştırmıyordu (AI Ölçüm
+    eksik, bayat içerik). W3 Total Cache ve WP Super Cache için elle adımlar gösterilir.
+  - **AI Katalog site haritasında** (`catalog_sitemap`, varsayılan kapalı): `/ai-katalog/` (portal modunda işletme
+    sayfaları) son değişiklik tarihiyle WordPress çekirdek site haritasına (`wp_register_sitemap_provider`) ya da
+    Rank Math (`rank_math/sitemap/index`) / Yoast SEO (`wpseo_sitemap_index`) dizinine (kendi
+    `/ai-katalog-sitemap.xml` dosyamızla, sitemaps.org protokolü) eklenir.
+  - Devre dışı bırakmada önbellek eklentilerindeki satırlarımız geri alınır; kaldırmada `aihs_litespeed_added` silinir.
+  - Testler: `IntegrationsCoreTest`, `IntegrationsTest` (WP Rocket ve LiteSpeed Cache belgelenmiş arayüzleriyle
+    taklit edilir; çekirdek site haritası gerçek). PHPStan için WP Rocket işlev taslakları (`tests/stubs/wp-rocket.php`).
+
+### Test güncellemesi (onay bekliyor)
+- `FeaturesTest::test_mvp_feature_defaults` anahtar listesine `bot_cache_bypass` ve `catalog_sitemap` (`false`)
+  (planda onaylandı).
+- `PublicPagesNotCachedTest`: kendi sunduğumuz sayfalar listesine yeni site haritası dosyası
+  (`WordPress/Integrations/CatalogSitemap.php`); denetim aynı, kapsam genişledi.
+
 ## [1.7.0] - 2026-09-28
 
 ### Eklendi

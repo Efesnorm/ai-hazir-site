@@ -37,6 +37,8 @@ temizleyin. 1.6.1'den beri `/ai-katalog/` ve `/llms.txt` önbelleğe alınmaz; e
 | `matching` | Eşleştirme: aranan ↔ satılan/tedarik ([eslestirme.md](eslestirme.md)) | WP-CLI |
 | `a2a` | A2A kartviziti ve agent, onaylı giden teklif isteği ([a2a.md](a2a.md)) | WP-CLI |
 | `discovery` | Sayfalardan llms.txt ve API'ye standart bağlantılar; isteğe bağlı görünür satır | AI Katalog → Firma Profili → AI keşif |
+| `bot_cache_bypass` | AI botlarına sayfa önbelleğinden kopya sunulmaz (WP Rocket, LiteSpeed Cache) ([entegrasyonlar.md](entegrasyonlar.md)) | Araçlar → AI Hazır Entegrasyonlar |
+| `catalog_sitemap` | AI Katalog site haritasında (WordPress, Rank Math, Yoast SEO) | Araçlar → AI Hazır Entegrasyonlar |
 | `telemetry` | Rapor paneline haftalık özet (ayrıca açık onay gerekir) | WP-CLI + Ayarlar → AI Hazır Güncelleme |
 
 WP-CLI ile açma (örnek: tarama, sihirbaz ve rapor):

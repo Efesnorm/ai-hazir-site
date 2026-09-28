@@ -123,6 +123,16 @@ final class Features {
 	public const DISCOVERY = 'discovery';
 
 	/**
+	 * Page-cache plugins do not serve cached pages to AI bots (WP Rocket, LiteSpeed Cache) (1.8.0).
+	 */
+	public const BOT_CACHE_BYPASS = 'bot_cache_bypass';
+
+	/**
+	 * The AI catalog in the site's XML sitemap (WordPress core, Rank Math, Yoast SEO) (1.8.0).
+	 */
+	public const CATALOG_SITEMAP = 'catalog_sitemap';
+
+	/**
 	 * Sector templates (0.8.0).
 	 */
 	public const TEMPLATES = 'templates';
@@ -178,6 +188,8 @@ final class Features {
 			self::MATCHING          => false,
 			self::A2A               => false,
 			self::DISCOVERY         => false,
+			self::BOT_CACHE_BYPASS  => false,
+			self::CATALOG_SITEMAP   => false,
 		);
 	}
 

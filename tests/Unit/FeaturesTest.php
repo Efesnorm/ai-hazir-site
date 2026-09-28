@@ -125,6 +125,8 @@ final class FeaturesTest extends UnitTestCase {
 				'matching'          => false,
 				'a2a'               => false,
 				'discovery'         => false,
+				'bot_cache_bypass'  => false,
+				'catalog_sitemap'   => false,
 			),
 			Features::defaults()
 		);

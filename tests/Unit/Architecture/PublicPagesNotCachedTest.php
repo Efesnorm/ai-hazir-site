@@ -48,7 +48,7 @@ final class PublicPagesNotCachedTest extends TestCase {
 		$this->assertSame( array(), $violations, "Served without PageCache::exclude():\n" . implode( "\n", $violations ) );
 		sort( $served );
 		$this->assertSame(
-			array( 'WordPress/A2A/A2AModule.php', 'WordPress/Llms/LlmsModule.php', 'WordPress/Portal/BusinessPage.php', 'WordPress/Report/BadgeModule.php', 'WordPress/Schema/CatalogPage.php' ),
+			array( 'WordPress/A2A/A2AModule.php', 'WordPress/Integrations/CatalogSitemap.php', 'WordPress/Llms/LlmsModule.php', 'WordPress/Portal/BusinessPage.php', 'WordPress/Report/BadgeModule.php', 'WordPress/Schema/CatalogPage.php' ),
 			$served
 		);
 	}

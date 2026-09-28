@@ -19,6 +19,7 @@ use AIHazirSite\Core\Features;
 use AIHazirSite\Core\Migrations\Migrator;
 use AIHazirSite\WordPress\Catalog\CatalogModule;
 use AIHazirSite\WordPress\Discovery\DiscoveryModule;
+use AIHazirSite\WordPress\Integrations\LiteSpeedBypass;
 use AIHazirSite\WordPress\Catalog\WpProfileRepository;
 use AIHazirSite\WordPress\I18n\LanguageSource;
 use AIHazirSite\WordPress\Portal\Portal;
@@ -65,6 +66,7 @@ final class Uninstaller {
 			TelemetryService::OPTION,
 			MatchingModule::OPTION,
 			DiscoveryModule::VISIBLE_OPTION,
+			LiteSpeedBypass::ADDED_OPTION,
 		);
 	}
 
