@@ -22,6 +22,8 @@ use AIHazirSite\WordPress\Catalog\WpProfileRepository;
 use AIHazirSite\WordPress\I18n\LanguageSource;
 use AIHazirSite\WordPress\Portal\Portal;
 use AIHazirSite\WordPress\Portal\WpBusinessRepository;
+use AIHazirSite\WordPress\Updates\UpdateModule;
+use AIHazirSite\Core\Telemetry\TelemetryService;
 use AIHazirSite\WordPress\Platform\WpSettings;
 use AIHazirSite\Core\Measurement\IpRanges;
 
@@ -57,6 +59,8 @@ final class Uninstaller {
 			LanguageSource::OPTION,
 			WpProfileRepository::TRANSLATIONS_OPTION,
 			WpBusinessRepository::OPTION,
+			UpdateModule::SETTINGS,
+			TelemetryService::OPTION,
 		);
 	}
 

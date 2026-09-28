@@ -3,7 +3,7 @@
 Sitenin "ne satıyorum, ne arıyorum, ne tedarik edebilirim" bilgisini AI agentların okuyup
 kullanabileceği biçimde yayınlayan WordPress eklentisi.
 
-> Sürüm 1.2.0: AI bot ve yönlendirme ölçümü (A0), AI uyum taraması (U1), veri modeli ve yönetim formları (A1), AI bot erişim ayarları (U2), Schema.org yapılandırılmış veri (A2), llms.txt ve AI katalog sayfası (A3), sektör şablonları (A4), AI uyum sihirbazı (U3), REST API (A5), Abilities API ve MCP (A6), teklif kutusu ve güvenlik katmanı (A7), AI uyum raporu ve AI Hazır rozeti (U4), çoklu dil (A8), portal modu (A9). Ayrıntılar: [CHANGELOG.md](CHANGELOG.md).
+> Sürüm 1.3.0: AI bot ve yönlendirme ölçümü (A0), AI uyum taraması (U1), veri modeli ve yönetim formları (A1), AI bot erişim ayarları (U2), Schema.org yapılandırılmış veri (A2), llms.txt ve AI katalog sayfası (A3), sektör şablonları (A4), AI uyum sihirbazı (U3), REST API (A5), Abilities API ve MCP (A6), teklif kutusu ve güvenlik katmanı (A7), AI uyum raporu ve AI Hazır rozeti (U4), çoklu dil (A8), portal modu (A9), merkezi güncelleme ve rapor paneli (A10). Ayrıntılar: [CHANGELOG.md](CHANGELOG.md).
 
 - En düşük sürümler: PHP 8.1, WordPress 6.9
 - Lisans: GPL-2.0-or-later
@@ -118,6 +118,14 @@ işletmeleri yönetilir; yetkililer **İşletmem** ekranında yalnızca kendi il
 `/ai-katalog/isletme/{kısaltma}/`; REST'te `business` alanı, `?business=` süzgeci ve `/businesses`; MCP'de
 `aihs/list-businesses`. Ayrıntı: [docs/kullanim/portal.md](docs/kullanim/portal.md).
 
+## Merkezi güncelleme ve rapor paneli (A10)
+
+`remote_updates` açıkken güncellemeler kendi sunucumuzdan (bildirim: `wp-update-server` / PUC alanları + `releases`)
+WordPress'in standart ekranına gelir; pilot kanal hemen, genel kanal 48 saat sonra. **Ayarlar → AI Hazır Güncelleme**
+ekranında önceki sürüme tek işlemle dönülür (önce şema `down()`, sonra paket). `telemetry` açık ve site sahibi açık
+onay verdiyse haftalık özet (yalnızca toplamlar) rapor paneline gider. Adres verilmedikçe hiçbir istek atılmaz.
+Ayrıntı: [docs/kullanim/guncelleme.md](docs/kullanim/guncelleme.md).
+
 ## Kullanıcı belgeleri ve paket
 
 - Site sahibi için başlangıç: [docs/kullanim/baslangic.md](docs/kullanim/baslangic.md)
@@ -199,6 +207,9 @@ src/Core/                  Platformdan bağımsız çekirdek (WordPress fonksiyo
   Templates/               A4: Template, TemplateField, TemplateRegistry, TemplateValidator, Freshness
   I18n/                    A8: LanguageSettings, LanguageNegotiator, Localizer, Localized
   Portal/                  A9: Business, PortalService (tek yazma noktası), PortalReport
+  Updates/                 A10: Release, ReleaseManifest, CanaryPolicy, RollbackService
+  Telemetry/               A10: TelemetrySummary, TelemetryService (onaysız göndermez)
+  Licensing/               A10: LicenseChecker, FreeLicense (altyapı)
 src/Adapters/              AI kanalı üreticileri (platformdan bağımsız)
   Schema/                  A2: SchemaMap, SchemaBuilder, SchemaValidator, SchemaCache
   Llms/                    A3: LlmsTxtBuilder, LlmsCache
@@ -225,9 +236,10 @@ src/WordPress/             WordPress adaptörü
   Templates/               TemplatesModule (kayıt defteri, aihs_template_dirs, hatalı dosya uyarısı)
   I18n/                    A8: MultilingualModule, LanguageSource (Polylang/WPML), Multilingual, TranslationsAdmin
   Portal/                  A9: PortalModule, Portal, WpBusinessRepository, PortalAdmin (İşletmeler), BusinessAdmin (İşletmem), BusinessPage
+  Updates/                 A10: UpdateModule (güncelleme kancaları, geri alma, haftalık özet), UpdatesAdmin, WpPackageInstaller
   Report/                  U4: ReportModule (AI Uyum Raporu, PDF), ComplianceReportView, BadgeModule (rozet, doğrulama sayfası)
 blocks/rozet/              "AI Hazır rozeti" dinamik bloğu (block.json, derlemesiz editör betiği)
-bin/paketle                Kurulabilir zip üretir
+bin/paketle                Kurulabilir zip ve güncelleme bildirimi kaydı üretir
 data/                      Düzenlenebilir bot ve yönlendirme listeleri, templates/ (sektör şablonları)
 docs/                      PRD, görevler, mimari kararlar (ADR)
 tests/Unit/                Birim testleri (WordPress'siz; bellek içi adaptörler)
@@ -240,7 +252,7 @@ tests/Support/             Bellek içi test adaptörleri
 
 | Seçenek | Anlamı |
 | --- | --- |
-| `aihs_features` | Özellik anahtarları (`measurement`, `compliance_scan`, `catalog`, `bot_access`, `schema_output`, `llms_txt`, `templates`, `compliance_wizard`, `rest_api`, `abilities`, `mcp`, `inquiries`, `compliance_report`, `multilingual`, `portal_mode`); `measurement` dışında hepsi varsayılan kapalı |
+| `aihs_features` | Özellik anahtarları (`measurement`, `compliance_scan`, `catalog`, `bot_access`, `schema_output`, `llms_txt`, `templates`, `compliance_wizard`, `rest_api`, `abilities`, `mcp`, `inquiries`, `compliance_report`, `multilingual`, `portal_mode`, `remote_updates`, `telemetry`); `measurement` dışında hepsi varsayılan kapalı |
 | `aihs_db_version` | Uygulanan son geçiş sürümü |
 | `aihs_delete_data_on_uninstall` | Açıksa eklenti silinirken tüm verisi (tablo dahil) silinir |
 | `aihs_ip_ranges` | Botların yayınlanmış IP listeleri önbelleği (otomatik yüklenmez) |
@@ -256,6 +268,8 @@ tests/Support/             Bellek içi test adaptörleri
 | `aihs_languages` | Çoklu dil: varsayılan dil ve diğer diller (Polylang/WPML yoksa) |
 | `aihs_profile_translations` | Profil çevirileri (otomatik yüklenmez); ilan çevirileri ilan kaydında `_aihs_translations` |
 | `aihs_businesses` | Portal işletmeleri (otomatik yüklenmez); ilanın işletmesi ilan kaydında `_aihs_business`, yetkilinin işletmesi kullanıcıda `aihs_business` |
+| `aihs_update_settings` | Güncelleme sunucusu, kanal, rapor paneli adresi |
+| `aihs_telemetry_consent` | Rapor paneli onayı: zaman, bildirim sürümü, rastgele site kimliği (otomatik yüklenmez) |
 | `aihs_llms_cache` | Son üretilen llms.txt metni ve girdisinin parmak izi (otomatik yüklenmez) |
 
 Veritabanı tabloları: `{prefix}aihs_hits`, `{prefix}aihs_inquiries`, `{prefix}aihs_audit_log`. Cron görevleri: `aihs_refresh_ip_ranges` (günlük),

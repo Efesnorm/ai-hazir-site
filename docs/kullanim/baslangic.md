@@ -31,6 +31,8 @@ Veriler ve ayarlar korunur; veritabanı değişiklikleri yalnızca ekleme şekli
 | `compliance_report` | AI Uyum Raporu, rozet, doğrulama sayfası | WP-CLI |
 | `multilingual` | Çoklu dil: çeviriler ve dile göre çıktılar ([coklu-dil.md](coklu-dil.md)) | WP-CLI |
 | `portal_mode` | Portal: birçok işletme, işletme yetkilileri ([portal.md](portal.md)) | WP-CLI |
+| `remote_updates` | Merkezi güncelleme, kanarya, önceki sürüme dönüş ([guncelleme.md](guncelleme.md)) | WP-CLI |
+| `telemetry` | Rapor paneline haftalık özet (ayrıca açık onay gerekir) | WP-CLI + Ayarlar → AI Hazır Güncelleme |
 
 WP-CLI ile açma (örnek: tarama, sihirbaz ve rapor):
 
