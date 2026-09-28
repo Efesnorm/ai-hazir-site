@@ -14,6 +14,12 @@ Tek sayfada, sabah kararı verilecek her şey. Ayrıntılar ilgili `gorev-NN.md`
 | `gorev-18` | 1.5.0 eşleştirme | 6 |
 | `gorev-19` | 1.6.0 A2A | 7 |
 
+**Bot listesi reddedilirse (alternatif zincir, hazır):** `gorev-17`'den sonra `gorev-17-bot-listesi`, `gorev-18`,
+`gorev-19` yerine **`gorev-18-botsuz`** (1.4.0 eşleştirme) ve **`gorev-19-botsuz`** (1.5.0 A2A) birleştirilir.
+Kod aynıdır; yalnızca bot listesi, puanlama sürümü 3, ilgili test beklentileri ve sürüm numaraları farklıdır. Bu
+iki dalda `composer check` temiz (PHP 8.1 + WordPress 7.1.2; 339 birim ve 174 entegrasyon testi `gorev-19-botsuz`'da).
+`gorev-19-botsuz`'daki A2A 3/3 işlemesinin mesajı taşınmadan kaldığı için "1.6.0" der; doğru sürüm 1.5.0'dır.
+
 ## Doğrulama
 
 - Her işlemede `composer check` temiz (PHP 8.1 + WordPress 7.1.2).
