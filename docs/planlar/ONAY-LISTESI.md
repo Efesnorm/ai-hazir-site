@@ -29,6 +29,7 @@ iki dalda `composer check` temiz (PHP 8.1 + WordPress 7.1.2; 339 birim ve 174 en
   - PHP 8.3 + WordPress 6.9: 174/174 entegrasyon testi geçti.
 - **Deneme birleşimi:** `birlesim-deneme` dalı = `duzeltme-sablon-sirasi` (1.0.1) + `gorev-19` zinciri. Çakışmalar
   yalnızca CHANGELOG, sürüm satırı ve `readme.txt`'de, çözüldü; `composer check` temiz (340 birim, 177 entegrasyon).
+  CI matrisinin dört kombinasyonunda da yeşil (PHP 8.1/8.3 × WordPress 6.9/7.1.2; yerelde, ayrı wp-env örneğinde).
   Onaylanırsa `main` bu hâle getirilebilir.
 - GitHub CI bu dallarda çalışmadı (yalnızca `main` ve PR'larda çalışır); birleştirmeden sonra çalışacak.
 
