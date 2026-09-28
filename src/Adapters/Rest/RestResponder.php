@@ -65,6 +65,31 @@ final class RestResponder {
 	}
 
 	/**
+	 * Adds the multilingual keys to a body (1.1.0): `language`, and `translation` markers on the
+	 * profile or on each listing (by id). Used only while multilingual output is active.
+	 *
+	 * @param array<string, mixed>                                                                              $body     Body from profile(), listings() or listing().
+	 * @param string                                                                                            $language Answer language.
+	 * @param array<int|string, array{language: string, missing: list<string>, fallback_language: string|null}> $markers  Listing id (or 'profile') → marker.
+	 * @return array<string, mixed>
+	 */
+	public static function translated( array $body, string $language, array $markers ): array {
+		$body['language'] = $language;
+		if ( isset( $body['items'] ) && is_array( $body['items'] ) ) {
+			foreach ( $body['items'] as $i => $item ) {
+				if ( is_array( $item ) && isset( $markers[ (int) ( $item['id'] ?? 0 ) ] ) ) {
+					$body['items'][ $i ]['translation'] = $markers[ (int) $item['id'] ];
+				}
+			}
+		} elseif ( isset( $body['id'], $markers[ (int) $body['id'] ] ) ) {
+			$body['translation'] = $markers[ (int) $body['id'] ];
+		} elseif ( isset( $markers['profile'] ) ) {
+			$body['translation'] = $markers['profile'];
+		}
+		return $body;
+	}
+
+	/**
 	 * GET /listings: current listings passing the filters, one page.
 	 *
 	 * @param Listing[]                   $listings All listings.

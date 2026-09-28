@@ -11,11 +11,14 @@ namespace AIHazirSite\WordPress\Schema;
 
 use AIHazirSite\Adapters\Schema\SchemaBuilder;
 use AIHazirSite\Adapters\Schema\SchemaCache;
+use AIHazirSite\Core\Catalog\CompanyProfile;
 use AIHazirSite\Core\Catalog\Listing;
 use AIHazirSite\Core\Catalog\ListingType;
 use AIHazirSite\Core\Features;
+use AIHazirSite\WordPress\Catalog\CatalogReader;
 use AIHazirSite\WordPress\Catalog\WpListingRepository;
 use AIHazirSite\WordPress\Catalog\WpProfileRepository;
+use AIHazirSite\WordPress\I18n\Multilingual;
 use AIHazirSite\WordPress\Module;
 use AIHazirSite\WordPress\Platform\WpClock;
 use AIHazirSite\WordPress\Platform\WpSettings;
@@ -90,9 +93,14 @@ final class SchemaModule implements Module {
 	}
 
 	/**
-	 * Catalog page URL.
+	 * Catalog page URL; with a non-default language (1.1.0) its ?lang= address.
+	 *
+	 * @param string|null $language Language, or null for the default page.
 	 */
-	public static function catalog_url(): string {
+	public static function catalog_url( ?string $language = null ): string {
+		if ( null !== $language && Multilingual::active() && Multilingual::settings()->default !== $language ) {
+			return add_query_arg( 'lang', $language, self::catalog_url() );
+		}
 		return home_url( '/' . self::SLUG . '/' );
 	}
 
@@ -152,13 +160,24 @@ final class SchemaModule implements Module {
 	}
 
 	/**
-	 * Catalog page JSON-LD (validated), or null.
+	 * Catalog page JSON-LD (validated), or null. With a language (1.1.0): translated, with inLanguage.
+	 *
+	 * @param string|null $language Answer language, or null for single-language output.
 	 *
 	 * @return array<string, mixed>|null
 	 */
-	public static function catalog_document(): ?array {
-		$document = self::builder()->catalog( ( new WpProfileRepository() )->get(), self::listings(), ( new WpClock() )->today(), self::catalog_url(), TemplatesModule::now() );
-		return self::cache()->publish( 'catalog', $document, gmdate( 'Y-m-d\TH:i:s\Z' ) );
+	public static function catalog_document( ?string $language = null ): ?array {
+		if ( null === $language ) {
+			$document = self::builder()->catalog( ( new WpProfileRepository() )->get(), self::listings(), ( new WpClock() )->today(), self::catalog_url(), TemplatesModule::now() );
+			return self::cache()->publish( 'catalog', $document, gmdate( 'Y-m-d\TH:i:s\Z' ) );
+		}
+
+		// 1.1.0: the same feed built from the translated records, with its language (schema.org inLanguage).
+		$profile                = Multilingual::profile( ( new WpProfileRepository() )->get(), $language )->record;
+		[ $listings ]           = CatalogReader::localized( self::listings(), $language );
+		$document               = self::builder()->catalog( $profile instanceof CompanyProfile ? $profile : ( new WpProfileRepository() )->get(), $listings, ( new WpClock() )->today(), self::catalog_url( $language ), TemplatesModule::now() );
+		$document['inLanguage'] = $language;
+		return self::cache()->publish( 'catalog-' . $language, $document, gmdate( 'Y-m-d\TH:i:s\Z' ) );
 	}
 
 	/**

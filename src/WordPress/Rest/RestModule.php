@@ -12,12 +12,14 @@ namespace AIHazirSite\WordPress\Rest;
 use AIHazirSite\Adapters\Rest\ListingsQuery;
 use AIHazirSite\Adapters\Rest\RestResponder;
 use AIHazirSite\Adapters\Rest\RestSchemas;
+use AIHazirSite\Core\Catalog\CompanyProfile;
 use AIHazirSite\Core\Catalog\ListingType;
 use AIHazirSite\Core\Features;
 use AIHazirSite\Core\RateLimit\FixedWindowLimiter;
 use AIHazirSite\WordPress\Catalog\CatalogReader;
 use AIHazirSite\WordPress\Catalog\WpListingRepository;
 use AIHazirSite\WordPress\Catalog\WpProfileRepository;
+use AIHazirSite\WordPress\I18n\Multilingual;
 use AIHazirSite\WordPress\Module;
 use AIHazirSite\WordPress\Platform\WpCache;
 use AIHazirSite\WordPress\Platform\WpClock;
@@ -112,7 +114,14 @@ final class RestModule implements Module {
 		}
 		$profiles = new WpProfileRepository();
 		$updated  = $profiles->updated_at();
-		return self::respond( $request, self::responder()->profile( $profiles->get(), $updated ), $updated );
+		$language = self::language( $request );
+		if ( null === $language ) {
+			return self::respond( $request, self::responder()->profile( $profiles->get(), $updated ), $updated );
+		}
+		$localized = Multilingual::profile( $profiles->get(), $language );
+		$record    = $localized->record instanceof CompanyProfile ? $localized->record : $profiles->get();
+		$body      = RestResponder::translated( self::responder()->profile( $record, $updated ), $language, array( 'profile' => $localized->marker() ) );
+		return self::in_language( self::respond( $request, $body, $updated ), $language );
 	}
 
 	/**
@@ -130,11 +139,20 @@ final class RestModule implements Module {
 			return self::error( 'rest_invalid_param', implode( ' ', $errors ), 400 );
 		}
 
-		$body     = self::responder()->listings( SchemaModule::listings(), $query, ( new WpClock() )->today(), TemplatesModule::now() );
+		$language = self::language( $request );
+		$listings = SchemaModule::listings();
+		$markers  = array();
+		if ( null !== $language ) {
+			[ $listings, $markers ] = CatalogReader::localized( $listings, $language );
+		}
+		$body = self::responder()->listings( $listings, $query, ( new WpClock() )->today(), TemplatesModule::now() );
+		if ( null !== $language ) {
+			$body = RestResponder::translated( $body, $language, $markers );
+		}
 		$response = self::respond( $request, $body, $body['updated_at'] );
 		$response->header( 'X-WP-Total', (string) $body['total'] );
 		$response->header( 'X-WP-TotalPages', (string) $body['total_pages'] );
-		return $response;
+		return null === $language ? $response : self::in_language( $response, $language );
 	}
 
 	/**
@@ -147,12 +165,21 @@ final class RestModule implements Module {
 		if ( null !== $limited ) {
 			return $limited;
 		}
-		$listing = ( new WpListingRepository() )->find( absint( $request->get_param( 'id' ) ) );
-		$body    = null === $listing ? null : self::responder()->listing( $listing, ( new WpClock() )->today(), TemplatesModule::now() );
+		$listing  = ( new WpListingRepository() )->find( absint( $request->get_param( 'id' ) ) );
+		$language = self::language( $request );
+		$markers  = array();
+		if ( null !== $listing && null !== $language ) {
+			[ $records, $markers ] = CatalogReader::localized( array( $listing ), $language );
+			$listing               = $records[0] ?? $listing;
+		}
+		$body = null === $listing ? null : self::responder()->listing( $listing, ( new WpClock() )->today(), TemplatesModule::now() );
 		if ( null === $body ) {
 			return self::error( 'aihs_listing_not_found', __( 'İlan bulunamadı veya süresi doldu.', 'ai-hazir-site' ), 404 );
 		}
-		return self::respond( $request, $body, $body['updated_at'] );
+		if ( null === $language ) {
+			return self::respond( $request, $body, $body['updated_at'] );
+		}
+		return self::in_language( self::respond( $request, RestResponder::translated( $body, $language, $markers ), $body['updated_at'] ), $language );
 	}
 
 	/**
@@ -176,7 +203,30 @@ final class RestModule implements Module {
 	 * @param WP_REST_Request $request Request.
 	 */
 	public static function get_schema( WP_REST_Request $request ): WP_REST_Response {
-		return self::respond( $request, RestSchemas::get( (string) $request->get_param( 'name' ) ), null );
+		return self::respond( $request, RestSchemas::get( (string) $request->get_param( 'name' ), Multilingual::active() ), null );
+	}
+
+	/**
+	 * Answer language of a request (?lang=, then Accept-Language), or null while multilingual
+	 * output is inactive.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 */
+	public static function language( WP_REST_Request $request ): ?string {
+		$requested = $request->get_param( 'lang' );
+		return Multilingual::language( is_string( $requested ) ? sanitize_text_field( $requested ) : null, (string) $request->get_header( 'accept_language' ) );
+	}
+
+	/**
+	 * Language headers (RFC 9110 §8.5 Content-Language, §12.5.5 Vary).
+	 *
+	 * @param WP_REST_Response $response Response.
+	 * @param string           $language Answer language.
+	 */
+	private static function in_language( WP_REST_Response $response, string $language ): WP_REST_Response {
+		$response->header( 'Content-Language', $language );
+		$response->header( 'Vary', 'Accept-Language' );
+		return $response;
 	}
 
 	/**
