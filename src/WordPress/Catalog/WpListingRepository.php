@@ -68,8 +68,11 @@ final class WpListingRepository implements ListingRepository, ListingTranslation
 				'post_type'        => PostType::NAME,
 				'post_status'      => 'publish',
 				'numberposts'      => $limit,
-				'orderby'          => 'modified',
-				'order'            => 'DESC',
+				// Newest id first among listings updated in the same second, so the order is stable.
+				'orderby'          => array(
+					'modified' => 'DESC',
+					'ID'       => 'DESC',
+				),
 				'fields'           => 'ids',
 				'meta_key'         => PostType::META['type'], // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Small private catalog.
 				'meta_value'       => $type, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Small private catalog.

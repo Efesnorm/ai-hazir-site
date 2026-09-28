@@ -3,6 +3,13 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.4.1] - 2026-09-28
+
+### Düzeltildi
+- Aynı saniyede güncellenen ilanların sırası sabit değildi (veritabanı eşitlikte rastgele dönebiliyordu); artık
+  eşitlikte yeni kimlik önce gelir. JSON-LD, REST, llms.txt ve yönetim listeleri aynı çıktıyı verir.
+  `PortalChannelsTest` CI'da bu yüzden ara sıra kırılıyordu. Yeni test: `ListingOrderTest`.
+
 ## [1.4.0] - 2026-09-28
 
 ### Eklendi
