@@ -4,7 +4,8 @@ Tek sayfada, sabah kararı verilecek her şey. Ayrıntılar ilgili `gorev-NN.md`
 
 > **Karar (2026-09-28 sabah):** tüm dallar birleştirilsin, bot listesi eklensin, test değişiklikleri onaylı.
 > `main`'e sırayla birleştirildi: 1.0.1 (şablon sırası + PHP 8.4 test satırı), 1.1.0, 1.2.0, 1.3.0, 1.4.0 (araştırma +
-> bot listesi), 1.5.0, 1.6.0. Görevlerin "onay bekleyenler"indeki temkinli seçimler olduğu gibi uygulandı.
+> bot listesi), 1.4.1, 1.5.0, 1.6.0. 1.4.0'ın CI'ı kırıldı (aynı saniyedeki ilanların sırası sabit değildi, `PortalChannelsTest`);
+> düzeltme 1.4.1 olarak eklendi, v1.4.0 etiketi konmadı. Görevlerin "onay bekleyenler"indeki temkinli seçimler olduğu gibi uygulandı.
 >
 > **Açık kalanlar:** güncelleme sunucusunun yeri (adres boş), `belge-u2-allow` ve `prd-ucp` dalları (ayrıca onay
 > verilmedi), "walkthrough planı" hangi belge, `AbilitiesTest` zamanlama düzeltmesi, gerçek Polylang denemesi,
