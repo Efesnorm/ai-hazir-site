@@ -1,6 +1,6 @@
 # Görev 19 – A12 A2A kartviziti ve agent: plan (onay bekliyor)
 
-> `gorev-19` dalı, `gorev-18` üzerine kuruldu. Kullanıcı uyurken hazırlandı; birleştirme/etiket yok.
+> `gorev-19` dalı, `gorev-18` üzerine kuruldu (bu kopya: `gorev-19-botsuz`, `gorev-18-botsuz` üzerine; sürüm 1.5.0). Kullanıcı uyurken hazırlandı; birleştirme/etiket yok.
 > **Hiçbir dış agent'a istek gönderilmedi.** Uçtan uca demo (iki site, iki tarafta insan onayı) elle yapılacak;
 > adımları §5'te.
 
