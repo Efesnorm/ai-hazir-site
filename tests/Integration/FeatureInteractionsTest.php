@@ -13,6 +13,8 @@ use AIHazirSite\Adapters\A2A\A2ASkills;
 use AIHazirSite\Adapters\A2A\JsonRpcServer;
 use AIHazirSite\Adapters\Rest\RestSchemas;
 use AIHazirSite\Core\Catalog\ListingType;
+use AIHazirSite\Core\Compliance\Checks\AdvancedCheck;
+use AIHazirSite\Core\Compliance\Site;
 use AIHazirSite\Core\Features;
 use AIHazirSite\Core\Inquiry\Inquiry;
 use AIHazirSite\WordPress\A2A\A2AModule;
@@ -26,11 +28,12 @@ use AIHazirSite\WordPress\Portal\Portal;
 use AIHazirSite\WordPress\Portal\WpBusinessRepository;
 use AIHazirSite\WordPress\Rest\RestModule;
 use AIHazirSite\WordPress\Templates\TemplatesModule;
+use AIHazirSite\Tests\Support\FakePageFetcher;
 use WP_REST_Request;
 use WP_UnitTestCase;
 
 /**
- * Multilingual + portal in REST; A2A on a fee-less (law firm) site.
+ * Multilingual + portal in REST; A2A on a fee-less (law firm) site; U1 scoring our own A2A card.
  *
  * @coversNothing
  */
@@ -123,6 +126,29 @@ final class FeatureInteractionsTest extends WP_UnitTestCase {
 		$result = rest_validate_value_from_schema( $body, $schema );
 		$this->assertTrue( true === $result, is_wp_error( $result ) ? $result->get_error_message() : '' );
 		$this->assertEquals( $schema, rest_get_server()->dispatch( new WP_REST_Request( 'GET', '/aihs/v1/schema/listings' ) )->get_data() );
+	}
+
+	/**
+	 * U1's "advanced" check gives our own published card the full score (A12 ↔ U1 contract).
+	 */
+	public function test_compliance_scan_scores_our_card(): void {
+		$card = static function (): FakePageFetcher {
+			$fetcher = new FakePageFetcher();
+			$body    = A2AModule::card();
+			if ( null !== $body ) {
+				$fetcher->on( 'https://ornek.example/' . AdvancedCheck::PATH, (string) wp_json_encode( $body ) );
+			}
+			return $fetcher;
+		};
+
+		$off = ( new AdvancedCheck() )->run( new Site( 'https://ornek.example/', $card() ) );
+		$this->assertNotSame( 1.0, $off->ratio, 'No card while A2A is off.' );
+
+		Features::set( Features::A2A, true );
+		Features::set( Features::CATALOG, true );
+		$on = ( new AdvancedCheck() )->run( new Site( 'https://ornek.example/', $card() ) );
+		$this->assertSame( 1.0, $on->ratio, implode( ' ', $on->findings ) );
+		$this->assertSame( A2AModule::CARD_PATH, AdvancedCheck::PATH );
 	}
 
 	/**
