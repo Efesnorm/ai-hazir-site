@@ -31,11 +31,11 @@ iki dalda `composer check` temiz (PHP 8.1 + WordPress 7.1.2; 339 birim ve 174 en
   `duzeltme-sablon-sirasi`) PHP 8.3 + WordPress 6.9'da birim ve entegrasyon testleriyle yeşil; her biri ayrı
   birleştirilip CI'dan geçeceği için önceden denendi.
 - **Deneme birleşimi:** `birlesim-deneme` dalı = `duzeltme-sablon-sirasi` (1.0.1) + `gorev-19` zinciri. Çakışmalar
-  yalnızca CHANGELOG, sürüm satırı ve `readme.txt`'de, çözüldü; `composer check` temiz (340 birim, 177 entegrasyon).
+  yalnızca CHANGELOG, sürüm satırı ve `readme.txt`'de, çözüldü; `composer check` temiz (340 birim, 182 entegrasyon).
   CI matrisinin dört kombinasyonunda da yeşil (PHP 8.1/8.3 × WordPress 6.9/7.1.2; yerelde, ayrı wp-env örneğinde).
   Onaylanırsa `main` bu hâle getirilebilir.
   Bot listesi reddedilirse: `birlesim-deneme-botsuz` (1.0.1 + `gorev-19-botsuz`, sürüm 1.5.0); `composer check` temiz
-  (340 birim, 177 entegrasyon).
+  (340 birim, 182 entegrasyon).
 - GitHub CI bu dallarda çalışmadı (yalnızca `main` ve PR'larda çalışır); birleştirmeden sonra çalışacak.
 
 ## Karar bekleyen konular
@@ -57,6 +57,9 @@ iki dalda `composer check` temiz (PHP 8.1 + WordPress 7.1.2; 339 birim ve 174 en
 - [ ] İşletmeler seçenekte (`aihs_businesses`), yüzlerce işletmeye kadar.
 - [ ] Kalıcı rol yok; `user_has_cap` ile anlık yetki.
 - [ ] İşletme sayfası adresi `/ai-katalog/isletme/{kısaltma}/`.
+- [ ] Kaldırmada işletme yetkilisinin kullanıcı bağı (`aihs_business`) ve eklentinin tüm `aihs_*` geçici verileri de
+      silinsin. Gece yapılan bir testle bu verilerin kaldığı bulundu; düzeltme `gorev-15`'e eklendi ve üstteki dallar
+      yeniden taşındı (yeni testler: `PortalUninstallTest`, `UninstallAllFeaturesTest`).
 
 ### Görev 16 – güncelleme ve rapor paneli
 - [ ] **Güncelleme sunucusu nerede barınacak?** (PRD açık kararı; şimdilik adres boş.)
