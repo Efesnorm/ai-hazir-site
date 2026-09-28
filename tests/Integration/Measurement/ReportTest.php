@@ -211,7 +211,8 @@ final class ReportTest extends WP_UnitTestCase {
 	 */
 	private function csv_cells( string $csv ): array {
 		$this->assertStringStartsWith( CsvExport::BOM, $csv );
-		$lines  = array_map( 'str_getcsv', explode( "\n", trim( substr( $csv, strlen( CsvExport::BOM ) ) ) ) );
+		// Same CSV rules as CsvExport writes (no escape character); PHP 8.4 requires $escape explicitly.
+		$lines  = array_map( static fn( string $line ): array => str_getcsv( $line, ',', '"', '' ), explode( "\n", trim( substr( $csv, strlen( CsvExport::BOM ) ) ) ) );
 		$labels = array_flip( ReportPage::section_labels() );
 
 		$cells = array(
