@@ -46,4 +46,27 @@ Disallow: /
 
 User-agent: meta-externalagent
 Disallow: /
+
+User-agent: meta-externalfetcher
+Disallow: /wp-admin/
+Allow: /wp-admin/admin-ajax.php
+
+User-agent: meta-webindexer
+Disallow: /wp-admin/
+Allow: /wp-admin/admin-ajax.php
+
+User-agent: MistralAI-Training
+Disallow: /
+
+User-agent: MistralAI-Index
+Disallow: /wp-admin/
+Allow: /wp-admin/admin-ajax.php
+
+User-agent: MistralAI-User
+Disallow: /wp-admin/
+Allow: /wp-admin/admin-ajax.php
+
+User-agent: DuckAssistBot
+Disallow: /wp-admin/
+Allow: /wp-admin/admin-ajax.php
 # END AI Hazir Site

@@ -197,7 +197,7 @@ final class ChecksTest extends TestCase {
 			)->ratio
 		);
 
-		// Only GPTBot blocked: 11/12 bots allowed.
+		// Only GPTBot blocked: 17/18 bots allowed (1.4.0 bot list).
 		$result = ( new BotAccessCheck() )->run(
 			$site(
 				array(
@@ -206,7 +206,7 @@ final class ChecksTest extends TestCase {
 				)
 			)
 		);
-		$this->assertEqualsWithDelta( 0.5 * 11 / 12 + 0.5, $result->ratio, 0.0001 );
+		$this->assertEqualsWithDelta( 0.5 * 17 / 18 + 0.5, $result->ratio, 0.0001 );
 		$this->assertStringContainsString( 'GPTBot', implode( ' ', $result->findings ) );
 	}
 }

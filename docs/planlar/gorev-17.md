@@ -42,8 +42,15 @@ Resmi belgelerden doğrulanan 6 yeni kayıt:
 IP listelerinin biçimi mevcut ayrıştırıcıyla aynı (`prefixes[].ipv4Prefix`).
 
 **Etkisi:** bot erişimi puanı bot sayısına göre hesaplandığından aynı site için oran biraz değişir; U2 hazır ayar
-çıktılarına yeni botlar eklenir. Bu yüzden o dalda 3 anlık görüntü dosyası ve 3 testteki beklenen oran
-(12 → 18 bot) güncellendi ve `score_version` 3'e çıkarıldı. **Mevcut test değişikliği olduğu için onayınız gerekir.**
+çıktılarına yeni botlar eklenir. Bu yüzden o dalda `score_version` 3'e çıkarıldı ve şu test beklentileri güncellendi
+(hiçbiri gevşetilmedi; yalnızca 12 → 18 bot):
+- `tests/Snapshots/robots/*.txt` (3 dosya; yalnızca satır eklendi),
+- `BotAccessPolicyTest` (2 oran), `ChecksTest::test_partial_results` (1 oran),
+- `ScannerTest` (`SCORE_VERSION` 3), `CompliancePageTest` ("Puanlama sürümü: 3"),
+- `VerificationTest` (indirilen IP listesi sayısı 8 → 11).
+
+**Mevcut test değişikliği olduğu için onayınız gerekir.** Onaylanırsa ilk taraması sürüm 2 olan sitelerde rapor,
+farklı puanlama sürümü nedeniyle önce/sonra karşılaştırmasını göstermez (tasarım gereği).
 
 ## 4. Kaynaklar
 - WebMCP: W3C Draft Community Group Report (Şubat 2026); patrickbrosset.com/articles/2026-02-23-webmcp-updates-clarifications-and-next-steps/

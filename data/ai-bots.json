@@ -1,5 +1,5 @@
 {
-	"$comment": "AI bot listesi. ua_pattern: büyük/küçük harf duyarsız düzenli ifade parçası (ayraçsız). category: training | search | user_agent. verify: none | ip_ranges | rdns. ip_ranges için verify_source bir URL; rdns için virgülle ayrılmış ana makine son ekleri. Kaynaklar docs_url alanında; son kontrol 2026-09-27.",
+	"$comment": "AI bot listesi. ua_pattern: büyük/küçük harf duyarsız düzenli ifade parçası (ayraçsız). category: training | search | user_agent. verify: none | ip_ranges | rdns. ip_ranges için verify_source bir URL; rdns için virgülle ayrılmış ana makine son ekleri. Kaynaklar docs_url alanında; son kontrol 2026-09-28.",
 	"bots": [
 		{
 			"id": "gptbot",
@@ -120,6 +120,66 @@
 			"verify": "none",
 			"verify_source": "",
 			"docs_url": "https://developers.facebook.com/docs/sharing/webmasters/web-crawlers/"
+		},
+		{
+			"id": "meta-externalfetcher",
+			"name": "meta-externalfetcher",
+			"operator": "Meta",
+			"ua_pattern": "\\bmeta-externalfetcher\\b",
+			"category": "user_agent",
+			"verify": "none",
+			"verify_source": "",
+			"docs_url": "https://developers.facebook.com/docs/sharing/webmasters/web-crawlers/"
+		},
+		{
+			"id": "meta-webindexer",
+			"name": "meta-webindexer",
+			"operator": "Meta",
+			"ua_pattern": "\\bmeta-webindexer\\b",
+			"category": "search",
+			"verify": "none",
+			"verify_source": "",
+			"docs_url": "https://developers.facebook.com/docs/sharing/webmasters/web-crawlers/"
+		},
+		{
+			"id": "mistralai-training",
+			"name": "MistralAI-Training",
+			"operator": "Mistral AI",
+			"ua_pattern": "\\bMistralAI-Training\\b",
+			"category": "training",
+			"verify": "none",
+			"verify_source": "",
+			"docs_url": "https://docs.mistral.ai/robots"
+		},
+		{
+			"id": "mistralai-index",
+			"name": "MistralAI-Index",
+			"operator": "Mistral AI",
+			"ua_pattern": "\\bMistralAI-Index\\b",
+			"category": "search",
+			"verify": "ip_ranges",
+			"verify_source": "https://mistral.ai/mistralai-index-ips.json",
+			"docs_url": "https://docs.mistral.ai/robots"
+		},
+		{
+			"id": "mistralai-user",
+			"name": "MistralAI-User",
+			"operator": "Mistral AI",
+			"ua_pattern": "\\bMistralAI-User\\b",
+			"category": "user_agent",
+			"verify": "ip_ranges",
+			"verify_source": "https://mistral.ai/mistralai-user-ips.json",
+			"docs_url": "https://docs.mistral.ai/robots"
+		},
+		{
+			"id": "duckassistbot",
+			"name": "DuckAssistBot",
+			"operator": "DuckDuckGo",
+			"ua_pattern": "\\bDuckAssistBot\\b",
+			"category": "search",
+			"verify": "ip_ranges",
+			"verify_source": "https://duckduckgo.com/duckassistbot.json",
+			"docs_url": "https://duckduckgo.com/duckduckgo-help-pages/results/duckassistbot"
 		}
 	]
 }
