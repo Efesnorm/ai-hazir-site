@@ -18,6 +18,9 @@ Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, 
     llms.txt'de işletme dizini; REST'te `business`, `?business=`, `/businesses`; MCP'de `business` girdisi ve
     `aihs/list-businesses`.
 - Belgeler: `docs/kullanim/portal.md`; bilinen sınırlar güncellendi.
+- Kaldırma (veriyi sil seçeneği açıkken): işletme yetkililerinin kullanıcı bağı (`aihs_business`) ve eklentinin tüm
+  `aihs_*` geçici verileri (önbellekler, hız sınırı pencereleri, form durumu) de silinir. Başka eklentilerin verisine
+  dokunulmaz (`PortalUninstallTest`).
 
 ### Değişmeyen
 - Portal kapalıyken (işletme kayıtları olsa bile) tüm çıktılar birebir aynı (geriye uyumluluk testi).

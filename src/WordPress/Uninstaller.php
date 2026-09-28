@@ -20,6 +20,7 @@ use AIHazirSite\Core\Migrations\Migrator;
 use AIHazirSite\WordPress\Catalog\CatalogModule;
 use AIHazirSite\WordPress\Catalog\WpProfileRepository;
 use AIHazirSite\WordPress\I18n\LanguageSource;
+use AIHazirSite\WordPress\Portal\Portal;
 use AIHazirSite\WordPress\Portal\WpBusinessRepository;
 use AIHazirSite\WordPress\Platform\WpSettings;
 use AIHazirSite\Core\Measurement\IpRanges;
@@ -85,6 +86,42 @@ final class Uninstaller {
 			delete_option( $option );
 		}
 
+		// Business users' links (1.2.0 portal mode) and the plugin's transients (caches, rate-limit
+		// windows, form state, one-time tokens).
+		$users = get_users(
+			array(
+				'meta_key' => Portal::USER_META, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Runs once, on uninstall.
+				'fields'   => 'ID',
+			)
+		);
+		foreach ( $users as $user_id ) {
+			delete_user_meta( (int) $user_id, Portal::USER_META );
+		}
+		self::delete_transients();
+
 		return true;
+	}
+
+	/**
+	 * Deletes every transient named aihs_* through the transient API (so an object cache is cleared too
+	 * for the ones stored in the options table).
+	 */
+	private static function delete_transients(): void {
+		global $wpdb;
+		$names = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Enumerating the plugin's transients once, on uninstall.
+			$wpdb->prepare(
+				'SELECT option_name FROM %i WHERE option_name LIKE %s OR option_name LIKE %s',
+				$wpdb->options,
+				$wpdb->esc_like( '_transient_aihs_' ) . '%',
+				$wpdb->esc_like( '_site_transient_aihs_' ) . '%'
+			)
+		);
+		foreach ( $names as $name ) {
+			if ( str_starts_with( $name, '_site_transient_' ) ) {
+				delete_site_transient( substr( $name, strlen( '_site_transient_' ) ) );
+			} else {
+				delete_transient( substr( $name, strlen( '_transient_' ) ) );
+			}
+		}
 	}
 }
