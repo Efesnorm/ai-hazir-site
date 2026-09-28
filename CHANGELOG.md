@@ -16,7 +16,7 @@ Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, 
   - Kaldırmada `aihs_discovery_visible` silinir.
   - Testler: `DiscoveryLinksTest`, `DiscoveryTest`.
 
-### Test güncellemesi (onay bekliyor)
+### Test güncellemesi (onaylı)
 - `FeaturesTest::test_mvp_feature_defaults` anahtar listesine `discovery` (`false`).
 
 ## [1.6.1] - 2026-09-28
