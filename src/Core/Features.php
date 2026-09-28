@@ -113,6 +113,11 @@ final class Features {
 	public const MATCHING = 'matching';
 
 	/**
+	 * A2A Agent Card and agent endpoint (1.6.0).
+	 */
+	public const A2A = 'a2a';
+
+	/**
 	 * Sector templates (0.8.0).
 	 */
 	public const TEMPLATES = 'templates';
@@ -166,6 +171,7 @@ final class Features {
 			self::REMOTE_UPDATES    => false,
 			self::TELEMETRY         => false,
 			self::MATCHING          => false,
+			self::A2A               => false,
 		);
 	}
 

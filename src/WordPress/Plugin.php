@@ -20,6 +20,7 @@ use AIHazirSite\WordPress\I18n\MultilingualModule;
 use AIHazirSite\WordPress\Portal\PortalModule;
 use AIHazirSite\WordPress\Updates\UpdateModule;
 use AIHazirSite\WordPress\Matching\MatchingModule;
+use AIHazirSite\WordPress\A2A\A2AModule;
 use AIHazirSite\WordPress\Access\AccessModule;
 use AIHazirSite\WordPress\Catalog\CatalogModule;
 use AIHazirSite\WordPress\Compliance\ComplianceModule;
@@ -88,6 +89,7 @@ final class Plugin {
 			new PortalModule(),
 			new UpdateModule(),
 			new MatchingModule(),
+			new A2AModule(),
 		);
 	}
 

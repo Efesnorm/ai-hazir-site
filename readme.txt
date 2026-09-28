@@ -4,7 +4,7 @@ Tags: ai, llms-txt, schema, mcp, robots-txt
 Requires at least: 6.9
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.5.0
+Stable tag: 1.6.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -36,6 +36,7 @@ Her özellik ayrı bir anahtarla açılır ve kapatılır. Kurulumdan sonra yaln
 * **Portal modu:** birçok işletmeyi listeleyen siteler için işletme başına sayfa, yetkili kullanıcı ve AI görünürlük raporu.
 * **Çoklu dil:** yalnızca girdiğiniz çeviriler yayınlanır; AI'lar `lang` ya da `Accept-Language` ile dili seçer, eksik çeviri işaretlenir.
 * **Eşleştirme:** aranan ilanlarınıza uyan ürün ve hizmetler, ölçüt başına açıklamalı puanla.
+* **A2A agent:** diğer firmaların AI agent'ları A2A 1.0 ile müsaitlik sorar ve teklif ister; siz de eşleşen ortaklara onayınızla teklif isteği gönderirsiniz.
 * **Teklif kutusu:** AI agentlar ve insanlar firmaya talep bırakır. Hiçbir talep otomatik onaylanmaz, talep sahibine otomatik yanıt gitmez; iletişim bilgisi şifreli saklanır ve süre dolunca silinir.
 
 = Gizlilik =
@@ -66,6 +67,9 @@ Tarama sitenin kendi adreslerini çeker. Kendine HTTP isteği atamayan ortamlard
 Varsayılan olarak veriler korunur. Eklentiyi silerken tüm verisinin (tablolar, ayarlar, ilanlar, talepler) kaldırılmasını istiyorsanız silmeden önce `aihs_delete_data_on_uninstall` seçeneğini açın, ör. WP-CLI ile: `wp option update aihs_delete_data_on_uninstall 1`.
 
 == Changelog ==
+
+= 1.6.0 =
+* A2A 1.0 agent kartviziti ve agent: müsaitlik ve teklif isteği becerileri; eşleşen ortaklara yalnızca kullanıcı onayıyla teklif isteği; tüm mesajlar denetim kaydında.
 
 = 1.5.0 =
 * Eşleştirme motoru: aranan ilanlar satılan/tedarik ilanlarıyla (bu site ve yetkilendirilmiş ortak siteler) puanlanarak eşleştirilir; her puan açıklamalı; hiçbir şey otomatik gönderilmez.

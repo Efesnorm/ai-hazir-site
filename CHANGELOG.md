@@ -3,6 +3,24 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.6.0] - 2026-09-28
+
+### Eklendi
+- **A12 A2A kartviziti ve agent** (`a2a` anahtarı, varsayılan kapalı). Resmi belgeden doğrulama ve onay bekleyen
+  kararlar: `docs/planlar/gorev-19.md` (A2A 1.0.0, a2a.proto).
+  - `src/Adapters/A2A/`: `AgentCardBuilder`, `AgentCardValidator` (resmi zorunlu alanlar; yarım/eski kart asla
+    yayınlanmaz), `JsonRpcServer` (`SendMessage`, `A2A-Version` 1.x, resmi hata kodları), `A2ASkills`.
+  - `/.well-known/agent-card.json` yalnızca uç nokta ve en az bir beceri çalışırken; `POST /wp-json/aihs/a2a`.
+  - Beceriler: `musaitlik-sor` (A6 `Availability`), `teklif-iste` (A7 `InquiryService`, kanal `a2a`, otomatik onay yok).
+  - Giden: Eşleşmeler'den ortak siteye, mesajın tam önizlemesi ve kullanıcı onayıyla (tek kullanımlık belirteç);
+    karşı kart ortak sitenin alan adından okunup doğrulanır. Yeni mimari testi `A2ASendsOnlyWithApprovalTest`.
+  - Tüm gelen ve giden mesajlar denetim kaydında.
+- Belgeler: `docs/kullanim/a2a.md` (uçtan uca demo adımları dahil).
+
+### Test güncellemesi (onaylı)
+- `FeaturesTest::test_mvp_feature_defaults` anahtar listesine `a2a => false`; `TelemetrySendsOnlyWithConsentTest`
+  izinli giden POST dosyalarına `A2AOutbox` eklendi.
+
 ## [1.5.0] - 2026-09-28
 
 ### Eklendi

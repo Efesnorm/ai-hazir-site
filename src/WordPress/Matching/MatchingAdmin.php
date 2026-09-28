@@ -11,6 +11,7 @@ namespace AIHazirSite\WordPress\Matching;
 
 use AIHazirSite\Core\Catalog\ListingType;
 use AIHazirSite\Core\Matching\MatchWeights;
+use AIHazirSite\WordPress\A2A\A2AAdmin;
 use AIHazirSite\WordPress\Catalog\Admin\CatalogAdmin;
 use AIHazirSite\WordPress\Catalog\Admin\FormState;
 
@@ -92,7 +93,7 @@ final class MatchingAdmin {
 
 		$need = $need_id > 0 ? MatchingModule::need( $need_id ) : null;
 		if ( null !== $need ) {
-			$html .= self::results( MatchingModule::matches( $need ) );
+			$html .= self::results( MatchingModule::matches( $need ), (int) $need->id );
 		} elseif ( array() === $needs ) {
 			$html .= '<p>' . esc_html__( 'Geçerli aranan ilan yok.', 'ai-hazir-site' ) . '</p>';
 		}
@@ -102,9 +103,10 @@ final class MatchingAdmin {
 	/**
 	 * Result table.
 	 *
-	 * @param array{matches: list<array{candidate: \AIHazirSite\Core\Matching\Candidate, score: float, breakdown: list<array{criterion: string, weight: float, value: float, points: float}>}>, excluded: array<string, string>, unreachable: list<string>} $result Result.
+	 * @param array{matches: list<array{candidate: \AIHazirSite\Core\Matching\Candidate, score: float, breakdown: list<array{criterion: string, weight: float, value: float, points: float}>}>, excluded: array<string, string>, unreachable: list<string>} $result  Result.
+	 * @param int                                                                                                                                                                                                                                           $need_id Need (for the A2A link).
 	 */
-	private static function results( array $result ): string {
+	private static function results( array $result, int $need_id ): string {
 		$labels = self::labels();
 		$html   = '';
 		foreach ( $result['unreachable'] as $partner ) {
@@ -119,7 +121,7 @@ final class MatchingAdmin {
 				$parts[] = ( $labels[ $row['criterion'] ] ?? $row['criterion'] ) . ' ' . number_format_i18n( $row['points'], 1 ) . '/' . number_format_i18n( 100 * $row['weight'], 1 );
 			}
 			$title = '' === $candidate->url ? esc_html( $candidate->listing->title ) : '<a href="' . esc_url( $candidate->url ) . '">' . esc_html( $candidate->listing->title ) . '</a>';
-			$html .= '<tr data-candidate="' . esc_attr( $candidate->key() ) . '"><td data-value="score">' . esc_html( number_format_i18n( $match['score'], 1 ) ) . '</td><td>' . $title . '</td><td>' . esc_html( '' === $candidate->source ? __( 'Bu site', 'ai-hazir-site' ) : (string) wp_parse_url( $candidate->source, PHP_URL_HOST ) ) . '</td><td>' . esc_html( implode( ' · ', $parts ) ) . '</td></tr>';
+			$html .= '<tr data-candidate="' . esc_attr( $candidate->key() ) . '"><td data-value="score">' . esc_html( number_format_i18n( $match['score'], 1 ) ) . '</td><td>' . $title . '</td><td>' . esc_html( '' === $candidate->source ? __( 'Bu site', 'ai-hazir-site' ) : (string) wp_parse_url( $candidate->source, PHP_URL_HOST ) ) . '</td><td>' . esc_html( implode( ' · ', $parts ) ) . self::a2a_link( $need_id, $candidate ) . '</td></tr>';
 		}
 		$html .= '</tbody></table>';
 		if ( array() !== $result['excluded'] ) {
@@ -130,6 +132,17 @@ final class MatchingAdmin {
 			$html .= '</ul></details>';
 		}
 		return $html;
+	}
+
+	/**
+	 * "A2A ile teklif iste" for a partner candidate (1.6.0, only while A2A is on), else ''.
+	 *
+	 * @param int                                  $need_id   Need.
+	 * @param \AIHazirSite\Core\Matching\Candidate $candidate Candidate.
+	 */
+	private static function a2a_link( int $need_id, \AIHazirSite\Core\Matching\Candidate $candidate ): string {
+		$url = A2AAdmin::link( $need_id, $candidate->source, (int) $candidate->listing->id );
+		return '' === $url ? '' : ' <a class="button button-small aihs-a2a-link" href="' . esc_url( $url ) . '">' . esc_html__( 'A2A ile teklif iste', 'ai-hazir-site' ) . '</a>';
 	}
 
 	/**
