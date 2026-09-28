@@ -53,3 +53,15 @@ Anahtarlar: `remote_updates`, `telemetry` (ikisi de varsayılan kapalı; `teleme
 4. Geri almada paket kurulumu gerçek ortamda elle denenmedi (geliştirme ortamında eklenti klasörü depoya bağlı;
    üzerine kurmak kaynak kodu silerdi). Veritabanı geri alma ve orkestrasyon testlerle doğrulandı.
 5. Özet gönderim sıklığı haftalık; gönderilen alanlar yukarıdaki liste.
+6. Mevcut bir testte değişiklik: `FeaturesTest::test_mvp_feature_defaults` anahtar listesine `remote_updates`,
+   `telemetry` eklendi.
+7. Bildirim indirilirken mevcut `WpHttpClient` kullanıldı; kullanıcı aracısında site adresi gider (WordPress'in kendi
+   güncelleme denetimi gibi). İstenirse site adresi göndermeyen ayrı bir istemci yazılabilir.
+
+## 5. Sonuç (uygulandı)
+- 3 işleme: çekirdek → WordPress (kancalar, geri alma, özet, ekran) → belgeler/sürüm 1.3.0 (+ `bin/paketle` sürüm kaydı).
+- `composer check` temiz: 330 birim, 170 entegrasyon testi.
+- Kabul (sahte saat, tüm HTTP istekleri yakalanarak): pilot kanal güncellemeyi hemen, genel kanal 48 saat sonra
+  alıyor; geri alma sonrası şema önceki sürümün (200), önceki veriler aynı, önceki paket kuruldu; onay verilmeden hiçbir
+  istek atılmıyor, onay geri alınınca gönderim duruyor.
+- Elle deneme (geliştirme sitesi): ayar ekranı oluşuyor, adres yokken 0 istek.

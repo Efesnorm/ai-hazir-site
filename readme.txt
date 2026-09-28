@@ -4,7 +4,7 @@ Tags: ai, llms-txt, schema, mcp, robots-txt
 Requires at least: 6.9
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -39,7 +39,7 @@ Her özellik ayrı bir anahtarla açılır ve kapatılır. Kurulumdan sonra yaln
 
 = Gizlilik =
 
-Eklenti ham IP adresi, tarayıcı bilgisi veya sorgu dizesi saklamaz. Teklif kutusu açıksa talep sahibinin iletişim bilgileri şifreli olarak ve yalnızca saklama süresi boyunca (varsayılan 180 gün) tutulur. Eklenti kendi başına hiçbir dış hizmete veri göndermez; yalnızca AI botlarının resmi IP listelerini yayımlandıkları adreslerden indirir.
+Eklenti ham IP adresi, tarayıcı bilgisi veya sorgu dizesi saklamaz. Teklif kutusu açıksa talep sahibinin iletişim bilgileri şifreli olarak ve yalnızca saklama süresi boyunca (varsayılan 180 gün) tutulur. Eklenti kendi başına hiçbir dış hizmete veri göndermez; yalnızca AI botlarının resmi IP listelerini yayımlandıkları adreslerden indirir. Merkezi güncelleme açılıp bir sunucu adresi verilirse sürüm bilgisi o adresten okunur. Rapor paneline haftalık özet yalnızca site sahibinin açık onayıyla ve yalnızca toplamlar olarak gönderilir; onay her an geri alınabilir.
 
 == Installation ==
 
@@ -66,6 +66,9 @@ Varsayılan olarak veriler korunur. Eklentiyi silerken tüm verisinin (tablolar,
 
 == Changelog ==
 
+= 1.3.0 =
+* Merkezi güncelleme (kanarya: pilot hemen, genel 48 saat sonra), önceki sürüme tek işlemle dönüş, açık onayla rapor paneline haftalık özet, lisans altyapısı.
+
 = 1.2.0 =
 * Portal modu: birçok işletme tek sitede; işletme yetkilileri yalnızca kendi ilanlarını yönetir; işletme sayfaları, işletme bazlı AI görünürlük raporu; REST, MCP, llms.txt ve JSON-LD'de işletmeler.
 
@@ -85,6 +88,9 @@ Varsayılan olarak veriler korunur. Eklentiyi silerken tüm verisinin (tablolar,
 Tüm değişiklikler: CHANGELOG.md.
 
 == Upgrade Notice ==
+
+= 1.3.0 =
+Merkezi güncelleme ve rapor paneli altyapısı eklendi (varsayılan kapalı; özet gönderimi ayrıca açık onay ister).
 
 = 1.2.0 =
 Portal modu eklendi (varsayılan kapalı). Tek firmalı sitelerde hiçbir çıktı değişmez.

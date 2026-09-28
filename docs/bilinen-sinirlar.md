@@ -1,4 +1,4 @@
-# Bilinen sınırlar (1.2.0)
+# Bilinen sınırlar (1.3.0)
 
 Bu liste MVP sürümünde bilerek bırakılan veya henüz çözülmemiş konuları toplar. Her madde ileride bir görevle ele alınabilir.
 
@@ -58,6 +58,14 @@ Bu liste MVP sürümünde bilerek bırakılan veya henüz çözülmemiş konular
 - İşletme profilleri çevrilmez (çoklu dil yalnızca portalın kendi profiline ve ilanlara uygulanır).
 - İşletme yetkilisinin formu ilan türünü, başlığı, açıklamayı ve temel alanları içerir; sektör şablonu alanları
   yalnızca yönetici formundadır.
+
+## Merkezi güncelleme ve rapor paneli (1.3.0)
+
+- Güncelleme sunucusu ve rapor paneli henüz yok (PRD açık kararı); adres verilmedikçe hiçbir istek atılmaz.
+- Geri almada paket kurulumu gerçek bir sunucuyla elle denenmedi; veritabanı geri alma ve orkestrasyon testlerle doğrulandı.
+- Bildirim dosyası indirilirken WordPress'in HTTP istemcisi, kullanıcı aracısında site adresini gönderir
+  (WordPress'in kendi güncelleme denetimi de böyle yapar). Rapor paneline giden özette site adresi yoktur.
+- Lisans denetimi yalnızca altyapıdır; hiçbir özellik kilitli değildir.
 
 ## Bilinen hata
 

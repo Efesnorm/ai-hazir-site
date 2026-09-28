@@ -3,6 +3,28 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.3.0] - 2026-09-28 (onay bekliyor: `gorev-16` dalı)
+
+### Eklendi
+- **A10 Merkezi güncelleme ve rapor paneli** (`remote_updates`, `telemetry` anahtarları, varsayılan kapalı). Plan ve onay
+  bekleyen kararlar: `docs/planlar/gorev-16.md`.
+  - Çekirdek `src/Core/Updates/`: `ReleaseManifest` (wp-update-server / Plugin Update Checker alanları + `releases`,
+    yalnızca https), `CanaryPolicy` (pilot hemen, genel 48 saat sonra; geri alma hedefi), `RollbackService` (önce şema
+    `down()`, sonra paket).
+  - WordPress: `pre_set_site_transient_update_plugins` ve `plugins_api` ile standart güncelleme ekranı; önceki pakete
+    `Plugin_Upgrader` (`overwrite_package`) ile dönüş. Sunucu adresi yoksa hiçbir istek yok (`AIHS_UPDATE_SERVER`).
+  - Rapor paneli: `TelemetryService` yalnızca anahtar + https adres + güncel bildirime açık onay varken gönderir;
+    `TelemetrySummary` yalnızca toplamlar; rastgele site kimliği; onay geri alınabilir. Yeni mimari testi
+    `TelemetrySendsOnlyWithConsentTest` (dışarı POST yalnızca bu servisten).
+  - Lisans altyapısı: `LicenseChecker`, `FreeLicense` (hiçbir özellik kilitli değil).
+  - **Ayarlar → AI Hazır Güncelleme**: sunucu, kanal, panel adresi, önceki sürüme dön, onay (gönderilecek verinin
+    tam önizlemesiyle) ve onayı geri alma.
+  - `bin/paketle` sunucu bildirimi için sürüm kaydı da üretir (`db_version` paketten okunur).
+- Belgeler: `docs/kullanim/guncelleme.md`; bilinen sınırlar güncellendi.
+
+### Test güncellemesi (onay bekliyor)
+- `FeaturesTest::test_mvp_feature_defaults` anahtar listesine `remote_updates`, `telemetry` (ikisi de `false`) eklendi.
+
 ## [1.2.0] - 2026-09-28 (onay bekliyor: `gorev-15` dalı)
 
 ### Eklendi
