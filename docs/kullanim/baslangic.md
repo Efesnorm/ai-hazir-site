@@ -33,6 +33,7 @@ Veriler ve ayarlar korunur; veritabanı değişiklikleri yalnızca ekleme şekli
 | `portal_mode` | Portal: birçok işletme, işletme yetkilileri ([portal.md](portal.md)) | WP-CLI |
 | `remote_updates` | Merkezi güncelleme, kanarya, önceki sürüme dönüş ([guncelleme.md](guncelleme.md)) | WP-CLI |
 | `matching` | Eşleştirme: aranan ↔ satılan/tedarik ([eslestirme.md](eslestirme.md)) | WP-CLI |
+| `a2a` | A2A kartviziti ve agent, onaylı giden teklif isteği ([a2a.md](a2a.md)) | WP-CLI |
 | `telemetry` | Rapor paneline haftalık özet (ayrıca açık onay gerekir) | WP-CLI + Ayarlar → AI Hazır Güncelleme |
 
 WP-CLI ile açma (örnek: tarama, sihirbaz ve rapor):
