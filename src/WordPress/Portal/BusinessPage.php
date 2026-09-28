@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace AIHazirSite\WordPress\Portal;
 
+use AIHazirSite\WordPress\Platform\PageCache;
 use AIHazirSite\WordPress\Schema\CatalogPage;
 
 /**
@@ -32,6 +33,7 @@ final class BusinessPage {
 			status_header( 404 );
 			return;
 		}
+		PageCache::exclude();
 		status_header( 200 );
 		header( 'Content-Type: text/html; charset=utf-8' );
 		echo CatalogPage::render_html( CatalogPage::language(), $business ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in render_html().

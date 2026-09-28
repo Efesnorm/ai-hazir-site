@@ -20,6 +20,7 @@ use AIHazirSite\WordPress\Catalog\CatalogReader;
 use AIHazirSite\WordPress\Catalog\WpProfileRepository;
 use AIHazirSite\WordPress\I18n\Multilingual;
 use AIHazirSite\WordPress\Llms\LlmsModule;
+use AIHazirSite\WordPress\Platform\PageCache;
 use AIHazirSite\WordPress\Platform\WpClock;
 use AIHazirSite\WordPress\Portal\Portal;
 use AIHazirSite\WordPress\Templates\TemplatesModule;
@@ -38,6 +39,7 @@ final class CatalogPage {
 		if ( ! get_query_var( SchemaModule::QUERY_VAR ) ) {
 			return;
 		}
+		PageCache::exclude();
 		status_header( 200 );
 		header( 'Content-Type: text/html; charset=utf-8' );
 		echo self::render_html( self::language() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in render_html().

@@ -11,6 +11,8 @@ Bu belge eklentiyi kuran site sahibi içindir. Geliştirme ortamı için: [READM
 
 Güncelleme: yeni zip dosyasını aynı yoldan yükleyin, WordPress "mevcut eklentiyi değiştir" diye sorar.
 Veriler ve ayarlar korunur; veritabanı değişiklikleri yalnızca ekleme şeklindedir ve kendiliğinden uygulanır.
+Bir sayfa önbelleği eklentisi kullanıyorsanız (WP Rocket, LiteSpeed Cache vb.) güncellemeden sonra önbelleği bir kez
+temizleyin. 1.6.1'den beri `/ai-katalog/` ve `/llms.txt` önbelleğe alınmaz; eski kopyalar ise temizlenene kadar kalır.
 
 ## Özellik anahtarları
 

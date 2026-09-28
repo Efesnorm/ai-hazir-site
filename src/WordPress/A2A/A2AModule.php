@@ -25,6 +25,7 @@ use AIHazirSite\WordPress\Inquiry\InquiryChannels;
 use AIHazirSite\WordPress\Inquiry\InquiryModule;
 use AIHazirSite\WordPress\Inquiry\WpAuditRepository;
 use AIHazirSite\WordPress\Module;
+use AIHazirSite\WordPress\Platform\PageCache;
 use AIHazirSite\WordPress\Platform\WpCache;
 use AIHazirSite\WordPress\Platform\WpClock;
 use AIHazirSite\WordPress\Platform\WpSecret;
@@ -144,6 +145,7 @@ final class A2AModule implements Module {
 		if ( null === $card ) {
 			return; // WordPress answers 404.
 		}
+		PageCache::exclude();
 		status_header( 200 );
 		header( 'Content-Type: application/json; charset=utf-8' );
 		header( 'Cache-Control: public, max-age=3600' );

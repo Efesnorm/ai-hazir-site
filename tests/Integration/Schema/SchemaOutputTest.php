@@ -131,6 +131,7 @@ final class SchemaOutputTest extends WP_UnitTestCase {
 		$stored         = get_option( WpProfileRepository::OPTION );
 		$stored['name'] = '';
 		update_option( WpProfileRepository::OPTION, $stored );
+		update_option( 'blogname', '' ); // 1.6.1: an empty profile name falls back to the site name, so blank both.
 
 		$served = self::json_ld( $this->home_head() );
 		$this->assertSame( $valid, $served[0], 'Last valid output is served.' );

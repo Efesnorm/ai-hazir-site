@@ -17,8 +17,9 @@ use AIHazirSite\Core\Templates\Template;
 
 /**
  * Answers yes / no / unknown with Turkish reasons, from the listing's own data only:
- * - offer: asked quantity against the stock (or the template's inventory field, e.g. remaining
- *   tour places; a stale value gives "unknown"); unknown stock → unknown;
+ * - offer: asked quantity against the stock, or, when the template has an inventory field (e.g.
+ *   remaining tour places), against that field only (1.6.1: empty → unknown, the general quantity is
+ *   not used; a stale value gives "unknown"); unknown stock → unknown;
  * - supply: made to order, so the quantity is not a limit;
  * - lead time against the asked days; no lead time given → unknown;
  * - demand, missing or expired listing → no.
@@ -55,11 +56,15 @@ final class Availability {
 		$stock   = $listing->quantity;
 		$unit    = $listing->unit;
 		$stale   = false;
+		$label   = null;
 		foreach ( $template->fields as $field ) {
-			if ( 'inventoryLevel' === ( $field->schema['property'] ?? '' ) && isset( $listing->attributes[ $field->name ] ) ) {
-				$stock = $listing->attributes[ $field->name ];
+			if ( 'inventoryLevel' === ( $field->schema['property'] ?? '' ) ) {
+				// 1.6.1: the template's own availability field (e.g. a tour's remaining places) is the only
+				// source; the general quantity (e.g. a tour's total) is not a fallback for it.
+				$label = $field->label;
+				$stock = $listing->attributes[ $field->name ] ?? null;
 				$unit  = '' === $field->unit ? $field->label : $field->unit;
-				$stale = Freshness::is_stale( $field, $listing, $now );
+				$stale = null !== $stock && Freshness::is_stale( $field, $listing, $now );
 			}
 		}
 
@@ -69,16 +74,18 @@ final class Availability {
 				$reasons[] = 'Siparişe göre üretilir; miktar sınırı yok.';
 			} elseif ( null === $stock ) {
 				$answers[] = self::UNKNOWN;
-				$reasons[] = 'Stok miktarı belirtilmemiş; firmaya sorun.';
+				$reasons[] = null === $label ? 'Stok miktarı belirtilmemiş; firmaya sorun.' : sprintf( '%s belirtilmemiş; firmaya sorun.', $label );
 			} elseif ( $stale ) {
 				$answers[] = self::UNKNOWN;
-				$reasons[] = sprintf( 'Son bilinen miktar %s %s, ancak doğrulanmadı (son güncelleme %s).', $stock, $unit, (string) $listing->updated_at );
+				$reasons[] = null === $label
+					? sprintf( 'Son bilinen miktar %s %s, ancak doğrulanmadı (son güncelleme %s).', $stock, $unit, (string) $listing->updated_at )
+					: sprintf( '%s son olarak %s bildirildi, ancak doğrulanmadı (son güncelleme %s).', $label, $stock, (string) $listing->updated_at );
 			} elseif ( ListingValidator::compare( $quantity, $stock ) <= 0 ) {
 				$answers[] = self::YES;
-				$reasons[] = trim( sprintf( 'Stokta %s %s var; istenen %s.', $stock, $unit, $quantity ) );
+				$reasons[] = null === $label ? trim( sprintf( 'Stokta %s %s var; istenen %s.', $stock, $unit, $quantity ) ) : sprintf( '%s: %s; istenen %s.', $label, $stock, $quantity );
 			} else {
 				$answers[] = self::NO;
-				$reasons[] = trim( sprintf( 'Stokta %s %s var; istenen %s karşılanamıyor.', $stock, $unit, $quantity ) );
+				$reasons[] = null === $label ? trim( sprintf( 'Stokta %s %s var; istenen %s karşılanamıyor.', $stock, $unit, $quantity ) ) : sprintf( '%s: %s; istenen %s karşılanamıyor.', $label, $stock, $quantity );
 			}
 		}
 

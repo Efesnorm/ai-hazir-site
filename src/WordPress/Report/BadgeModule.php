@@ -16,6 +16,7 @@ use AIHazirSite\Core\Features;
 use AIHazirSite\WordPress\Compliance\Admin\CompliancePage;
 use AIHazirSite\WordPress\Compliance\ComplianceModule;
 use AIHazirSite\WordPress\Module;
+use AIHazirSite\WordPress\Platform\PageCache;
 
 /**
  * While `compliance_report` is on: the `[aihs_rozet]` shortcode and the `ai-hazir-site/rozet`
@@ -123,6 +124,7 @@ final class BadgeModule implements Module {
 		if ( ! get_query_var( self::QUERY_VAR ) ) {
 			return;
 		}
+		PageCache::exclude();
 		status_header( 200 );
 		header( 'Content-Type: text/html; charset=utf-8' );
 		echo self::page_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in page_html().

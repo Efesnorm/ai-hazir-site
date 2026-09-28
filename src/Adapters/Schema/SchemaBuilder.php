@@ -38,12 +38,23 @@ final class SchemaBuilder {
 	 * @param bool                  $link_organization False when another plugin owns the Organization node:
 	 *                                                 references then carry the name instead of our @id.
 	 * @param TemplateRegistry|null $templates Sector templates; null = every listing is "general".
+	 * @param string                $site_name Used when the profile has no name (as llms.txt and the A2A card do).
 	 */
 	public function __construct(
 		private readonly string $site_url,
 		private readonly bool $link_organization = true,
-		private readonly ?TemplateRegistry $templates = null
+		private readonly ?TemplateRegistry $templates = null,
+		private readonly string $site_name = ''
 	) {
+	}
+
+	/**
+	 * The company's name: the profile's, else the site name.
+	 *
+	 * @param CompanyProfile $profile Profile.
+	 */
+	private function company_name( CompanyProfile $profile ): string {
+		return '' === $profile->name ? $this->site_name : $profile->name;
 	}
 
 	/**
@@ -74,7 +85,7 @@ final class SchemaBuilder {
 			array(
 				'@type'         => 'Organization',
 				'@id'           => $this->organization_id(),
-				'name'          => $profile->name,
+				'name'          => $this->company_name( $profile ),
 				'url'           => $this->site_url,
 				'email'         => $profile->contact_email,
 				'telephone'     => $profile->contact_phone,
@@ -96,7 +107,7 @@ final class SchemaBuilder {
 					'@type'        => 'WebPage',
 					'@id'          => $this->site_url . '#webpage',
 					'url'          => $this->site_url,
-					'name'         => $profile->name,
+					'name'         => $this->company_name( $profile ),
 					'about'        => array( '@id' => $this->organization_id() ),
 					'dateModified' => $date_modified,
 				),
@@ -132,8 +143,8 @@ final class SchemaBuilder {
 			'@context'        => self::CONTEXT,
 			'@type'           => 'DataFeed',
 			'@id'             => $catalog_url . '#feed',
-			'name'            => 'AI Katalog – ' . $profile->name,
-			'description'     => $profile->name . ' firmasının sattığı, aradığı ve tedarik edebildiği ürün ve hizmetler.',
+			'name'            => 'AI Katalog – ' . $this->company_name( $profile ),
+			'description'     => $this->company_name( $profile ) . ' firmasının sattığı, aradığı ve tedarik edebildiği ürün ve hizmetler.',
 			'url'             => $catalog_url,
 			'dateModified'    => $modified[0] ?? $today,
 			'publisher'       => $this->organization_reference( $profile ),
@@ -404,7 +415,7 @@ final class SchemaBuilder {
 		}
 		return array(
 			'@type' => 'Organization',
-			'name'  => $profile->name,
+			'name'  => $this->company_name( $profile ),
 			'url'   => $this->site_url,
 		);
 	}

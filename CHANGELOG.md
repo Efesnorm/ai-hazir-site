@@ -3,6 +3,25 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.6.1] - 2026-09-28
+
+Gerçek site denemesinde (makedonya.tr: WordPress 7.1.2, Rank Math, WP Rocket) bulunanlar.
+
+### Düzeltildi
+- Firma profilinin adı boşken Schema.org çıktısı "Organization: name zorunlu" hatası veriyor ve yayınlanmıyordu;
+  artık llms.txt ve A2A kartındaki gibi site adı kullanılır. Yeni test: `SiteNameFallbackTest`.
+- Sayfa önbelleği eklentileri (WP Rocket vb.) `/ai-katalog/` sayfasının eski halini sunmaya devam ediyordu. Kendi
+  sunduğumuz çıktılar (`/ai-katalog/`, işletme sayfaları, `/llms.txt`, doğrulama sayfası, A2A kartı) artık önbellek
+  eklentilerinin ortak kuralı `DONOTCACHEPAGE` ile işaretlenir. Güncellemeden sonra önbellek bir kez temizlenmelidir.
+  Yeni testler: `PageCacheTest`, `PublicPagesNotCachedTest`.
+- Tur ilanlarında müsaitlik, "Kalan yer" boşken genel miktardan hesaplanıyor ve "stokta" diye anlatılıyordu. Şablonun
+  kendi müsaitlik alanı varsa yalnızca o kullanılır (boşsa "bilinmiyor"); gerekçe alanın adıyla yazılır
+  ("Kalan yer: 6; istenen 4."). Yeni test: `TourAvailabilityTest`.
+
+### Test güncellemesi (onaylı)
+- `SchemaOutputTest::test_invalid_output_serves_last_valid_and_warns`: hatayı boş profil adıyla tetikliyordu; boş
+  ad artık site adına döndüğü için site adı da boşaltılıyor. Doğrulamalar aynı.
+
 ## [1.6.0] - 2026-09-28
 
 ### Eklendi

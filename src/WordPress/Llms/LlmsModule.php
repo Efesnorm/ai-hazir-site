@@ -18,6 +18,7 @@ use AIHazirSite\WordPress\Catalog\CatalogReader;
 use AIHazirSite\WordPress\Catalog\WpProfileRepository;
 use AIHazirSite\WordPress\I18n\Multilingual;
 use AIHazirSite\WordPress\Module;
+use AIHazirSite\WordPress\Platform\PageCache;
 use AIHazirSite\WordPress\Platform\WpClock;
 use AIHazirSite\WordPress\Platform\WpSettings;
 use AIHazirSite\WordPress\Portal\Portal;
@@ -70,6 +71,7 @@ final class LlmsModule implements Module {
 		if ( null === $text ) {
 			return;
 		}
+		PageCache::exclude();
 		status_header( 200 );
 		foreach ( self::HEADERS as $header ) {
 			header( $header );

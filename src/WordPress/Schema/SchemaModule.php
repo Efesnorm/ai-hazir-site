@@ -110,7 +110,7 @@ final class SchemaModule implements Module {
 	 * Builder for this site.
 	 */
 	public static function builder(): SchemaBuilder {
-		return new SchemaBuilder( home_url( '/' ), null === SeoConflict::detect(), TemplatesModule::registry() );
+		return new SchemaBuilder( home_url( '/' ), null === SeoConflict::detect(), TemplatesModule::registry(), (string) get_bloginfo( 'name' ) );
 	}
 
 	/**
