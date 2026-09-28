@@ -22,7 +22,7 @@ Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, 
   - Testler: `IntegrationsCoreTest`, `IntegrationsTest` (WP Rocket ve LiteSpeed Cache belgelenmiş arayüzleriyle
     taklit edilir; çekirdek site haritası gerçek). PHPStan için WP Rocket işlev taslakları (`tests/stubs/wp-rocket.php`).
 
-### Test güncellemesi (onay bekliyor)
+### Test güncellemesi (onaylı)
 - `FeaturesTest::test_mvp_feature_defaults` anahtar listesine `bot_cache_bypass` ve `catalog_sitemap` (`false`)
   (planda onaylandı).
 - `PublicPagesNotCachedTest`: kendi sunduğumuz sayfalar listesine yeni site haritası dosyası
