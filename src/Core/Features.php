@@ -118,6 +118,11 @@ final class Features {
 	public const A2A = 'a2a';
 
 	/**
+	 * The home page announces our AI resources (llms.txt, REST API) with standard links (1.7.0).
+	 */
+	public const DISCOVERY = 'discovery';
+
+	/**
 	 * Sector templates (0.8.0).
 	 */
 	public const TEMPLATES = 'templates';
@@ -172,6 +177,7 @@ final class Features {
 			self::TELEMETRY         => false,
 			self::MATCHING          => false,
 			self::A2A               => false,
+			self::DISCOVERY         => false,
 		);
 	}
 

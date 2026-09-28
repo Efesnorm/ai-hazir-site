@@ -19,6 +19,7 @@ use AIHazirSite\WordPress\Catalog\CatalogModule;
 use AIHazirSite\WordPress\Catalog\PostType;
 use AIHazirSite\WordPress\Catalog\WpListingRepository;
 use AIHazirSite\WordPress\Catalog\WpProfileRepository;
+use AIHazirSite\WordPress\Discovery\DiscoveryModule;
 use AIHazirSite\WordPress\Templates\TemplatesModule;
 use AIHazirSite\WordPress\Platform\WpClock;
 
@@ -261,7 +262,7 @@ final class CatalogAdmin {
 		if ( ! current_user_can( self::CAPABILITY ) ) {
 			wp_die( esc_html__( 'Bu sayfaya erişim yetkiniz yok.', 'ai-hazir-site' ), 403 );
 		}
-		echo '<div class="wrap">' . self::render_profile_form( ( new WpProfileRepository() )->get(), FormState::take() ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in render_profile_form().
+		echo '<div class="wrap">' . self::render_profile_form( ( new WpProfileRepository() )->get(), FormState::take() ) . DiscoveryModule::settings_html() . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in render_profile_form() and settings_html().
 	}
 
 	/**

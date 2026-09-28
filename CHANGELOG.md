@@ -3,6 +3,22 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.7.0] - 2026-09-28
+
+### Eklendi
+- **Sayfalardan keşif** (`discovery` anahtarı, varsayılan kapalı). makedonya.tr denemesinde iki ayrı AI agent yalnızca
+  sayfaları okudu, `/llms.txt` ve API'ye kendiliğinden bakmadı ve "yok" dedi. Plan: `docs/planlar/1.7.0-kesif.md`.
+  - Ön yüzdeki her sayfada `<link>` öğeleri ve yanıtta HTTP `Link` başlığı (RFC 8288): llms.txt için
+    `rel="describedby"` (llms.txt önerisi, llmstxt.org), REST API için `rel="service-desc"` (RFC 8631). Yalnızca açık
+    olan kaynaklar duyurulur; A2A kartı, A2A yalnızca `/.well-known/` ile keşfedildiği için bağlanmaz.
+  - İsteğe bağlı görünür satır (sayfa altı): "AI asistanları için: AI Katalog · llms.txt" (ayrı ayar, varsayılan kapalı).
+  - Ayarlar: AI Katalog → Firma Profili → "AI keşif" (yetki ve nonce denetimli).
+  - Kaldırmada `aihs_discovery_visible` silinir.
+  - Testler: `DiscoveryLinksTest`, `DiscoveryTest`.
+
+### Test güncellemesi (onay bekliyor)
+- `FeaturesTest::test_mvp_feature_defaults` anahtar listesine `discovery` (`false`).
+
 ## [1.6.1] - 2026-09-28
 
 Gerçek site denemesinde (makedonya.tr: WordPress 7.1.2, Rank Math, WP Rocket) bulunanlar.

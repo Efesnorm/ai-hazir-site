@@ -124,6 +124,7 @@ final class FeaturesTest extends UnitTestCase {
 				'telemetry'         => false,
 				'matching'          => false,
 				'a2a'               => false,
+				'discovery'         => false,
 			),
 			Features::defaults()
 		);

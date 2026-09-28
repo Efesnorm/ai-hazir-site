@@ -4,7 +4,7 @@ Tags: ai, llms-txt, schema, mcp, robots-txt
 Requires at least: 6.9
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.6.1
+Stable tag: 1.7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -67,6 +67,9 @@ Tarama sitenin kendi adreslerini çeker. Kendine HTTP isteği atamayan ortamlard
 Varsayılan olarak veriler korunur. Eklentiyi silerken tüm verisinin (tablolar, ayarlar, ilanlar, talepler) kaldırılmasını istiyorsanız silmeden önce `aihs_delete_data_on_uninstall` seçeneğini açın, ör. WP-CLI ile: `wp option update aihs_delete_data_on_uninstall 1`.
 
 == Changelog ==
+
+= 1.7.0 =
+* Sayfalardan keşif: llms.txt ve API'ye standart bağlantılar (rel=describedby, rel=service-desc), isteğe bağlı görünür satır.
 
 = 1.6.1 =
 * Profil adı boşken Schema.org çıktısında site adı kullanılır.

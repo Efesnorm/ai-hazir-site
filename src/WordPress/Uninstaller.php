@@ -18,6 +18,7 @@ use AIHazirSite\Core\Compliance\ScanStore;
 use AIHazirSite\Core\Features;
 use AIHazirSite\Core\Migrations\Migrator;
 use AIHazirSite\WordPress\Catalog\CatalogModule;
+use AIHazirSite\WordPress\Discovery\DiscoveryModule;
 use AIHazirSite\WordPress\Catalog\WpProfileRepository;
 use AIHazirSite\WordPress\I18n\LanguageSource;
 use AIHazirSite\WordPress\Portal\Portal;
@@ -63,6 +64,7 @@ final class Uninstaller {
 			UpdateModule::SETTINGS,
 			TelemetryService::OPTION,
 			MatchingModule::OPTION,
+			DiscoveryModule::VISIBLE_OPTION,
 		);
 	}
 
