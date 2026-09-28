@@ -90,3 +90,9 @@ iki dalda `composer check` temiz (PHP 8.1 + WordPress 7.1.2; 339 birim ve 174 en
       (C1 profil + katalog, C2 WooCommerce checkout, C3 sipariş ve kimlik bağlama, C4 AP2 ve konaklama, U6 uyum
       kontrolü), riskler ve açık kararlar. Görev dosyası oluşturulmadı.
 - [ ] "Walkthrough planı" hangi belge? UCP oraya da eklenecek.
+
+## U2 "Allow: /" notu (düzeltildi: hata değil)
+- [ ] `belge-u2-allow` dalı (`main` üzerine, yalnızca belge): eskiden "bilinen hata" denen `Allow: /` yokluğu bilinçli.
+      Denendi: eklenirse başka eklentinin adlı bot engeli RFC 9309 eşitlik kuralıyla kalkıyor ve iki mevcut test
+      kırılıyor. Kod değişmedi; bilinen sınırlar metni gerekçeyle düzeltildi. Zincirle birleşirken
+      `docs/bilinen-sinirlar.md`'de küçük bir çakışma çıkar.
