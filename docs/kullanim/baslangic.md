@@ -53,7 +53,8 @@ Kapatmak için `true` yerine `false` yazın. WP-CLI'ye erişiminiz yoksa barınd
 
 ## Eklentiyi silme
 
-Varsayılan olarak veriler korunur. Silmede tüm verinin (tablolar, ayarlar, ilanlar, talepler) kaldırılması için
+Varsayılan olarak veriler korunur. Silmede tüm verinin (tablolar, ayarlar, ilanlar ve çevirileri, talepler, işletmeler
+ve işletme yetkililerinin kullanıcı bağları, önbellekler) kaldırılması için
 silmeden önce şunu çalıştırın:
 
 ```bash
