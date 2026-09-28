@@ -56,3 +56,15 @@ Anahtar: `a2a` (varsayılan kapalı).
 ## 4. Kaynaklar
 - https://a2a-protocol.org/latest/specification/ (1.0.0), https://github.com/a2aproject/A2A (a2a.proto)
 - JSON-RPC 2.0 (jsonrpc.org/specification), RFC 8615 (well-known URI)
+5. Mevcut testlerde değişiklik: `FeaturesTest` anahtar listesine `a2a => false`; `TelemetrySendsOnlyWithConsentTest`
+   (Görev 16, o da onay bekliyor) izinli giden POST dosyalarına `A2AOutbox`.
+
+## 5. Sonuç (uygulandı)
+- 3 işleme: kanal (kart, doğrulayıcı, JSON-RPC) → WordPress (uç nokta, kart yayını, onaylı giden istek) → belgeler, sürüm 1.6.0.
+- `composer check` temiz: 339 birim, 174 entegrasyon testi.
+- Kabul: kart resmi şemaya uygun (sözleşme testi; U1 `advanced` ile aynı zorunlu alanlar); uç nokta kapalıyken kart
+  yayınlanmıyor; onay olmadan hiçbir dış istek gönderilmiyor (mimari + entegrasyon: önizleme istek atmıyor, onayla
+  tam olarak önizlenen mesaj gidiyor, belirteç tek kullanımlık).
+- Elle deneme (geliştirme sitesi, gerçek HTTP): kapalıyken 404, açıkken geçerli kart, `SendMessage` görev döndürüyor.
+- **Yapılmayan:** uçtan uca iki site demosu (iki gerçek https site ve iki tarafta insan gerekir). Adımlar
+  `docs/kullanim/a2a.md`'de.

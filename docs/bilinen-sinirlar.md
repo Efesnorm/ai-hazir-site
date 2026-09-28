@@ -1,4 +1,4 @@
-# Bilinen sınırlar (1.5.0)
+# Bilinen sınırlar (1.6.0)
 
 Bu liste MVP sürümünde bilerek bırakılan veya henüz çözülmemiş konuları toplar. Her madde ileride bir görevle ele alınabilir.
 
@@ -72,6 +72,13 @@ Bu liste MVP sürümünde bilerek bırakılan veya henüz çözülmemiş konular
 - Yalnızca aranan → satılan/tedarik yönünde; eşleşmeler yönetim ekranında, REST/MCP'ye açık değil.
 - Kur çevrimi yok; farklı para birimindeki fiyat nötr (0,5) sayılır.
 - Ortak sitelerden türe göre en çok 50'şer ilan okunur.
+
+## A2A (1.6.0)
+
+- Yalnızca JSON-RPC bağlaması ve `SendMessage`; akış (SSE), anlık bildirim ve görev sorgulama yok (görevler anında sonuçlanır).
+- `A2A-Version` başlığı olmayan (0.3) istemciler reddedilir.
+- Kimlik doğrulama şeması yok (herkese açık; hız sınırı ve A7 güvenlik katmanı).
+- Uçtan uca iki site demosu henüz yapılmadı (adımlar: `docs/kullanim/a2a.md`).
 
 ## Bilinen hata
 

@@ -3,7 +3,7 @@
 Sitenin "ne satıyorum, ne arıyorum, ne tedarik edebilirim" bilgisini AI agentların okuyup
 kullanabileceği biçimde yayınlayan WordPress eklentisi.
 
-> Sürüm 1.5.0: AI bot ve yönlendirme ölçümü (A0), AI uyum taraması (U1), veri modeli ve yönetim formları (A1), AI bot erişim ayarları (U2), Schema.org yapılandırılmış veri (A2), llms.txt ve AI katalog sayfası (A3), sektör şablonları (A4), AI uyum sihirbazı (U3), REST API (A5), Abilities API ve MCP (A6), teklif kutusu ve güvenlik katmanı (A7), AI uyum raporu ve AI Hazır rozeti (U4), çoklu dil (A8), portal modu (A9), merkezi güncelleme ve rapor paneli (A10), eşleştirme motoru (A11). Ayrıntılar: [CHANGELOG.md](CHANGELOG.md).
+> Sürüm 1.6.0: AI bot ve yönlendirme ölçümü (A0), AI uyum taraması (U1), veri modeli ve yönetim formları (A1), AI bot erişim ayarları (U2), Schema.org yapılandırılmış veri (A2), llms.txt ve AI katalog sayfası (A3), sektör şablonları (A4), AI uyum sihirbazı (U3), REST API (A5), Abilities API ve MCP (A6), teklif kutusu ve güvenlik katmanı (A7), AI uyum raporu ve AI Hazır rozeti (U4), çoklu dil (A8), portal modu (A9), merkezi güncelleme ve rapor paneli (A10), eşleştirme motoru (A11), A2A kartviziti ve agent (A12). Ayrıntılar: [CHANGELOG.md](CHANGELOG.md).
 
 - En düşük sürümler: PHP 8.1, WordPress 6.9
 - Lisans: GPL-2.0-or-later
@@ -133,6 +133,13 @@ ortak sitelerin REST çıktısı) kesin şartlardan (kategori, şablon, standart
 S = w1·özellik + w2·miktar + w3·teslim + w4·fiyat ile puanlanır; her puanın açıklaması gösterilir. Hiçbir şey
 otomatik gönderilmez. Ayrıntı: [docs/kullanim/eslestirme.md](docs/kullanim/eslestirme.md).
 
+## A2A kartviziti ve agent (A12)
+
+`a2a` açıkken `/.well-known/agent-card.json` (A2A 1.0.0; yalnızca uç nokta çalışırken ve kart resmi şemaya uyarken)
+ve `POST /wp-json/aihs/a2a` (JSON-RPC `SendMessage`; beceriler `musaitlik-sor`, `teklif-iste`). Eşleşmeler ekranından
+ortak sitelere teklif isteği yalnızca mesajın önizlemesi ve kullanıcı onayıyla gider. Tüm mesajlar denetim kaydında.
+Ayrıntı ve demo adımları: [docs/kullanim/a2a.md](docs/kullanim/a2a.md).
+
 ## Kullanıcı belgeleri ve paket
 
 - Site sahibi için başlangıç: [docs/kullanim/baslangic.md](docs/kullanim/baslangic.md)
@@ -221,6 +228,7 @@ src/Core/                  Platformdan bağımsız çekirdek (WordPress fonksiyo
 src/Adapters/              AI kanalı üreticileri (platformdan bağımsız)
   Schema/                  A2: SchemaMap, SchemaBuilder, SchemaValidator, SchemaCache
   Llms/                    A3: LlmsTxtBuilder, LlmsCache
+  A2A/                     A12: AgentCardBuilder, AgentCardValidator, JsonRpcServer, A2ASkills
   Rest/                    A5: RestResponder, RestSchemas, ListingsQuery
   Abilities/               A6: AbilitySchemas; A7: InquirySchemas
   Report/                  U4: ComplianceReportData (rapor verisi, tek kaynak), BadgeSvg
@@ -246,6 +254,7 @@ src/WordPress/             WordPress adaptörü
   Portal/                  A9: PortalModule, Portal, WpBusinessRepository, PortalAdmin (İşletmeler), BusinessAdmin (İşletmem), BusinessPage
   Updates/                 A10: UpdateModule (güncelleme kancaları, geri alma, haftalık özet), UpdatesAdmin, WpPackageInstaller
   Matching/                A11: MatchingModule (adaylar, ortak site önbelleği), MatchingAdmin (Eşleşmeler)
+  A2A/                     A12: A2AModule (uç nokta, kartvizit), A2AOutbox, A2AAdmin (onay), ApprovedRequest
   Report/                  U4: ReportModule (AI Uyum Raporu, PDF), ComplianceReportView, BadgeModule (rozet, doğrulama sayfası)
 blocks/rozet/              "AI Hazır rozeti" dinamik bloğu (block.json, derlemesiz editör betiği)
 bin/paketle                Kurulabilir zip ve güncelleme bildirimi kaydı üretir
@@ -261,7 +270,7 @@ tests/Support/             Bellek içi test adaptörleri
 
 | Seçenek | Anlamı |
 | --- | --- |
-| `aihs_features` | Özellik anahtarları (`measurement`, `compliance_scan`, `catalog`, `bot_access`, `schema_output`, `llms_txt`, `templates`, `compliance_wizard`, `rest_api`, `abilities`, `mcp`, `inquiries`, `compliance_report`, `multilingual`, `portal_mode`, `remote_updates`, `telemetry`, `matching`); `measurement` dışında hepsi varsayılan kapalı |
+| `aihs_features` | Özellik anahtarları (`measurement`, `compliance_scan`, `catalog`, `bot_access`, `schema_output`, `llms_txt`, `templates`, `compliance_wizard`, `rest_api`, `abilities`, `mcp`, `inquiries`, `compliance_report`, `multilingual`, `portal_mode`, `remote_updates`, `telemetry`, `matching`, `a2a`); `measurement` dışında hepsi varsayılan kapalı |
 | `aihs_db_version` | Uygulanan son geçiş sürümü |
 | `aihs_delete_data_on_uninstall` | Açıksa eklenti silinirken tüm verisi (tablo dahil) silinir |
 | `aihs_ip_ranges` | Botların yayınlanmış IP listeleri önbelleği (otomatik yüklenmez) |
