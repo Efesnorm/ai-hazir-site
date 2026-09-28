@@ -21,7 +21,7 @@ AI agentlar tedarikçi arıyor, fiyat ve stok soruyor, teklif topluyor. KOBİ si
 
 ### Çözüm
 
-Firma sahibi bilgisini bir kez, basit formlarla girer. Eklenti bunu dört kanaldan AI'lara sunar: Schema.org etiketleri, llms.txt dosyası, REST API ve MCP. İleride A2A ile agentlar arası konuşma eklenir. Yazma işlemleri (teklif) her zaman insan onayından geçer.
+Firma sahibi bilgisini bir kez, basit formlarla girer. Eklenti bunu dört kanaldan AI'lara sunar: Schema.org etiketleri, llms.txt dosyası, REST API ve MCP. İleride A2A ile agentlar arası konuşma, sonra UCP (Universal Commerce Protocol) ile AI asistanlarının içinden satın alma eklenir (bkz. "İkinci ürün adayı: UCP"). Yazma işlemleri (teklif) her zaman insan onayından geçer.
 
 **AI Agent Uyum Paketi:** Eklenti önce siteyi tarar ve 100 üzerinden bir "AI uyum puanı" ile eksik listesi verir. Ardından bir sihirbaz eksikleri adım adım tamamlatır, AI botlarının erişimini panelden yönetmeyi sağlar ve sonunda müşterinin kullanabileceği bir uyum raporu ile "AI Hazır" rozeti üretir. Ücretsiz tarama, satışta ilk kapıyı açan araçtır.
 
@@ -127,6 +127,56 @@ Uyum paketi ana artımlara paralel, küçük ve bağımsız artımlarla eklenir;
 | U5 | Yeni standartlara uyum (WebMCP, A2A kartviziti) | Gelişen standartlar puana ve sihirbaza eklenir | Yeni kontrol eklenince eski puanlama testleri bozulmuyor | 20 ve sonrası, sürekli |
 
 Tarama ileride eklenti kurulmadan, sadece site adresi girilerek de çalışabilecek şekilde tasarlanır; bu hali satış ekibinin ön görüşme aracı olur.
+
+### İkinci ürün adayı: UCP (Universal Commerce Protocol)
+
+> Taslak (2026-09-28), onay bekliyor. Kaynaklar: ucp.dev, github.com/Universal-Commerce-Protocol/ucp, Google Developers
+> "Under the Hood: UCP" ve "Create a UCP profile" belgeleri.
+
+**Nedir?** Google ve Shopify'ın Ocak 2026'da (NRF) duyurduğu, Apache 2.0 lisanslı açık standart. AI agentlarının bir
+işletmede ürün keşfetmesini, yetenek pazarlığını, sepet ve ödemeyi (checkout) ve satış sonrası sipariş bilgisini
+tanımlar. Google AI Mode ve Gemini'de ABD'de canlı; Mart 2026 güncellemesiyle Catalog, Cart ve Identity Linking
+eklendi; konaklama (Booking) taslak aşamasında.
+
+**Nasıl çalışır?**
+
+- İşletme yeteneklerini `/.well-known/ucp` adresindeki bir profilde yayınlar. Profilde tarih biçiminde sürüm
+  (ör. `2026-01-23`), servisler (`dev.ucp.shopping`), yetenekler (`dev.ucp.shopping.checkout`, catalog, cart, order,
+  identity linking), ödeme işleyicileri (`payment_handlers`) ve imza anahtarları (JWK) bulunur.
+- Taşıma: REST, MCP ve A2A. Bizim A5, A6 ve A12 kanallarımız bu üçünün de altyapısını zaten kurdu.
+- Ödeme: AP2 (Agent Payments Protocol; kullanıcı onayının kriptografik kanıtı), Google Pay, Shop Pay gibi işleyiciler.
+
+**Bizim ürünümüze uyumu**
+
+| UCP yeteneği | Bizde karşılığı | Uyum |
+| --- | --- | --- |
+| Catalog (ürün arama ve gezinme) | A1 veri modeli, A5 REST, A6 MCP okuma | Yüksek: veriyi UCP şemasına eşleyen bir adaptör yeter |
+| Cart ve Checkout | Yok (teklif kutusu var, satın alma yok) | Düşük: WooCommerce ve ödeme sağlayıcı gerekir |
+| Order (sipariş sonrası) | Yok | WooCommerce ile |
+| Identity Linking (OAuth 2.0) | Yok | Checkout ile birlikte |
+| Booking (konaklama, taslak) | A4 tur şablonu | Orta; taslak olgunlaşınca turizm portalı için |
+
+B2B teklif isteği (RFQ) UCP'de henüz yok. Bizim pilot ağımızın büyük kısmı (kablo, ihracat, hukuk) teklif üzerinden
+çalışır; bu yüzden UCP en çok **perakende satış yapan (WooCommerce kullanan) KOBİ'ler** için ikinci ürün olarak
+anlamlıdır. Mevcut ürün (AI Hazır Site) bilgi ve teklif katmanı olarak kalır; UCP ürünü onun üzerine satın alma katmanı
+ekler.
+
+**Önerilen artımlar (taslak)**
+
+| No | Artım | Değer | Kabul testi |
+| --- | --- | --- | --- |
+| C1 | UCP profili (`/.well-known/ucp`) ve Catalog yeteneği (salt okuma) | Gemini / AI Mode katalogdaki ürünleri UCP ile bulur | Profil resmi şemaya uygun; katalog yanıtları A5 ile aynı veriden |
+| C2 | WooCommerce köprüsü: Cart ve Checkout (REST bağlaması) | AI asistanı içinden sepet ve ödeme | Resmi uyumluluk testleri; ödeme test modunda uçtan uca |
+| C3 | Order ve Identity Linking | Sipariş durumu ve hesap bağlama | Sipariş olayları imzalı; OAuth akışı test modunda |
+| C4 | AP2 ödeme ve Booking (turizm, taslak olgunlaşınca) | Turlarda doğrudan rezervasyon | Konaklama/tur rezervasyonu test ortamında |
+| U6 | Uyum taramasına UCP kontrolü | Profil var mı, geçerli mi? | Eski puanlama testleri bozulmuyor (U5 kuralı) |
+
+**Riskler**
+
+- Spesifikasyon tarih sürümlü ve hızlı değişiyor; adaptör katmanı (UCP yalnızca `src/Adapters/UCP`) bu riski sınırlar.
+- Checkout; vergi, iade ve ödeme mevzuatı (Türkiye'de BDDK / ödeme kuruluşu kuralları) gerektirir; ödeme verisi
+  eklentiden geçmemeli, ödeme sağlayıcıda kalmalı.
+- Google tarafında Merchant Center hesabı ve onay süreci; Türkiye'de kullanılabilirlik henüz belirsiz.
 
 ### Sitelere kurulum sırası
 
@@ -317,3 +367,6 @@ MVP için en az 1 tam zamanlı WordPress/PHP geliştirici ve bir ürün sahibi y
 - [ ] Turizm firması hangi rezervasyon sistemini kullanıyor; entegrasyon mümkün mü?
 - [ ] Hukuk firması AI'a açılacak metni ne zaman onaylayacak?
 - [ ] Proje bütçesi ve 6 aylık maliyet tavanı.
+- [ ] UCP: ikinci ürün mü, AI Hazır Site'nin Pro modülü mü? İlk hedef kitle WooCommerce kullanan perakende KOBİ'ler mi?
+- [ ] UCP'nin Türkiye'de (Google AI Mode / Gemini alışverişi) ne zaman kullanılabilir olacağı takip edilecek.
+- [ ] "Walkthrough planı" hangi belge? (UCP oraya da eklenecek.)
