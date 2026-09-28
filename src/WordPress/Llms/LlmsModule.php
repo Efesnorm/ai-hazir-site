@@ -20,6 +20,7 @@ use AIHazirSite\WordPress\I18n\Multilingual;
 use AIHazirSite\WordPress\Module;
 use AIHazirSite\WordPress\Platform\WpClock;
 use AIHazirSite\WordPress\Platform\WpSettings;
+use AIHazirSite\WordPress\Portal\Portal;
 use AIHazirSite\WordPress\Rest\RestModule;
 use AIHazirSite\WordPress\Schema\SchemaModule;
 use AIHazirSite\WordPress\Templates\TemplatesModule;
@@ -92,7 +93,7 @@ final class LlmsModule implements Module {
 			return null;
 		}
 		$language = self::language_of( $uri );
-		return null === $language ? self::text() : self::text_in( $language );
+		return null === $language && ! Portal::active() ? self::text() : self::text_in( $language );
 	}
 
 	/**
@@ -111,14 +112,34 @@ final class LlmsModule implements Module {
 	}
 
 	/**
-	 * The llms.txt text in a language (1.1.0): translated values, fallback fields named, other
-	 * languages linked. Built on request (the single-language text keeps its cache).
+	 * The llms.txt text in a language (1.1.0: translated values, fallback fields named, other
+	 * languages linked) and/or for a portal (1.2.0: business directory, business per listing).
+	 * Built on request (the single-company, single-language text keeps its cache).
 	 *
-	 * @param string $language Language.
+	 * @param string|null $language Language, or null when multilingual output is inactive.
 	 */
-	public static function text_in( string $language ): string {
+	public static function text_in( ?string $language ): string {
+		$original = SchemaModule::listings();
+		$portal   = null;
+		if ( Portal::active() ) {
+			$owners = array_map( static fn( $b ): string => $b->profile->name, Portal::owners( $original ) );
+			$portal = array(
+				'businesses' => array_map(
+					static fn( $b ): array => array(
+						'name'   => $b->profile->name,
+						'url'    => Portal::page_url( $b ),
+						'sector' => $b->profile->sector,
+					),
+					Portal::businesses()->businesses()
+				),
+				'owners'     => $owners,
+			);
+		}
+		if ( null === $language ) {
+			$builder = new LlmsTxtBuilder( home_url( '/' ), SchemaModule::catalog_url(), (string) get_bloginfo( 'name' ), self::labels(), TemplatesModule::registry(), Features::is_enabled( Features::REST_API ) ? RestModule::url() : '' );
+			return $builder->build( ( new WpProfileRepository() )->get(), $original, ( new WpClock() )->today(), (string) SchemaModule::last_modified( $original ), TemplatesModule::now(), null, $portal );
+		}
 		$profile                = Multilingual::profile( ( new WpProfileRepository() )->get(), $language );
-		$original               = SchemaModule::listings();
 		[ $listings, $markers ] = CatalogReader::localized( $original, $language );
 		$api_url                = Features::is_enabled( Features::REST_API ) ? RestModule::url() : '';
 		$builder                = new LlmsTxtBuilder( home_url( '/' ), SchemaModule::catalog_url(), (string) get_bloginfo( 'name' ), self::labels(), TemplatesModule::registry(), $api_url );
@@ -144,7 +165,8 @@ final class LlmsModule implements Module {
 				'fallback'   => $settings->default,
 				'missing'    => $missing,
 				'alternates' => $alternates,
-			)
+			),
+			$portal
 		);
 	}
 

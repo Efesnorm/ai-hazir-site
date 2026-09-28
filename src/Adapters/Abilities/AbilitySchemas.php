@@ -24,13 +24,48 @@ final class AbilitySchemas {
 	 * Ability names → [input schema, output schema]. With published languages (1.1.0, two or more)
 	 * the catalog reads take an optional `lang` and their outputs carry the translation markers.
 	 *
-	 * @param string[] $languages Published languages, default first; empty = single-language output.
+	 * In portal mode (1.2.0, $businesses not null) listings carry their business, the search takes a
+	 * `business` slug and `aihs/list-businesses` lists the businesses.
+	 *
+	 * @param string[]      $languages  Published languages, default first; empty = single-language output.
+	 * @param string[]|null $businesses Business slugs in portal mode; null = not a portal.
+	 * @return array<string, array{input: array<string, mixed>, output: array<string, mixed>}>
+	 *
+	 * @phpstan-param list<string> $languages
+	 * @phpstan-param list<string>|null $businesses
+	 */
+	public static function all( array $languages = array(), ?array $businesses = null ): array {
+		$all = self::languages( self::base(), $languages );
+		if ( null === $businesses ) {
+			return $all;
+		}
+		$business = array(
+			'type'        => 'string',
+			'description' => 'Yalnızca bu işletmenin ilanları (aihs/list-businesses sonucundaki slug). Verilmezse tüm işletmelerde arar.',
+		);
+		if ( array() !== $businesses ) {
+			$business['enum'] = $businesses;
+		}
+		$all['aihs/search-listings']['input']['properties']['business'] = $business;
+		$all['aihs/search-listings']['output']                          = RestSchemas::with_portal( 'listings', $all['aihs/search-listings']['output'] );
+		$all['aihs/get-listing']['output']                              = RestSchemas::with_portal( 'listing', $all['aihs/get-listing']['output'] );
+		$all['aihs/list-businesses']                                    = array(
+			'input'  => self::input( array() ),
+			'output' => self::strip( RestSchemas::with_portal( 'businesses', array() ) ),
+		);
+		return $all;
+	}
+
+	/**
+	 * Adds the multilingual input and output keys (1.1.0) when two or more languages are published.
+	 *
+	 * @param array<string, array{input: array<string, mixed>, output: array<string, mixed>}> $all       Schemas.
+	 * @param string[]                                                                        $languages Published languages.
 	 * @return array<string, array{input: array<string, mixed>, output: array<string, mixed>}>
 	 *
 	 * @phpstan-param list<string> $languages
 	 */
-	public static function all( array $languages = array() ): array {
-		$all = self::base();
+	private static function languages( array $all, array $languages ): array {
 		if ( count( $languages ) < 2 ) {
 			return $all;
 		}

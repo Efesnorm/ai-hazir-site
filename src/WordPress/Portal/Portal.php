@@ -137,6 +137,44 @@ final class Portal {
 	}
 
 	/**
+	 * Listing id → business reference {id, slug, name, url} for the channels.
+	 *
+	 * @param Listing[] $listings Listings.
+	 * @return array<int, array{id: int, slug: string, name: string, url: string}>
+	 *
+	 * @phpstan-param list<Listing> $listings
+	 */
+	public static function references( array $listings ): array {
+		return array_map(
+			static fn( Business $b ): array => array(
+				'id'   => (int) $b->id,
+				'slug' => $b->slug,
+				'name' => $b->profile->name,
+				'url'  => self::page_url( $b ),
+			),
+			self::owners( $listings )
+		);
+	}
+
+	/**
+	 * Listings of one business (by slug), or null when there is no such business.
+	 *
+	 * @param Listing[] $listings Listings.
+	 * @param string    $slug     Business slug.
+	 * @return list<Listing>|null
+	 *
+	 * @phpstan-param list<Listing> $listings
+	 */
+	public static function filter( array $listings, string $slug ): ?array {
+		$business = self::businesses()->business_by_slug( $slug );
+		if ( null === $business ) {
+			return null;
+		}
+		$owners = self::owners( $listings );
+		return array_values( array_filter( $listings, static fn( Listing $l ): bool => null !== $l->id && ( $owners[ $l->id ]->id ?? null ) === $business->id ) );
+	}
+
+	/**
 	 * `user_has_cap`: a user linked to an existing business may manage that business's listings.
 	 *
 	 * @param array<string, bool> $allcaps User capabilities.
