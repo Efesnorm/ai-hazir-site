@@ -14,12 +14,14 @@ use AIHazirSite\Core\Catalog\CompanyProfile;
 use AIHazirSite\Core\Catalog\ListingType;
 use AIHazirSite\Core\Catalog\ListingValidity;
 use AIHazirSite\Core\Features;
+use AIHazirSite\Core\Portal\Business;
 use AIHazirSite\WordPress\Catalog\Admin\CatalogAdmin;
 use AIHazirSite\WordPress\Catalog\CatalogReader;
 use AIHazirSite\WordPress\Catalog\WpProfileRepository;
 use AIHazirSite\WordPress\I18n\Multilingual;
 use AIHazirSite\WordPress\Llms\LlmsModule;
 use AIHazirSite\WordPress\Platform\WpClock;
+use AIHazirSite\WordPress\Portal\Portal;
 use AIHazirSite\WordPress\Templates\TemplatesModule;
 
 /**
@@ -56,9 +58,10 @@ final class CatalogPage {
 	 * Full HTML document (everything escaped here). With a language (1.1.0): translated values,
 	 * default-language fallbacks marked with the HTML lang attribute, hreflang alternates.
 	 *
-	 * @param string|null $language Page language, or null for single-language output.
+	 * @param string|null   $language Page language, or null for single-language output.
+	 * @param Business|null $business One business's page (1.2.0 portal mode), or null for the whole catalog.
 	 */
-	public static function render_html( ?string $language = null ): string {
+	public static function render_html( ?string $language = null, ?Business $business = null ): string {
 		$profile  = ( new WpProfileRepository() )->get();
 		$all      = SchemaModule::listings();
 		$markers  = array();
@@ -69,6 +72,12 @@ final class CatalogPage {
 			$profile           = $localized->record instanceof CompanyProfile ? $localized->record : $profile;
 			$sector            = in_array( 'sector', $localized->missing, true );
 			[ $all, $markers ] = CatalogReader::localized( $all, $language );
+		}
+		$owners = Portal::active() ? Portal::owners( SchemaModule::listings() ) : array();
+		if ( null !== $business ) {
+			$profile = $business->profile;
+			$sector  = false;
+			$all     = array_values( array_filter( $all, static fn( $l ): bool => null !== $l->id && ( $owners[ $l->id ]->id ?? null ) === $business->id ) );
 		}
 		$mark   = static fn( string $escaped, bool $missing ): string => $missing ? '<span lang="' . esc_attr( $fallback ) . '">' . $escaped . '</span>' : $escaped;
 		$today  = ( new WpClock() )->today();
@@ -110,7 +119,9 @@ final class CatalogPage {
 				}
 				$sections .= '<li' . ( null === $listing->id ? '' : ' id="ilan-' . (int) $listing->id . '"' ) . '><strong>' . $mark( esc_html( $listing->title ), in_array( 'title', $missing, true ) ) . '</strong>'
 					. ( '' !== $listing->description ? ' – ' . $mark( esc_html( $listing->description ), in_array( 'description', $missing, true ) ) : '' )
-					. '<br><small>' . implode( '; ', $lines ) . '</small></li>';
+					. '<br><small>' . implode( '; ', $lines ) . '</small>'
+					. ( null === $business && isset( $owners[ (int) $listing->id ] ) ? '<br><small>' . esc_html__( 'İşletme', 'ai-hazir-site' ) . ': <a href="' . esc_url( Portal::page_url( $owners[ (int) $listing->id ] ) ) . '">' . esc_html( $owners[ (int) $listing->id ]->profile->name ) . '</a></small>' : '' )
+					. '</li>';
 			}
 			$sections .= '</ul></section>';
 		}
@@ -118,13 +129,29 @@ final class CatalogPage {
 		return '<!doctype html><html lang="' . esc_attr( $language ?? get_bloginfo( 'language' ) ) . '"><head><meta charset="utf-8">'
 			. '<title>' . esc_html( $title ) . '</title>'
 			. '<meta name="viewport" content="width=device-width, initial-scale=1">'
-			. '<link rel="canonical" href="' . esc_url( SchemaModule::catalog_url( $language ) ) . '">'
-			. ( null === $language ? '' : self::alternates() )
-			. ( Features::is_enabled( Features::SCHEMA_OUTPUT ) ? SchemaModule::script( SchemaModule::catalog_document( $language ) ) : '' )
+			. '<link rel="canonical" href="' . esc_url( null === $business ? SchemaModule::catalog_url( $language ) : Portal::page_url( $business ) ) . '">'
+			. ( null === $language || null !== $business ? '' : self::alternates() )
+			. ( Features::is_enabled( Features::SCHEMA_OUTPUT ) ? SchemaModule::script( SchemaModule::catalog_document( $language, $business ) ) : '' )
 			. '</head><body><main><h1>' . esc_html( $title ) . '</h1>'
 			. self::company( $profile, $sector ? $fallback : null )
+			. ( null === $business && Portal::active() ? self::directory() : '' )
 			. ( '' === $sections ? '<p>' . esc_html__( 'Şu anda yayında ilan yok.', 'ai-hazir-site' ) . '</p>' : $sections )
 			. '</main></body></html>';
+	}
+
+	/**
+	 * Portal: the business directory (name, sector, link to the business page).
+	 */
+	private static function directory(): string {
+		$businesses = Portal::businesses()->businesses();
+		if ( array() === $businesses ) {
+			return '';
+		}
+		$html = '<section id="aihs-businesses"><h2>' . esc_html__( 'İşletmeler', 'ai-hazir-site' ) . '</h2><ul>';
+		foreach ( $businesses as $business ) {
+			$html .= '<li><a href="' . esc_url( Portal::page_url( $business ) ) . '">' . esc_html( $business->profile->name ) . '</a>' . ( '' === $business->profile->sector ? '' : ' – ' . esc_html( $business->profile->sector ) ) . '</li>';
+		}
+		return $html . '</ul></section>';
 	}
 
 	/**

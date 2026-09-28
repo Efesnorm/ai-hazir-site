@@ -15,12 +15,14 @@ use AIHazirSite\Core\Catalog\CompanyProfile;
 use AIHazirSite\Core\Catalog\Listing;
 use AIHazirSite\Core\Catalog\ListingType;
 use AIHazirSite\Core\Features;
+use AIHazirSite\Core\Portal\Business;
 use AIHazirSite\WordPress\Catalog\CatalogReader;
 use AIHazirSite\WordPress\Catalog\WpListingRepository;
 use AIHazirSite\WordPress\Catalog\WpProfileRepository;
 use AIHazirSite\WordPress\I18n\Multilingual;
 use AIHazirSite\WordPress\Module;
 use AIHazirSite\WordPress\Platform\WpClock;
+use AIHazirSite\WordPress\Portal\Portal;
 use AIHazirSite\WordPress\Platform\WpSettings;
 use AIHazirSite\WordPress\Templates\TemplatesModule;
 
@@ -162,22 +164,45 @@ final class SchemaModule implements Module {
 	/**
 	 * Catalog page JSON-LD (validated), or null. With a language (1.1.0): translated, with inLanguage.
 	 *
-	 * @param string|null $language Answer language, or null for single-language output.
+	 * @param string|null   $language Answer language, or null for single-language output.
+	 * @param Business|null $business One business's page (1.2.0 portal mode), or null.
 	 *
 	 * @return array<string, mixed>|null
 	 */
-	public static function catalog_document( ?string $language = null ): ?array {
-		if ( null === $language ) {
+	public static function catalog_document( ?string $language = null, ?Business $business = null ): ?array {
+		$portal = Portal::active();
+		if ( null === $language && ! $portal ) {
 			$document = self::builder()->catalog( ( new WpProfileRepository() )->get(), self::listings(), ( new WpClock() )->today(), self::catalog_url(), TemplatesModule::now() );
 			return self::cache()->publish( 'catalog', $document, gmdate( 'Y-m-d\TH:i:s\Z' ) );
 		}
 
-		// 1.1.0: the same feed built from the translated records, with its language (schema.org inLanguage).
-		$profile                = Multilingual::profile( ( new WpProfileRepository() )->get(), $language )->record;
-		[ $listings ]           = CatalogReader::localized( self::listings(), $language );
-		$document               = self::builder()->catalog( $profile instanceof CompanyProfile ? $profile : ( new WpProfileRepository() )->get(), $listings, ( new WpClock() )->today(), self::catalog_url( $language ), TemplatesModule::now() );
-		$document['inLanguage'] = $language;
-		return self::cache()->publish( 'catalog-' . $language, $document, gmdate( 'Y-m-d\TH:i:s\Z' ) );
+		$profile  = ( new WpProfileRepository() )->get();
+		$listings = self::listings();
+		$url      = self::catalog_url( $language );
+		$key      = 'catalog';
+		$owners   = $portal ? Portal::owners( $listings ) : array();
+		if ( null !== $language ) {
+			// 1.1.0: the same feed built from the translated records, with its language (schema.org inLanguage).
+			$localized    = Multilingual::profile( $profile, $language )->record;
+			$profile      = $localized instanceof CompanyProfile ? $localized : $profile;
+			[ $listings ] = CatalogReader::localized( $listings, $language );
+		}
+		if ( null !== $business ) {
+			// 1.2.0: one business's page; its listings only.
+			$profile  = $business->profile;
+			$listings = array_values( array_filter( $listings, static fn( Listing $l ): bool => null !== $l->id && ( $owners[ $l->id ]->id ?? null ) === $business->id ) );
+			$url      = Portal::page_url( $business );
+			$key      = 'business-' . (int) $business->id;
+		}
+		// 1.2.0: in portal mode each listing's seller is its business.
+		$seller_of = $portal ? static fn( Listing $l ): ?array => null !== $l->id && isset( $owners[ $l->id ] ) ? Portal::organization( $owners[ $l->id ] ) : null : null;
+
+		$document = self::builder()->catalog( $profile, $listings, ( new WpClock() )->today(), $url, TemplatesModule::now(), $seller_of );
+		if ( null !== $language ) {
+			$document['inLanguage'] = $language;
+			$key                   .= '-' . $language;
+		}
+		return self::cache()->publish( $key, $document, gmdate( 'Y-m-d\TH:i:s\Z' ) );
 	}
 
 	/**

@@ -20,6 +20,7 @@ use AIHazirSite\Core\Migrations\Migrator;
 use AIHazirSite\WordPress\Catalog\CatalogModule;
 use AIHazirSite\WordPress\Catalog\WpProfileRepository;
 use AIHazirSite\WordPress\I18n\LanguageSource;
+use AIHazirSite\WordPress\Portal\WpBusinessRepository;
 use AIHazirSite\WordPress\Platform\WpSettings;
 use AIHazirSite\Core\Measurement\IpRanges;
 
@@ -54,6 +55,7 @@ final class Uninstaller {
 			InquirySettings::OPTION,
 			LanguageSource::OPTION,
 			WpProfileRepository::TRANSLATIONS_OPTION,
+			WpBusinessRepository::OPTION,
 		);
 	}
 
