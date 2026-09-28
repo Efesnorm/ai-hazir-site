@@ -93,6 +93,11 @@ final class Features {
 	public const MULTILINGUAL = 'multilingual';
 
 	/**
+	 * Portal mode: many businesses on one site (1.2.0).
+	 */
+	public const PORTAL_MODE = 'portal_mode';
+
+	/**
 	 * Sector templates (0.8.0).
 	 */
 	public const TEMPLATES = 'templates';
@@ -142,6 +147,7 @@ final class Features {
 			self::INQUIRIES         => false,
 			self::COMPLIANCE_REPORT => false,
 			self::MULTILINGUAL      => false,
+			self::PORTAL_MODE       => false,
 		);
 	}
 
