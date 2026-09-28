@@ -97,6 +97,12 @@ iki dalda `composer check` temiz (PHP 8.1 + WordPress 7.1.2; 339 birim ve 174 en
       kontrolü), riskler ve açık kararlar. Görev dosyası oluşturulmadı.
 - [ ] "Walkthrough planı" hangi belge? UCP oraya da eklenecek.
 
+## Kapsam dışı bulgu: `AbilitiesTest::test_rate_limit` zamanlaması
+- Test sabit IP ve gerçek saatle 3 istek atıyor; hız sınırlayıcı dakikalık pencere kullandığından istekler arasında
+  dakika dönerse test ara sıra kırılır (Görev 11'den beri). Düzeltmesi testte sahte saat kullanmayı gerektirir; mevcut
+  test değişikliği olduğu için yapılmadı.
+  - [ ] Onay: bu test sahte saatle yeniden yazılsın mı?
+
 ## U2 "Allow: /" notu (düzeltildi: hata değil)
 - [ ] `belge-u2-allow` dalı (`main` üzerine, yalnızca belge): eskiden "bilinen hata" denen `Allow: /` yokluğu bilinçli.
       Denendi: eklenirse başka eklentinin adlı bot engeli RFC 9309 eşitlik kuralıyla kalkıyor ve iki mevcut test
