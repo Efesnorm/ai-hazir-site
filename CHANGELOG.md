@@ -3,6 +3,21 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.4.0] - 2026-09-28 (onay bekliyor: `gorev-18-botsuz` dalı — bot listesi reddedilirse)
+
+### Eklendi
+- **A11 Eşleştirme motoru** (`matching` anahtarı, varsayılan kapalı). Plan ve onay bekleyen kararlar: `docs/planlar/gorev-18.md`.
+  - Çekirdek `src/Core/Matching/`: `HardFilter` (tür, kategori, şablon, standart, bölge, teslim süresi sınırı),
+    `Matcher` (S = Σ wᵢ·sᵢ, 0–100; ölçüt başına değer ve puan, toplam puanla birebir), `MatchWeights` (toplam 1,
+    başlangıçta eşit), `PartnerListings` (ortak sitenin A5 REST yanıtı; güvenilmeyen veri).
+  - **AI Katalog → Eşleşmeler**: aranan ilan seçimi, açıklamalı sonuçlar, elenenler ve nedenleri, ağırlık ve ortak
+    site ayarları (yalnızca https). Ortak yanıtlar 1 saat önbellekte; erişilemeyen ortak atlanır, yerel eşleştirme sürer.
+  - Eşleşmeler öneridir; hiçbir teklif veya mesaj gönderilmez.
+- Belgeler: `docs/kullanim/eslestirme.md`; U5 araştırması `docs/planlar/gorev-17.md` (puanlama değişmedi).
+
+### Test güncellemesi (onay bekliyor)
+- `FeaturesTest::test_mvp_feature_defaults` anahtar listesine `matching => false` eklendi.
+
 ## [1.3.0] - 2026-09-28 (onay bekliyor: `gorev-16` dalı)
 
 ### Eklendi

@@ -19,6 +19,7 @@ use AIHazirSite\WordPress\Report\BadgeModule;
 use AIHazirSite\WordPress\I18n\MultilingualModule;
 use AIHazirSite\WordPress\Portal\PortalModule;
 use AIHazirSite\WordPress\Updates\UpdateModule;
+use AIHazirSite\WordPress\Matching\MatchingModule;
 use AIHazirSite\WordPress\Access\AccessModule;
 use AIHazirSite\WordPress\Catalog\CatalogModule;
 use AIHazirSite\WordPress\Compliance\ComplianceModule;
@@ -86,6 +87,7 @@ final class Plugin {
 			new MultilingualModule(),
 			new PortalModule(),
 			new UpdateModule(),
+			new MatchingModule(),
 		);
 	}
 

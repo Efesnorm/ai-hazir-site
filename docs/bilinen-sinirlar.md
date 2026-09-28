@@ -1,4 +1,4 @@
-# Bilinen sınırlar (1.3.0)
+# Bilinen sınırlar (1.5.0)
 
 Bu liste MVP sürümünde bilerek bırakılan veya henüz çözülmemiş konuları toplar. Her madde ileride bir görevle ele alınabilir.
 
@@ -66,6 +66,12 @@ Bu liste MVP sürümünde bilerek bırakılan veya henüz çözülmemiş konular
 - Bildirim dosyası indirilirken WordPress'in HTTP istemcisi, kullanıcı aracısında site adresini gönderir
   (WordPress'in kendi güncelleme denetimi de böyle yapar). Rapor paneline giden özette site adresi yoktur.
 - Lisans denetimi yalnızca altyapıdır; hiçbir özellik kilitli değildir.
+
+## Eşleştirme (1.5.0)
+
+- Yalnızca aranan → satılan/tedarik yönünde; eşleşmeler yönetim ekranında, REST/MCP'ye açık değil.
+- Kur çevrimi yok; farklı para birimindeki fiyat nötr (0,5) sayılır.
+- Ortak sitelerden türe göre en çok 50'şer ilan okunur.
 
 ## Bilinen hata
 
