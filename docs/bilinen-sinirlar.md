@@ -41,8 +41,13 @@ Bu liste MVP sürümünde bilerek bırakılan veya henüz çözülmemiş konular
 - Şifreleme anahtarı sitenin `AUTH_SALT` / `AUTH_KEY` değerinden türetilir. Bu değerler değiştirilirse eski
   taleplerin iletişim bilgileri okunamaz.
 
-## Bilinen hata
+## AI bot erişimi (U2): izin grubunda neden `Allow: /` yok?
 
-- AI bot erişimi (U2): robots.txt'ye eklenen izin grubunda yalnızca WordPress'in `/wp-admin/` kuralları var, açık
-  `Allow: /` satırı yok. Kurallar yine doğru yorumlanır (engellenmeyen yol izinlidir), ancak bazı denetim araçları
-  izni açıkça görmek ister.
+- robots.txt'ye eklenen izin grubunda yalnızca WordPress'in `/wp-admin/` kuralları var; açık `Allow: /` satırı **bilerek**
+  eklenmez. Başka bir eklenti bir botu adıyla engellediğinde (`User-agent: GPTBot` / `Disallow: /`) RFC 9309'a göre
+  aynı botun grupları birleşir ve eşit uzunluktaki kurallarda izin kazanır; bizim `Allow: /` satırımız o eklentinin
+  engelini sessizce kaldırırdı. Şimdiki hâliyle engel geçerli kalır ve sihirbaz bunu "elle yapılacak" adım olarak gösterir.
+- Engellenmeyen yol zaten izinli olduğundan kurallar doğru yorumlanır. İzni açıkça görmek isteyen bazı denetim
+  araçları grubu boş sayabilir; bu, başka eklentilerin kararına saygı için kabul edilen bir sınırdır.
+- Bu davranış `WizardFlowTest::test_named_block_is_manual` testiyle korunur (2026-09-28'de denendi: `Allow: /`
+  eklenince bu test ve `RobotsFilterTest` kırılıyor).
