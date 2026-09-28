@@ -70,6 +70,11 @@ iki dalda `composer check` temiz (PHP 8.1 + WordPress 7.1.2; 339 birim ve 174 en
 - [ ] `A2A-Version` başlığı olmayan (0.3) istemciler reddediliyor.
 - [ ] Uçtan uca iki site demosu (elle; adımlar `docs/kullanim/a2a.md`).
 
-## Kapsam dışı bulgu
-- `RestContractTest::test_full_catalog` ara sıra kırılıyor (şablon sırası ilanların kaydedildiği saniyeye bağlı;
-  Görev 10'dan beri). Ayrı görev önerildi.
+## Kapsam dışı bulgu ve düzeltme önerisi
+- `RestContractTest::test_full_catalog` ara sıra kırılıyordu (şablon sırası ilanların kaydedildiği saniyeye bağlı;
+  Görev 10'dan beri). Düzeltmesi ayrı dalda: **`duzeltme-sablon-sirasi`** (`main` üzerine, sürüm 1.0.1).
+  - [ ] Onay: `GET /templates` sırası "genel, profilin şablonu, sonra ilanların şablonları kimliğe göre" olsun.
+  - Mevcut testler değişmedi; yeni `TemplateOrderTest` eski kodda kırılıyor, düzeltmeyle geçiyor; `composer check`
+    temiz, `RestContractTest` arka arkaya 5 kez geçti.
+  - Birleştirme sırası: önce bu dal (1.0.1), sonra `gorev-14`. `gorev-14`'te CHANGELOG ve sürüm satırlarında basit
+    çakışma çıkar (1.1.0 girdisi 1.0.1'in üstüne gelir).
