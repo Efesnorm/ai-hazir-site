@@ -122,6 +122,7 @@ final class FeaturesTest extends UnitTestCase {
 				'portal_mode'       => false,
 				'remote_updates'    => false,
 				'telemetry'         => false,
+				'matching'          => false,
 			),
 			Features::defaults()
 		);

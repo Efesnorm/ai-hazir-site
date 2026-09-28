@@ -108,6 +108,11 @@ final class Features {
 	public const TELEMETRY = 'telemetry';
 
 	/**
+	 * Need ↔ offer/supply matching (1.5.0).
+	 */
+	public const MATCHING = 'matching';
+
+	/**
 	 * Sector templates (0.8.0).
 	 */
 	public const TEMPLATES = 'templates';
@@ -160,6 +165,7 @@ final class Features {
 			self::PORTAL_MODE       => false,
 			self::REMOTE_UPDATES    => false,
 			self::TELEMETRY         => false,
+			self::MATCHING          => false,
 		);
 	}
 
