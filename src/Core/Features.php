@@ -88,6 +88,11 @@ final class Features {
 	public const COMPLIANCE_REPORT = 'compliance_report';
 
 	/**
+	 * Multilingual catalog output (1.1.0).
+	 */
+	public const MULTILINGUAL = 'multilingual';
+
+	/**
 	 * Sector templates (0.8.0).
 	 */
 	public const TEMPLATES = 'templates';
@@ -136,6 +141,7 @@ final class Features {
 			self::MCP               => false,
 			self::INQUIRIES         => false,
 			self::COMPLIANCE_REPORT => false,
+			self::MULTILINGUAL      => false,
 		);
 	}
 
