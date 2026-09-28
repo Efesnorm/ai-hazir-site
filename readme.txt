@@ -4,7 +4,7 @@ Tags: ai, llms-txt, schema, mcp, robots-txt
 Requires at least: 6.9
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -33,6 +33,7 @@ Her özellik ayrı bir anahtarla açılır ve kapatılır. Kurulumdan sonra yaln
 * **llms.txt ve /ai-katalog/ sayfası:** AI'ların hızlı okuyacağı sade metin ve HTML.
 * **REST API:** salt okunur `/wp-json/aihs/v1/` uç noktaları, önbellek başlıkları ve hız sınırı.
 * **MCP sunucusu ve Abilities API:** AI asistanları kataloğu doğrudan sorgular ("Stokta var mı, kaç günde gelir?").
+* **Portal modu:** birçok işletmeyi listeleyen siteler için işletme başına sayfa, yetkili kullanıcı ve AI görünürlük raporu.
 * **Çoklu dil:** yalnızca girdiğiniz çeviriler yayınlanır; AI'lar `lang` ya da `Accept-Language` ile dili seçer, eksik çeviri işaretlenir.
 * **Teklif kutusu:** AI agentlar ve insanlar firmaya talep bırakır. Hiçbir talep otomatik onaylanmaz, talep sahibine otomatik yanıt gitmez; iletişim bilgisi şifreli saklanır ve süre dolunca silinir.
 
@@ -65,6 +66,9 @@ Varsayılan olarak veriler korunur. Eklentiyi silerken tüm verisinin (tablolar,
 
 == Changelog ==
 
+= 1.2.0 =
+* Portal modu: birçok işletme tek sitede; işletme yetkilileri yalnızca kendi ilanlarını yönetir; işletme sayfaları, işletme bazlı AI görünürlük raporu; REST, MCP, llms.txt ve JSON-LD'de işletmeler.
+
 = 1.1.0 =
 * Çoklu dil: ilan ve profil çevirileri; REST, MCP, llms.txt ve AI katalog sayfası istenen dilde. Otomatik çeviri yok; eksik çeviri varsayılan dilde gösterilir ve işaretlenir. Polylang ve WPML'in dil listesi kullanılır.
 
@@ -81,6 +85,9 @@ Varsayılan olarak veriler korunur. Eklentiyi silerken tüm verisinin (tablolar,
 Tüm değişiklikler: CHANGELOG.md.
 
 == Upgrade Notice ==
+
+= 1.2.0 =
+Portal modu eklendi (varsayılan kapalı). Tek firmalı sitelerde hiçbir çıktı değişmez.
 
 = 1.1.0 =
 Çoklu dil desteği eklendi (varsayılan kapalı). Tek dilli sitelerde hiçbir çıktı değişmez.

@@ -30,6 +30,7 @@ Veriler ve ayarlar korunur; veritabanı değişiklikleri yalnızca ekleme şekli
 | `inquiries` | Teklif kutusu | AI Katalog → Teklif Kutusu (uyarı ve onayla) |
 | `compliance_report` | AI Uyum Raporu, rozet, doğrulama sayfası | WP-CLI |
 | `multilingual` | Çoklu dil: çeviriler ve dile göre çıktılar ([coklu-dil.md](coklu-dil.md)) | WP-CLI |
+| `portal_mode` | Portal: birçok işletme, işletme yetkilileri ([portal.md](portal.md)) | WP-CLI |
 
 WP-CLI ile açma (örnek: tarama, sihirbaz ve rapor):
 

@@ -3,6 +3,28 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.2.0] - 2026-09-28 (onay bekliyor: `gorev-15` dalı)
+
+### Eklendi
+- **A9 Portal modu** (`portal_mode` anahtarı, varsayılan kapalı). Plan ve onay bekleyen kararlar: `docs/planlar/gorev-15.md`.
+  - Çekirdek `src/Core/Portal/`: `Business` (adres kısaltması + `CompanyProfile`), `PortalService` (tek yazma noktası;
+    işletme yetkilisi yalnızca kendi ilanına dokunur, ilanı olan işletme silinmez), `PortalReport` (işletme ve portal
+    satırları toplamla tutarlı). Yeni mimari testi `PortalWritesOnlyThroughServiceTest`.
+  - Saklama: işletmeler `aihs_businesses` seçeneğinde; ilanın işletmesi ilan kaydında `_aihs_business`; yetkilinin
+    işletmesi kullanıcı meta verisinde `aihs_business`. Yeni tablo yok, kalıcı rol yok (`user_has_cap`).
+  - Yönetim: **AI Katalog → İşletmeler** (işletmeler, yetkililer, ilan ataması, 28 günlük işletme raporu) ve
+    **İşletmem** (yetkilinin kendi ilanları).
+  - Çıktılar: `/ai-katalog/isletme/{kısaltma}/` işletme sayfası; katalogda işletme dizini; JSON-LD'de satıcı işletme;
+    llms.txt'de işletme dizini; REST'te `business`, `?business=`, `/businesses`; MCP'de `business` girdisi ve
+    `aihs/list-businesses`.
+- Belgeler: `docs/kullanim/portal.md`; bilinen sınırlar güncellendi.
+
+### Değişmeyen
+- Portal kapalıyken (işletme kayıtları olsa bile) tüm çıktılar birebir aynı (geriye uyumluluk testi).
+
+### Test güncellemesi (onay bekliyor)
+- `FeaturesTest::test_mvp_feature_defaults` anahtar listesine `portal_mode => false` eklendi.
+
 ## [1.1.0] - 2026-09-28 (onay bekliyor: `gorev-14` dalı)
 
 ### Eklendi

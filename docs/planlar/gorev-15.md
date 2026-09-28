@@ -60,3 +60,15 @@ Anahtar: `portal_mode` (varsayılan kapalı).
 3. İşletme sayfası adresi `/ai-katalog/isletme/{slug}/`.
 4. İşletme bazlı ölçümde REST/MCP çağrıları işletmeye atfedilemez (yol aynı); yalnızca işletme sayfası okumaları
    ve talepler sayılır.
+5. Mevcut bir testte değişiklik: `FeaturesTest::test_mvp_feature_defaults` anahtar listesine `portal_mode => false`.
+6. `SchemaBuilder::catalog()` / `entry()` isteğe bağlı satıcı parametresi aldı (varsayılan davranış aynı).
+
+## 5. Sonuç (uygulandı)
+- 4 işleme: çekirdek → WordPress (saklama, yetki, ekranlar, işletme sayfası) → kanallar → belgeler/sürüm 1.2.0.
+- `composer check` temiz: 324 birim, 165 entegrasyon testi.
+- Kabul: yetkili başka işletmenin ilanını göremiyor/düzenleyemiyor/silemiyor; tek sorgu tüm işletmelerden
+  sonuç döndürüyor; işletme rapor satırları toplamla tutarlı; portal kapalıyken çıktılar birebir aynı.
+- Elle deneme (geliştirme sitesi): işletme sayfası 200 (JSON-LD'de satıcı işletme), bilinmeyen işletme 404,
+  `GET /businesses` doğru.
+- Kapsam dışı bulgu: `RestContractTest::test_full_catalog` ara sıra kırılıyor (şablon sırası ilanların
+  güncellenme saniyesine bağlı; Görev 10'dan beri). Ayrı görev önerildi.
