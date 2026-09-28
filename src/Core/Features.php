@@ -146,6 +146,34 @@ final class Features {
 	public const DEFAULT_ON = array( self::MEASUREMENT );
 
 	/**
+	 * Features that need ALL of the listed features (1.9.0). Used by the settings screen, which only
+	 * lets a feature be turned on when these are on and off when nothing on needs it. Runtime behavior
+	 * does not depend on this table.
+	 */
+	public const REQUIRES = array(
+		self::TEMPLATES         => array( self::CATALOG ),
+		self::SCHEMA_OUTPUT     => array( self::CATALOG ),
+		self::LLMS_TXT          => array( self::CATALOG ),
+		self::REST_API          => array( self::CATALOG ),
+		self::ABILITIES         => array( self::CATALOG ),
+		self::INQUIRIES         => array( self::CATALOG ),
+		self::MULTILINGUAL      => array( self::CATALOG ),
+		self::PORTAL_MODE       => array( self::CATALOG ),
+		self::MATCHING          => array( self::CATALOG ),
+		self::A2A               => array( self::CATALOG ),
+		self::MCP               => array( self::ABILITIES ),
+		self::COMPLIANCE_REPORT => array( self::COMPLIANCE_SCAN ),
+	);
+
+	/**
+	 * Features that need AT LEAST ONE of the listed features (1.9.0).
+	 */
+	public const REQUIRES_ANY = array(
+		self::DISCOVERY       => array( self::LLMS_TXT, self::REST_API ),
+		self::CATALOG_SITEMAP => array( self::SCHEMA_OUTPUT, self::LLMS_TXT ),
+	);
+
+	/**
 	 * Storage, set once by the platform at boot.
 	 *
 	 * @var Settings|null
@@ -262,6 +290,59 @@ final class Features {
 			return;
 		}
 		self::settings()->set( self::OPTION, $overrides, true );
+	}
+
+	/**
+	 * What must be turned on before a feature can be: every missing "all" requirement, and the "any"
+	 * list when none of it is on.
+	 *
+	 * @param string $key Feature key.
+	 * @return array{all: list<string>, any: list<string>}
+	 */
+	public static function missing_requirements( string $key ): array {
+		$all = array();
+		foreach ( self::REQUIRES[ $key ] ?? array() as $required ) {
+			if ( ! self::is_enabled( $required ) ) {
+				$all[] = $required;
+			}
+		}
+		$any = array();
+		foreach ( self::REQUIRES_ANY[ $key ] ?? array() as $candidate ) {
+			if ( self::is_enabled( $candidate ) ) {
+				$any = array();
+				break;
+			}
+			$any[] = $candidate;
+		}
+		return array(
+			'all' => $all,
+			'any' => $any,
+		);
+	}
+
+	/**
+	 * Features that are on and would lose a requirement if this one were turned off.
+	 *
+	 * @param string $key Feature key.
+	 * @return list<string>
+	 */
+	public static function enabled_dependents( string $key ): array {
+		$dependents = array();
+		foreach ( self::REQUIRES as $dependent => $requirements ) {
+			if ( in_array( $key, $requirements, true ) && self::is_enabled( $dependent ) ) {
+				$dependents[] = $dependent;
+			}
+		}
+		foreach ( self::REQUIRES_ANY as $dependent => $candidates ) {
+			if ( ! in_array( $key, $candidates, true ) || ! self::is_enabled( $dependent ) ) {
+				continue;
+			}
+			$others = array_filter( $candidates, static fn( string $candidate ): bool => $candidate !== $key && self::is_enabled( $candidate ) );
+			if ( array() === $others ) {
+				$dependents[] = $dependent;
+			}
+		}
+		return $dependents;
 	}
 
 	/**

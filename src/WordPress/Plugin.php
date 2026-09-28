@@ -23,6 +23,7 @@ use AIHazirSite\WordPress\Matching\MatchingModule;
 use AIHazirSite\WordPress\A2A\A2AModule;
 use AIHazirSite\WordPress\Discovery\DiscoveryModule;
 use AIHazirSite\WordPress\Integrations\IntegrationsModule;
+use AIHazirSite\WordPress\Settings\SettingsModule;
 use AIHazirSite\WordPress\Access\AccessModule;
 use AIHazirSite\WordPress\Catalog\CatalogModule;
 use AIHazirSite\WordPress\Compliance\ComplianceModule;
@@ -94,6 +95,7 @@ final class Plugin {
 			new A2AModule(),
 			new DiscoveryModule(),
 			new IntegrationsModule(),
+			new SettingsModule(),
 		);
 	}
 

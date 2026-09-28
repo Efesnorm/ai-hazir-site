@@ -1,14 +1,23 @@
-# Bilinen sınırlar (1.6.0)
+# Bilinen sınırlar (1.9.0)
 
-Bu liste MVP sürümünde bilerek bırakılan veya henüz çözülmemiş konuları toplar. Her madde ileride bir görevle ele alınabilir.
+Bu liste bilerek bırakılan veya henüz çözülmemiş konuları toplar. Her madde ileride bir görevle ele alınabilir.
 
 ## Kullanım
 
-- **Genel ayar ekranı yok.** Yönetim ekranından yalnızca `measurement` (AI Ölçüm sayfası) ve `inquiries`
-  (Teklif Kutusu) açılıp kapatılabilir; sihirbaz birkaç anahtarı kendisi açar. Diğer anahtarlar ve sihirbazın
-  kendisi WP-CLI ile açılır ([başlangıç](kullanim/baslangic.md)).
-- **Silmede veri temizliği** seçeneğinin ekranı yok; WP-CLI ile açılır.
 - Arayüz metinleri Türkçe; çeviri dosyası (`.pot`) henüz üretilmiyor.
+- Ayarlar ekranındaki önkoşul kuralları yalnızca ekran içindir; WP-CLI ile önkoşulu kapalı bir özellik açılabilir
+  (ör. katalog kapalıyken REST API boş katalog döndürür).
+
+## Keşif ve entegrasyonlar (1.7.0–1.8.0)
+
+- Sayfa önbelleğinden sunulan sayfalarda HTTP `Link` başlığı yoktur (önbellek eklentileri başlığı saklamaz);
+  sayfadaki `<link>` bağlantıları ve görünür satır durur. AI botlarına önbellek sunulmuyorsa (`bot_cache_bypass`)
+  botlar başlığı da alır.
+- Önbellek entegrasyonu yalnızca WP Rocket ve LiteSpeed Cache (7.2+) içindir; W3 Total Cache ve WP Super Cache için
+  ekranda elle adımlar gösterilir. Barındırma ya da CDN düzeyindeki önbellek ve hız sınırları eklentinin dışındadır.
+- Bot kimliğini taklit eden istekler de önbellek dışı kalır (doğrulama ölçümde IP ile yapılır, önbellek kararında değil).
+- AI agentlar siteyi hiç açmadan arama dizininden ya da ezberden cevap verebilir; bu durumda sitede ne olursa olsun
+  görülmez (makedonya.tr denemesi, 1.7.0).
 
 ## Çoklu dil (1.1.0)
 
@@ -32,6 +41,8 @@ Bu liste MVP sürümünde bilerek bırakılan veya henüz çözülmemiş konular
 
 - Bot doğrulaması, işletmecinin yayımladığı IP listesi veya ters DNS kaydıyla yapılır; ikisini de sunmayan botlar "doğrulanmamış" sayılır.
 - Sayfa önbelleği (ör. tam sayfa önbellek eklentileri, CDN) önünde sunulan istekler PHP'ye ulaşmadığı için ölçülemez.
+  WP Rocket ve LiteSpeed Cache için "AI botlarına önbellekten sayfa sunma" (`bot_cache_bypass`, 1.8.0) bunu çözer;
+  makedonya.tr'de açıldıktan sonra doğrulanmış GPTBot ve OAI-SearchBot istekleri görünmeye başladı.
 
 ## AI Katalog, REST ve MCP
 
@@ -85,5 +96,3 @@ Bu liste MVP sürümünde bilerek bırakılan veya henüz çözülmemiş konular
 - AI bot erişimi (U2): robots.txt'ye eklenen izin grubunda yalnızca WordPress'in `/wp-admin/` kuralları var, açık
   `Allow: /` satırı yok. Kurallar yine doğru yorumlanır (engellenmeyen yol izinlidir), ancak bazı denetim araçları
   izni açıkça görmek ister.
-- REST `/templates` (Görev 10'dan beri): şablonların sırası ilanların güncellenme zamanına bağlı; aynı saniyede
-  kaydedilen ilanlarda sıra değişebilir. `RestContractTest::test_full_catalog` bu yüzden ara sıra kırılır.

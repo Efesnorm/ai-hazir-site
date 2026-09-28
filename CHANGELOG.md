@@ -3,6 +3,28 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.9.0] - 2026-09-29
+
+### Eklendi
+- **Ayarlar → AI Hazır Site**: tüm özellik anahtarları tek ekranda, gruplar hâlinde; her biri tek tıkla açılıp
+  kapanır. WP-CLI artık gerekmez. Eklentiler listesinde eklenti satırına standart "Ayarlar" bağlantısı
+  (`plugin_action_links_`). Plan: `docs/planlar/1.9.0-ayarlar-ekrani.md`.
+  - Önkoşullar çekirdekte (`Features::REQUIRES`, `REQUIRES_ANY`, `missing_requirements()`, `enabled_dependents()`):
+    önkoşulu kapalı özellik açılmaz, açık bir özelliğin bağlı olduğu özellik kapanmaz; satırında "Önce şunu açın /
+    kapatın" yazar. Zincirleme açma/kapama yok. Kurallar yalnızca ekran içindir; çalışma davranışı değişmedi.
+  - Kendi akışı olanlar korunur: teklif kutusu KVKK uyarısıyla kendi ekranından açılır (burada bağlantı); önbellek ve
+    site haritası entegrasyonları Entegrasyonlar ekranındaki işlemin aynısını çalıştırır; telemetri gönderimi için açık
+    onay kendi ekranında kalır.
+  - "Eklentiyi silerken tüm verilerini de sil" seçeneği ekranda.
+  - Testler: `FeatureRequirementsTest` (tablolar tutarlı, döngü yok), `SettingsPageTest`.
+- **Onaylı istisna (anahtar kuralı):** Ekranın kendisi bir anahtara bağlı değildir. Kendi başına hiçbir davranışı
+  değiştirmez, yalnızca anahtarları değiştirmenin yoludur; bir anahtarın arkasında olsaydı onu açmak için yine WP-CLI
+  gerekirdi (kullanıcı onayı 2026-09-29).
+
+### Değişti
+- Belgeler: `docs/kullanim/baslangic.md` (anahtar tablosu, önkoşullar, silme), `docs/bilinen-sinirlar.md` (ayar ekranı
+  maddeleri kaldırıldı, 1.0.1'de düzeltilen `/templates` hatası listeden çıkarıldı, 1.7.0–1.8.0 sınırları eklendi).
+
 ## [1.8.0] - 2026-09-28
 
 ### Eklendi
