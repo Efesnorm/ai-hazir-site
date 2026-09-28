@@ -33,6 +33,7 @@ final class Inquiry {
 
 	public const CHANNEL_MCP  = 'mcp';
 	public const CHANNEL_REST = 'rest';
+	public const CHANNEL_A2A  = 'a2a';
 
 	/**
 	 * Constructor.

@@ -88,6 +88,36 @@ final class Features {
 	public const COMPLIANCE_REPORT = 'compliance_report';
 
 	/**
+	 * Multilingual catalog output (1.1.0).
+	 */
+	public const MULTILINGUAL = 'multilingual';
+
+	/**
+	 * Portal mode: many businesses on one site (1.2.0).
+	 */
+	public const PORTAL_MODE = 'portal_mode';
+
+	/**
+	 * Updates from our update server, canary channels, rollback (1.3.0).
+	 */
+	public const REMOTE_UPDATES = 'remote_updates';
+
+	/**
+	 * Weekly summary to the report panel; also needs the site owner's explicit consent (1.3.0).
+	 */
+	public const TELEMETRY = 'telemetry';
+
+	/**
+	 * Need ↔ offer/supply matching (1.5.0).
+	 */
+	public const MATCHING = 'matching';
+
+	/**
+	 * A2A Agent Card and agent endpoint (1.6.0).
+	 */
+	public const A2A = 'a2a';
+
+	/**
 	 * Sector templates (0.8.0).
 	 */
 	public const TEMPLATES = 'templates';
@@ -136,6 +166,12 @@ final class Features {
 			self::MCP               => false,
 			self::INQUIRIES         => false,
 			self::COMPLIANCE_REPORT => false,
+			self::MULTILINGUAL      => false,
+			self::PORTAL_MODE       => false,
+			self::REMOTE_UPDATES    => false,
+			self::TELEMETRY         => false,
+			self::MATCHING          => false,
+			self::A2A               => false,
 		);
 	}
 

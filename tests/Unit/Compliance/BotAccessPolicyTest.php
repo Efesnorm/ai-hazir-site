@@ -56,7 +56,7 @@ final class BotAccessPolicyTest extends TestCase {
 		$this->assertSame( 1.0, $with->ratio );
 		$this->assertStringContainsString( 'Bilerek engellendi', implode( ' ', $with->findings ) );
 		$this->assertStringContainsString( 'GPTBot', implode( ' ', $with->findings ) );
-		$this->assertEqualsWithDelta( 0.5 * 6 / 12 + 0.5, $without->ratio, 0.0001, 'Without the policy the old rule applies.' );
+		$this->assertEqualsWithDelta( 0.5 * 11 / 18 + 0.5, $without->ratio, 0.0001, 'Without the policy the old rule applies (1.4.0: 18 bots, 7 training).' );
 	}
 
 	/**
@@ -66,7 +66,7 @@ final class BotAccessPolicyTest extends TestCase {
 		$policy = ( new BotPolicy() )->with( 'gptbot', BotPolicy::DISALLOW );
 		$result = ( new BotAccessCheck( $policy ) )->run( self::site( "User-agent: GPTBot\nDisallow: /\n\nUser-agent: ClaudeBot\nDisallow: /\n" ) );
 
-		$this->assertEqualsWithDelta( 0.5 * 10 / 11 + 0.5, $result->ratio, 0.0001 );
+		$this->assertEqualsWithDelta( 0.5 * 16 / 17 + 0.5, $result->ratio, 0.0001, '1.4.0: 18 bots, GPTBot intentionally blocked, ClaudeBot not.' );
 		$this->assertStringContainsString( 'engelliyor: ClaudeBot.', implode( ' ', $result->findings ) );
 	}
 

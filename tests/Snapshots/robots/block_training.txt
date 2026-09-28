@@ -22,4 +22,7 @@ Disallow: /
 
 User-agent: meta-externalagent
 Disallow: /
+
+User-agent: MistralAI-Training
+Disallow: /
 # END AI Hazir Site

@@ -29,6 +29,12 @@ Veriler ve ayarlar korunur; veritabanı değişiklikleri yalnızca ekleme şekli
 | `mcp` | MCP sunucusu `/wp-json/aihs/mcp` | WP-CLI |
 | `inquiries` | Teklif kutusu | AI Katalog → Teklif Kutusu (uyarı ve onayla) |
 | `compliance_report` | AI Uyum Raporu, rozet, doğrulama sayfası | WP-CLI |
+| `multilingual` | Çoklu dil: çeviriler ve dile göre çıktılar ([coklu-dil.md](coklu-dil.md)) | WP-CLI |
+| `portal_mode` | Portal: birçok işletme, işletme yetkilileri ([portal.md](portal.md)) | WP-CLI |
+| `remote_updates` | Merkezi güncelleme, kanarya, önceki sürüme dönüş ([guncelleme.md](guncelleme.md)) | WP-CLI |
+| `matching` | Eşleştirme: aranan ↔ satılan/tedarik ([eslestirme.md](eslestirme.md)) | WP-CLI |
+| `a2a` | A2A kartviziti ve agent, onaylı giden teklif isteği ([a2a.md](a2a.md)) | WP-CLI |
+| `telemetry` | Rapor paneline haftalık özet (ayrıca açık onay gerekir) | WP-CLI + Ayarlar → AI Hazır Güncelleme |
 
 WP-CLI ile açma (örnek: tarama, sihirbaz ve rapor):
 
@@ -51,7 +57,8 @@ Kapatmak için `true` yerine `false` yazın. WP-CLI'ye erişiminiz yoksa barınd
 
 ## Eklentiyi silme
 
-Varsayılan olarak veriler korunur. Silmede tüm verinin (tablolar, ayarlar, ilanlar, talepler) kaldırılması için
+Varsayılan olarak veriler korunur. Silmede tüm verinin (tablolar, ayarlar, ilanlar ve çevirileri, talepler, işletmeler
+ve işletme yetkililerinin kullanıcı bağları, önbellekler) kaldırılması için
 silmeden önce şunu çalıştırın:
 
 ```bash

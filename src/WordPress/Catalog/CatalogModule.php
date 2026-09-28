@@ -43,6 +43,8 @@ final class CatalogModule implements Module {
 	 * The catalog write service with the WordPress adapters.
 	 */
 	public static function service(): CatalogService {
-		return new CatalogService( new WpListingRepository(), new WpProfileRepository(), new WpClock(), TemplatesModule::registry() );
+		$listings = new WpListingRepository();
+		$profiles = new WpProfileRepository();
+		return new CatalogService( $listings, $profiles, new WpClock(), TemplatesModule::registry(), $listings, $profiles );
 	}
 }

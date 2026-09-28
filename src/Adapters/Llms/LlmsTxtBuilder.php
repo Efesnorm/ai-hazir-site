@@ -58,6 +58,16 @@ final class LlmsTxtBuilder {
 		'api_note'          => 'Geçerli ilanlar, sayfalı; şema: %s',
 		'api_templates'     => 'Şablon alan tanımları (JSON)',
 		'unverified'        => '%1$s (doğrulanmadı, son güncelleme %2$s)',
+		'language'          => 'Dil',
+		'untranslated'      => 'çevirisi yok, %1$s dilinde: %2$s',
+		'alternate'         => 'Bu metin %s dilinde',
+		'field_title'       => 'başlık',
+		'field_description' => 'açıklama',
+		'field_category'    => 'kategori',
+		'field_region'      => 'bölge',
+		'field_sector'      => 'sektör',
+		'businesses'        => 'İşletmeler',
+		'business'          => 'İşletme',
 	);
 
 	/**
@@ -66,6 +76,20 @@ final class LlmsTxtBuilder {
 	 * @var array<string, string>
 	 */
 	private readonly array $labels;
+
+	/**
+	 * Language context of the text being built (1.1.0), null for single-language output.
+	 *
+	 * @var array{language: string, fallback: string, missing: array<int|string, list<string>>, alternates: array<string, string>}|null
+	 */
+	private ?array $i18n = null;
+
+	/**
+	 * Portal context of the text being built (1.2.0), null for a single company.
+	 *
+	 * @var array{businesses: list<array{name: string, url: string, sector: string}>, owners: array<int, string>}|null
+	 */
+	private ?array $portal = null;
 
 	/**
 	 * Constructor.
@@ -96,18 +120,28 @@ final class LlmsTxtBuilder {
 	 * @param string         $today         Y-m-d.
 	 * @param string         $date_modified Last change of the data (ISO 8601), '' when unknown.
 	 * @param string|null    $now           ISO 8601 date-time for freshness (default: start of today).
+	 * @param array|null     $i18n          Language context (1.1.0): language, fallback (default language),
+	 *                                      missing (listing id or 'profile' → fields shown in the fallback
+	 *                                      language), alternates (language → URL). Null = unchanged output.
+	 * @param array|null     $portal        Portal context (1.2.0): businesses (name, url, sector) and owners
+	 *                                      (listing id → business name). Null = unchanged output.
 	 *
 	 * @phpstan-param list<Listing> $listings
+	 * @phpstan-param array{language: string, fallback: string, missing: array<int|string, list<string>>, alternates: array<string, string>}|null $i18n
+	 * @phpstan-param array{businesses: list<array{name: string, url: string, sector: string}>, owners: array<int, string>}|null $portal
 	 */
-	public function build( CompanyProfile $profile, array $listings, string $today, string $date_modified, ?string $now = null ): string {
-		$name   = self::inline( '' === $profile->name ? $this->site_name : $profile->name );
-		$blocks = array(
+	public function build( CompanyProfile $profile, array $listings, string $today, string $date_modified, ?string $now = null, ?array $i18n = null, ?array $portal = null ): string {
+		$this->i18n   = $i18n;
+		$this->portal = $portal;
+		$name         = self::inline( '' === $profile->name ? $this->site_name : $profile->name );
+		$blocks       = array(
 			'# ' . $name,
 			'> ' . sprintf( $this->labels['summary'], $name . ( '' !== $profile->sector ? ' (' . self::inline( $profile->sector ) . ')' : '' ) ),
 		);
 
 		$details = array_filter(
 			array(
+				'language'       => null === $i18n ? '' : $i18n['language'] . $this->untranslated( 'profile' ),
 				'country'        => $profile->country,
 				'languages'      => implode( ', ', $profile->languages ),
 				'certifications' => implode( ', ', $profile->certifications ),
@@ -117,6 +151,10 @@ final class LlmsTxtBuilder {
 		);
 		if ( array() !== $details ) {
 			$blocks[] = implode( "\n", array_map( fn( string $key, string $value ): string => '- ' . $this->labels[ $key ] . ': ' . self::inline( $value ), array_keys( $details ), $details ) );
+		}
+
+		if ( null !== $portal && array() !== $portal['businesses'] ) {
+			$blocks[] = '## ' . $this->labels['businesses'] . "\n\n" . implode( "\n", array_map( static fn( array $b ): string => self::link( $b['name'], $b['url'], self::inline( $b['sector'] ) ), $portal['businesses'] ) );
 		}
 
 		foreach ( ListingType::ALL as $type ) {
@@ -144,6 +182,11 @@ final class LlmsTxtBuilder {
 			$optional[] = self::link( $this->labels['api'], $this->api_url . 'listings', sprintf( $this->labels['api_note'], $this->api_url . 'schema/listings' ) );
 			$optional[] = self::link( $this->labels['api_templates'], $this->api_url . 'templates', '' );
 		}
+		foreach ( null === $i18n ? array() : $i18n['alternates'] as $language => $url ) {
+			if ( $language !== $i18n['language'] ) {
+				$optional[] = self::link( 'llms.txt (' . $language . ')', $url, sprintf( $this->labels['alternate'], $language ) );
+			}
+		}
 		$blocks[] = "## Optional\n\n" . implode( "\n", $optional );
 
 		return implode( "\n\n", $blocks ) . "\n";
@@ -161,11 +204,28 @@ final class LlmsTxtBuilder {
 		foreach ( $this->details( $listing, $today, $now ) as $label => $value ) {
 			$details[] = $label . ': ' . $value;
 		}
+		if ( null !== $listing->id && isset( $this->portal['owners'][ $listing->id ] ) ) {
+			$details[] = $this->labels['business'] . ': ' . self::inline( $this->portal['owners'][ $listing->id ] );
+		}
 
 		$text = '' !== $listing->description ? rtrim( self::inline( $listing->description ), '.' ) . '. ' : '';
 		$url  = $this->catalog_url . ( null === $listing->id ? '' : '#ilan-' . $listing->id );
 
-		return self::link( $listing->title, $url, $text . implode( '; ', $details ) );
+		return self::link( $listing->title, $url, $text . implode( '; ', $details ) . $this->untranslated( $listing->id ?? 0 ) );
+	}
+
+	/**
+	 * " (çevirisi yok, tr dilinde: açıklama, bölge)" for a record with fallback fields, else ''.
+	 *
+	 * @param int|string $key Listing id or 'profile'.
+	 */
+	private function untranslated( int|string $key ): string {
+		$missing = $this->i18n['missing'][ $key ] ?? array();
+		if ( null === $this->i18n || array() === $missing ) {
+			return '';
+		}
+		$names = array_map( fn( string $field ): string => $this->labels[ 'field_' . $field ] ?? $field, $missing );
+		return ' (' . sprintf( $this->labels['untranslated'], $this->i18n['fallback'], implode( ', ', $names ) ) . ')';
 	}
 
 	/**

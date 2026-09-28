@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace AIHazirSite\Adapters\Rest;
 
 use AIHazirSite\Core\Catalog\ListingType;
+use AIHazirSite\Core\I18n\Localizer;
 use AIHazirSite\Core\Templates\Template;
 use AIHazirSite\Core\Templates\TemplateField;
 
@@ -33,17 +34,120 @@ final class RestSchemas {
 	/**
 	 * Schema by name.
 	 *
-	 * @param string $name One of self::NAMES.
+	 * @param string $name         One of self::NAMES.
+	 * @param bool   $multilingual With the optional multilingual keys (1.1.0).
 	 * @return array<string, mixed>
 	 */
-	public static function get( string $name ): array {
-		return match ( $name ) {
+	public static function get( string $name, bool $multilingual = false ): array {
+		$schema = match ( $name ) {
 			'profile'   => self::profile(),
 			'listings'  => self::listings(),
 			'listing'   => self::document( 'aihs-listing', self::listing() ),
 			'templates' => self::templates(),
 			default     => array(),
 		};
+		return $multilingual ? self::with_languages( $name, $schema ) : $schema;
+	}
+
+	/**
+	 * Portal mode (1.2.0): listings carry `business` (reference or null); GET /businesses.
+	 *
+	 * @param string               $name   One of self::NAMES or 'businesses'.
+	 * @param array<string, mixed> $schema Schema from get() (ignored for 'businesses').
+	 * @return array<string, mixed>
+	 */
+	public static function with_portal( string $name, array $schema ): array {
+		$reference = array(
+			'type'                 => array( 'object', 'null' ),
+			'properties'           => array(
+				'id'   => self::integer( 1 ),
+				'slug' => self::string(),
+				'name' => self::string(),
+				'url'  => self::string(),
+			),
+			'required'             => array( 'id', 'slug', 'name', 'url' ),
+			'additionalProperties' => false,
+		);
+		switch ( $name ) {
+			case 'listing':
+				$schema['properties']['business'] = $reference;
+				break;
+			case 'listings':
+				$schema['properties']['items']['items']['properties']['business'] = $reference;
+				break;
+			case 'businesses':
+				$schema = self::document(
+					'aihs-businesses',
+					self::object(
+						array(
+							'items'       => array(
+								'type'  => 'array',
+								'items' => self::object(
+									array(
+										'id'             => self::integer( 1 ),
+										'slug'           => self::string(),
+										'name'           => self::string(),
+										'sector'         => self::string(),
+										'country'        => self::string(),
+										'languages'      => self::strings(),
+										'certifications' => self::strings(),
+										'contact_email'  => self::string(),
+										'contact_phone'  => self::string(),
+										'catalog_url'    => self::string(),
+									)
+								),
+							),
+							'updated_at'  => self::nullable_datetime(),
+							'valid_until' => array( 'type' => 'null' ),
+						)
+					)
+				);
+				break;
+		}
+		return $schema;
+	}
+
+	/**
+	 * A document schema with the optional multilingual keys (1.1.0): `language` on the document
+	 * and `translation` on the profile and on every listing. Single-language sites never get them.
+	 *
+	 * @param string               $name   One of self::NAMES.
+	 * @param array<string, mixed> $schema Schema from get().
+	 * @return array<string, mixed>
+	 */
+	public static function with_languages( string $name, array $schema ): array {
+		$language = array(
+			'type'    => 'string',
+			'pattern' => '^[a-z]{2}$',
+		);
+		$marker   = self::object(
+			array(
+				'language'          => $language,
+				'missing'           => array(
+					'type'  => 'array',
+					'items' => array(
+						'type' => 'string',
+						'enum' => array_merge( Localizer::LISTING_FIELDS, Localizer::PROFILE_FIELDS ),
+					),
+				),
+				'fallback_language' => array(
+					'type'    => array( 'string', 'null' ),
+					'pattern' => '^[a-z]{2}$',
+				),
+			)
+		);
+		switch ( $name ) {
+			case 'profile':
+			case 'listing':
+				$schema['properties']['language']    = $language;
+				$schema['properties']['translation'] = $marker;
+				break;
+			case 'listings':
+				$schema['properties']['language']                                    = $language;
+				$schema['properties']['items']['items']['properties']['translation'] = $marker;
+				break;
+		}
+		return $schema;
 	}
 
 	/**

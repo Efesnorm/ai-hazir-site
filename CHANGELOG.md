@@ -3,6 +3,126 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.6.0] - 2026-09-28 (onay bekliyor: `gorev-19` dalı)
+
+### Eklendi
+- **A12 A2A kartviziti ve agent** (`a2a` anahtarı, varsayılan kapalı). Resmi belgeden doğrulama ve onay bekleyen
+  kararlar: `docs/planlar/gorev-19.md` (A2A 1.0.0, a2a.proto).
+  - `src/Adapters/A2A/`: `AgentCardBuilder`, `AgentCardValidator` (resmi zorunlu alanlar; yarım/eski kart asla
+    yayınlanmaz), `JsonRpcServer` (`SendMessage`, `A2A-Version` 1.x, resmi hata kodları), `A2ASkills`.
+  - `/.well-known/agent-card.json` yalnızca uç nokta ve en az bir beceri çalışırken; `POST /wp-json/aihs/a2a`.
+  - Beceriler: `musaitlik-sor` (A6 `Availability`), `teklif-iste` (A7 `InquiryService`, kanal `a2a`, otomatik onay yok).
+  - Giden: Eşleşmeler'den ortak siteye, mesajın tam önizlemesi ve kullanıcı onayıyla (tek kullanımlık belirteç);
+    karşı kart ortak sitenin alan adından okunup doğrulanır. Yeni mimari testi `A2ASendsOnlyWithApprovalTest`.
+  - Tüm gelen ve giden mesajlar denetim kaydında.
+- Belgeler: `docs/kullanim/a2a.md` (uçtan uca demo adımları dahil).
+
+### Test güncellemesi (onay bekliyor)
+- `FeaturesTest::test_mvp_feature_defaults` anahtar listesine `a2a => false`; `TelemetrySendsOnlyWithConsentTest`
+  izinli giden POST dosyalarına `A2AOutbox` eklendi.
+
+## [1.5.0] - 2026-09-28 (onay bekliyor: `gorev-18` dalı)
+
+### Eklendi
+- **A11 Eşleştirme motoru** (`matching` anahtarı, varsayılan kapalı). Plan ve onay bekleyen kararlar: `docs/planlar/gorev-18.md`.
+  - Çekirdek `src/Core/Matching/`: `HardFilter` (tür, kategori, şablon, standart, bölge, teslim süresi sınırı),
+    `Matcher` (S = Σ wᵢ·sᵢ, 0–100; ölçüt başına değer ve puan, toplam puanla birebir), `MatchWeights` (toplam 1,
+    başlangıçta eşit), `PartnerListings` (ortak sitenin A5 REST yanıtı; güvenilmeyen veri).
+  - **AI Katalog → Eşleşmeler**: aranan ilan seçimi, açıklamalı sonuçlar, elenenler ve nedenleri, ağırlık ve ortak
+    site ayarları (yalnızca https). Ortak yanıtlar 1 saat önbellekte; erişilemeyen ortak atlanır, yerel eşleştirme sürer.
+  - Eşleşmeler öneridir; hiçbir teklif veya mesaj gönderilmez.
+- Belgeler: `docs/kullanim/eslestirme.md`.
+
+### Test güncellemesi (onay bekliyor)
+- `FeaturesTest::test_mvp_feature_defaults` anahtar listesine `matching => false` eklendi.
+
+## [1.4.0] - 2026-09-28 (onay bekliyor: `gorev-17` ve `gorev-17-bot-listesi` dalları)
+
+### Eklendi
+- **U5 Yeni standartlar araştırması** (`docs/planlar/gorev-17.md`): WebMCP, IETF AIPREF ve Content Signals henüz
+  kararlı değil, puanlamaya eklenmedi; A2A v1.0 kararlı ve mevcut `advanced` kontrolüyle zaten denetleniyor;
+  llms.txt ağırlığı için öneri (uygulanmadı).
+- **AI bot listesi** 12 → 18 (resmi belgelerden): MistralAI-Training, MistralAI-Index, MistralAI-User, DuckAssistBot,
+  meta-externalfetcher, meta-webindexer. Mistral ve DuckDuckGo botları resmi IP listeleriyle doğrulanır.
+
+### Değişti
+- Puanlama sürümü 3 (bot erişimi oranı yeni bot sayısıyla hesaplanır). Eski taramalar kendi sürümüyle gösterilir.
+
+### Test güncellemesi (onay bekliyor)
+- robots.txt hazır ayar anlık görüntüleri (yalnızca yeni bot satırları), bot sayısına bağlı 3 oran, `SCORE_VERSION`
+  3, puanlama sürümü metni, indirilen IP listesi sayısı (8 → 11). Ayrıntı: `docs/planlar/gorev-17.md` §3.
+
+## [1.3.0] - 2026-09-28 (onay bekliyor: `gorev-16` dalı)
+
+### Eklendi
+- **A10 Merkezi güncelleme ve rapor paneli** (`remote_updates`, `telemetry` anahtarları, varsayılan kapalı). Plan ve onay
+  bekleyen kararlar: `docs/planlar/gorev-16.md`.
+  - Çekirdek `src/Core/Updates/`: `ReleaseManifest` (wp-update-server / Plugin Update Checker alanları + `releases`,
+    yalnızca https), `CanaryPolicy` (pilot hemen, genel 48 saat sonra; geri alma hedefi), `RollbackService` (önce şema
+    `down()`, sonra paket).
+  - WordPress: `pre_set_site_transient_update_plugins` ve `plugins_api` ile standart güncelleme ekranı; önceki pakete
+    `Plugin_Upgrader` (`overwrite_package`) ile dönüş. Sunucu adresi yoksa hiçbir istek yok (`AIHS_UPDATE_SERVER`).
+  - Rapor paneli: `TelemetryService` yalnızca anahtar + https adres + güncel bildirime açık onay varken gönderir;
+    `TelemetrySummary` yalnızca toplamlar; rastgele site kimliği; onay geri alınabilir. Yeni mimari testi
+    `TelemetrySendsOnlyWithConsentTest` (dışarı POST yalnızca bu servisten).
+  - Lisans altyapısı: `LicenseChecker`, `FreeLicense` (hiçbir özellik kilitli değil).
+  - **Ayarlar → AI Hazır Güncelleme**: sunucu, kanal, panel adresi, önceki sürüme dön, onay (gönderilecek verinin
+    tam önizlemesiyle) ve onayı geri alma.
+  - `bin/paketle` sunucu bildirimi için sürüm kaydı da üretir (`db_version` paketten okunur).
+- Belgeler: `docs/kullanim/guncelleme.md`; bilinen sınırlar güncellendi.
+
+### Test güncellemesi (onay bekliyor)
+- `FeaturesTest::test_mvp_feature_defaults` anahtar listesine `remote_updates`, `telemetry` (ikisi de `false`) eklendi.
+
+## [1.2.0] - 2026-09-28 (onay bekliyor: `gorev-15` dalı)
+
+### Eklendi
+- **A9 Portal modu** (`portal_mode` anahtarı, varsayılan kapalı). Plan ve onay bekleyen kararlar: `docs/planlar/gorev-15.md`.
+  - Çekirdek `src/Core/Portal/`: `Business` (adres kısaltması + `CompanyProfile`), `PortalService` (tek yazma noktası;
+    işletme yetkilisi yalnızca kendi ilanına dokunur, ilanı olan işletme silinmez), `PortalReport` (işletme ve portal
+    satırları toplamla tutarlı). Yeni mimari testi `PortalWritesOnlyThroughServiceTest`.
+  - Saklama: işletmeler `aihs_businesses` seçeneğinde; ilanın işletmesi ilan kaydında `_aihs_business`; yetkilinin
+    işletmesi kullanıcı meta verisinde `aihs_business`. Yeni tablo yok, kalıcı rol yok (`user_has_cap`).
+  - Yönetim: **AI Katalog → İşletmeler** (işletmeler, yetkililer, ilan ataması, 28 günlük işletme raporu) ve
+    **İşletmem** (yetkilinin kendi ilanları).
+  - Çıktılar: `/ai-katalog/isletme/{kısaltma}/` işletme sayfası; katalogda işletme dizini; JSON-LD'de satıcı işletme;
+    llms.txt'de işletme dizini; REST'te `business`, `?business=`, `/businesses`; MCP'de `business` girdisi ve
+    `aihs/list-businesses`.
+- Belgeler: `docs/kullanim/portal.md`; bilinen sınırlar güncellendi.
+- Kaldırma (veriyi sil seçeneği açıkken): işletme yetkililerinin kullanıcı bağı (`aihs_business`) ve eklentinin tüm
+  `aihs_*` geçici verileri (önbellekler, hız sınırı pencereleri, form durumu) de silinir. Başka eklentilerin verisine
+  dokunulmaz (`PortalUninstallTest`).
+
+### Değişmeyen
+- Portal kapalıyken (işletme kayıtları olsa bile) tüm çıktılar birebir aynı (geriye uyumluluk testi).
+
+### Test güncellemesi (onay bekliyor)
+- `FeaturesTest::test_mvp_feature_defaults` anahtar listesine `portal_mode => false` eklendi.
+
+## [1.1.0] - 2026-09-28 (onay bekliyor: `gorev-14` dalı)
+
+### Eklendi
+- **A8 Çoklu dil** (`multilingual` anahtarı, varsayılan kapalı). Plan ve onay bekleyen kararlar: `docs/planlar/gorev-14.md`.
+  - Çekirdek `src/Core/I18n/`: `LanguageSettings` (ISO 639-1, varsayılan dil ilk), `LanguageNegotiator`
+    (açık parametre → `Accept-Language` q değerleri, RFC 9110 §12.5.4 / RFC 4647 lookup → varsayılan dil),
+    `Localizer` (yalnızca girilmiş çeviriler; eksik alan varsayılan dilde kalır ve bildirilir).
+  - Çevrilen alanlar: ilan `title`, `description`, `category`, `region`; profil `sector`.
+  - Yazma tek noktadan: `CatalogService::save_listing_translation()` / `save_profile_translation()`;
+    yeni mimari testi `TranslationWritesOnlyThroughServiceTest`.
+  - Saklama: ilan çevirileri ilan kaydının meta verisinde (`_aihs_translations`, ilanla silinir), profil çevirisi
+    `aihs_profile_translations`, dil ayarı `aihs_languages`. Yeni tablo yok.
+  - Polylang (`pll_*` fonksiyonları) veya WPML (`wpml_*` süzgeçleri) varsa dil listesi onlardan okunur.
+  - **AI Katalog → Çeviriler**: dil ayarı, profil çevirisi, ilan başına dil formu ve dil bazında durum.
+  - Kanallar: REST (`?lang=` / `Accept-Language`, `Content-Language`, `Vary`), Abilities/MCP (`lang` girdisi),
+    `/llms.txt?lang=`, `/ai-katalog/?lang=` (`hreflang`, `lang` özniteliği, JSON-LD `inLanguage`). Her yanıtta
+    `translation {language, missing, fallback_language}` işareti.
+- Belgeler: `docs/kullanim/coklu-dil.md`; bilinen sınırlar güncellendi.
+
+### Değişmeyen
+- Anahtar kapalıyken veya tek dil tanımlıyken tüm çıktılar 1.0.0 ile birebir aynı (geriye uyumluluk testi).
+
+### Test güncellemesi (onay bekliyor)
+- `FeaturesTest::test_mvp_feature_defaults` anahtar listesine `multilingual => false` eklendi (gevşetme değil).
 ## [1.0.1] - 2026-09-28 (onay bekliyor: `duzeltme-sablon-sirasi` dalı)
 
 ### Düzeltildi
