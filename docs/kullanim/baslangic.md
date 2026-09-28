@@ -29,6 +29,7 @@ Veriler ve ayarlar korunur; veritabanı değişiklikleri yalnızca ekleme şekli
 | `mcp` | MCP sunucusu `/wp-json/aihs/mcp` | WP-CLI |
 | `inquiries` | Teklif kutusu | AI Katalog → Teklif Kutusu (uyarı ve onayla) |
 | `compliance_report` | AI Uyum Raporu, rozet, doğrulama sayfası | WP-CLI |
+| `multilingual` | Çoklu dil: çeviriler ve dile göre çıktılar ([coklu-dil.md](coklu-dil.md)) | WP-CLI |
 
 WP-CLI ile açma (örnek: tarama, sihirbaz ve rapor):
 

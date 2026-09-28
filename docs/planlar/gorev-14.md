@@ -64,3 +64,12 @@ Anahtar: `multilingual` (varsayılan kapalı). Kapalıyken **veya tek dil tanım
 4. Çakışma testi gerçek Polylang/WPML kurulmadan, onların resmi fonksiyon/süzgeç arayüzünü taklit eden
    testlerle yapıldı. Gerçek Polylang'ı wp-env'e eklemek (wordpress.org'dan indirme) onayınıza bırakıldı.
 5. Kalıp metinlerin (etiketler) İngilizce çevirisi (`.pot`/`.mo`) ayrı bir iş olarak önerilir.
+6. Mevcut bir testte değişiklik: `FeaturesTest::test_mvp_feature_defaults` anahtar listesine `multilingual => false`
+   eklendi (yeni anahtar; gevşetme değil).
+
+## 5. Sonuç (uygulandı)
+- 4 işleme: çekirdek → WordPress saklama/ekran → kanallar → belgeler/sürüm 1.1.0.
+- `composer check` temiz: 320 birim, 159 entegrasyon testi.
+- Elle deneme (geliştirme sitesi): `Accept-Language: en` ile REST yanıtı `Content-Language: en`, çevrilen alanlar
+  İngilizce, eksik açıklama `translation.missing` içinde; `/llms.txt?lang=en` işaretli.
+- Birleştirme, etiket (v1.1.0) ve CI onaydan sonra.

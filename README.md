@@ -3,7 +3,7 @@
 Sitenin "ne satıyorum, ne arıyorum, ne tedarik edebilirim" bilgisini AI agentların okuyup
 kullanabileceği biçimde yayınlayan WordPress eklentisi.
 
-> Sürüm 1.0.0 (MVP): AI bot ve yönlendirme ölçümü (A0), AI uyum taraması (U1), veri modeli ve yönetim formları (A1), AI bot erişim ayarları (U2), Schema.org yapılandırılmış veri (A2), llms.txt ve AI katalog sayfası (A3), sektör şablonları (A4), AI uyum sihirbazı (U3), REST API (A5), Abilities API ve MCP (A6), teklif kutusu ve güvenlik katmanı (A7), AI uyum raporu ve AI Hazır rozeti (U4). Ayrıntılar: [CHANGELOG.md](CHANGELOG.md).
+> Sürüm 1.1.0: AI bot ve yönlendirme ölçümü (A0), AI uyum taraması (U1), veri modeli ve yönetim formları (A1), AI bot erişim ayarları (U2), Schema.org yapılandırılmış veri (A2), llms.txt ve AI katalog sayfası (A3), sektör şablonları (A4), AI uyum sihirbazı (U3), REST API (A5), Abilities API ve MCP (A6), teklif kutusu ve güvenlik katmanı (A7), AI uyum raporu ve AI Hazır rozeti (U4), çoklu dil (A8). Ayrıntılar: [CHANGELOG.md](CHANGELOG.md).
 
 - En düşük sürümler: PHP 8.1, WordPress 6.9
 - Lisans: GPL-2.0-or-later
@@ -104,6 +104,13 @@ aynı içeriği A4 PDF olarak verir (Dompdf, DejaVu Sans). Puan eşiği (varsay�
 aşılınca `[aihs_rozet]` kısa kodu ve "AI Hazır rozeti" bloğu rozeti gösterir; rozet **/ai-hazir-dogrulama/**
 sayfasına bağlanır. Kullanım: [docs/kullanim/rapor-ve-rozet.md](docs/kullanim/rapor-ve-rozet.md).
 
+## Çoklu dil (A8)
+
+`multilingual` anahtarı açıkken **AI Katalog → Çeviriler** ekranından diller (Polylang/WPML varsa onlardan) ve
+ilan/profil çevirileri girilir. REST (`?lang=` / `Accept-Language`), MCP (`lang`), `/llms.txt?lang=` ve
+`/ai-katalog/?lang=` istenen dilde cevap verir; çevirisi olmayan alan varsayılan dilde döner ve işaretlenir.
+Otomatik çeviri yoktur. Ayrıntı: [docs/kullanim/coklu-dil.md](docs/kullanim/coklu-dil.md).
+
 ## Kullanıcı belgeleri ve paket
 
 - Site sahibi için başlangıç: [docs/kullanim/baslangic.md](docs/kullanim/baslangic.md)
@@ -183,6 +190,7 @@ src/Core/                  Platformdan bağımsız çekirdek (WordPress fonksiyo
   Security/                A7: TokenBucketLimiter, SpamScorer, AuditLog
   Access/                  U2: BotPolicy, Presets, RobotsRules, PolicyStore
   Templates/               A4: Template, TemplateField, TemplateRegistry, TemplateValidator, Freshness
+  I18n/                    A8: LanguageSettings, LanguageNegotiator, Localizer, Localized
 src/Adapters/              AI kanalı üreticileri (platformdan bağımsız)
   Schema/                  A2: SchemaMap, SchemaBuilder, SchemaValidator, SchemaCache
   Llms/                    A3: LlmsTxtBuilder, LlmsCache
@@ -207,6 +215,7 @@ src/WordPress/             WordPress adaptörü
   Inquiry/                 InquiryModule, InquiryChannels, WpInquiryRepository (şifreli), WpAuditRepository,
                            WpInquiryNotifier, Admin/InquiryAdmin (Teklif Kutusu)
   Templates/               TemplatesModule (kayıt defteri, aihs_template_dirs, hatalı dosya uyarısı)
+  I18n/                    A8: MultilingualModule, LanguageSource (Polylang/WPML), Multilingual, TranslationsAdmin
   Report/                  U4: ReportModule (AI Uyum Raporu, PDF), ComplianceReportView, BadgeModule (rozet, doğrulama sayfası)
 blocks/rozet/              "AI Hazır rozeti" dinamik bloğu (block.json, derlemesiz editör betiği)
 bin/paketle                Kurulabilir zip üretir
@@ -222,7 +231,7 @@ tests/Support/             Bellek içi test adaptörleri
 
 | Seçenek | Anlamı |
 | --- | --- |
-| `aihs_features` | Özellik anahtarları (`measurement`, `compliance_scan`, `catalog`, `bot_access`, `schema_output`, `llms_txt`, `templates`, `compliance_wizard`, `rest_api`, `abilities`, `mcp`, `inquiries`, `compliance_report`); `measurement` dışında hepsi varsayılan kapalı |
+| `aihs_features` | Özellik anahtarları (`measurement`, `compliance_scan`, `catalog`, `bot_access`, `schema_output`, `llms_txt`, `templates`, `compliance_wizard`, `rest_api`, `abilities`, `mcp`, `inquiries`, `compliance_report`, `multilingual`); `measurement` dışında hepsi varsayılan kapalı |
 | `aihs_db_version` | Uygulanan son geçiş sürümü |
 | `aihs_delete_data_on_uninstall` | Açıksa eklenti silinirken tüm verisi (tablo dahil) silinir |
 | `aihs_ip_ranges` | Botların yayınlanmış IP listeleri önbelleği (otomatik yüklenmez) |
@@ -235,6 +244,8 @@ tests/Support/             Bellek içi test adaptörleri
 | `aihs_schema_error` | Son Schema.org doğrulama hataları (otomatik yüklenmez) |
 | `aihs_inquiry_settings` | Teklif kutusu: saklama süresi, hız sınırları, spam eşiği |
 | `aihs_wizard` | Sihirbazın uyguladığı adımlar ve önceki değerleri, başlangıç puanı, öneri kapatıldı mı (otomatik yüklenmez) |
+| `aihs_languages` | Çoklu dil: varsayılan dil ve diğer diller (Polylang/WPML yoksa) |
+| `aihs_profile_translations` | Profil çevirileri (otomatik yüklenmez); ilan çevirileri ilan kaydında `_aihs_translations` |
 | `aihs_llms_cache` | Son üretilen llms.txt metni ve girdisinin parmak izi (otomatik yüklenmez) |
 
 Veritabanı tabloları: `{prefix}aihs_hits`, `{prefix}aihs_inquiries`, `{prefix}aihs_audit_log`. Cron görevleri: `aihs_refresh_ip_ranges` (günlük),

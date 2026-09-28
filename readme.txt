@@ -4,7 +4,7 @@ Tags: ai, llms-txt, schema, mcp, robots-txt
 Requires at least: 6.9
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -33,6 +33,7 @@ Her özellik ayrı bir anahtarla açılır ve kapatılır. Kurulumdan sonra yaln
 * **llms.txt ve /ai-katalog/ sayfası:** AI'ların hızlı okuyacağı sade metin ve HTML.
 * **REST API:** salt okunur `/wp-json/aihs/v1/` uç noktaları, önbellek başlıkları ve hız sınırı.
 * **MCP sunucusu ve Abilities API:** AI asistanları kataloğu doğrudan sorgular ("Stokta var mı, kaç günde gelir?").
+* **Çoklu dil:** yalnızca girdiğiniz çeviriler yayınlanır; AI'lar `lang` ya da `Accept-Language` ile dili seçer, eksik çeviri işaretlenir.
 * **Teklif kutusu:** AI agentlar ve insanlar firmaya talep bırakır. Hiçbir talep otomatik onaylanmaz, talep sahibine otomatik yanıt gitmez; iletişim bilgisi şifreli saklanır ve süre dolunca silinir.
 
 = Gizlilik =
@@ -64,6 +65,9 @@ Varsayılan olarak veriler korunur. Eklentiyi silerken tüm verisinin (tablolar,
 
 == Changelog ==
 
+= 1.1.0 =
+* Çoklu dil: ilan ve profil çevirileri; REST, MCP, llms.txt ve AI katalog sayfası istenen dilde. Otomatik çeviri yok; eksik çeviri varsayılan dilde gösterilir ve işaretlenir. Polylang ve WPML'in dil listesi kullanılır.
+
 = 1.0.0 =
 * AI uyum raporu (PDF), AI Hazır rozeti (kısa kod ve blok) ve doğrulama sayfası.
 * MVP sürümü: tüm özellik anahtarlarının varsayılanları son kez denetlendi; kullanıcı belgeleri ve bilinen sınırlar listesi.
@@ -77,6 +81,9 @@ Varsayılan olarak veriler korunur. Eklentiyi silerken tüm verisinin (tablolar,
 Tüm değişiklikler: CHANGELOG.md.
 
 == Upgrade Notice ==
+
+= 1.1.0 =
+Çoklu dil desteği eklendi (varsayılan kapalı). Tek dilli sitelerde hiçbir çıktı değişmez.
 
 = 1.0.0 =
 İlk kararlı sürüm. Güncellemeden önce yedek alın. Mevcut veriler ve ayarlar korunur; yeni özellikler kapalı gelir.

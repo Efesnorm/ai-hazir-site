@@ -1,4 +1,4 @@
-# Bilinen sınırlar (1.0.0)
+# Bilinen sınırlar (1.1.0)
 
 Bu liste MVP sürümünde bilerek bırakılan veya henüz çözülmemiş konuları toplar. Her madde ileride bir görevle ele alınabilir.
 
@@ -8,7 +8,16 @@ Bu liste MVP sürümünde bilerek bırakılan veya henüz çözülmemiş konular
   (Teklif Kutusu) açılıp kapatılabilir; sihirbaz birkaç anahtarı kendisi açar. Diğer anahtarlar ve sihirbazın
   kendisi WP-CLI ile açılır ([başlangıç](kullanim/baslangic.md)).
 - **Silmede veri temizliği** seçeneğinin ekranı yok; WP-CLI ile açılır.
-- Arayüz metinleri Türkçe; çeviri dosyası (`.pot`) henüz üretilmiyor. Çok dil desteği Görev 14 (A8) kapsamında.
+- Arayüz metinleri Türkçe; çeviri dosyası (`.pot`) henüz üretilmiyor.
+
+## Çoklu dil (1.1.0)
+
+- Yalnızca ilan başlığı, açıklaması, kategorisi, bölgesi ve profil sektörü çevrilir.
+- Şablon alan etiketleri (ör. "Kalan yer"), müsaitlik cevabının gerekçeleri ve llms.txt / katalog sayfasının
+  kalıp metinleri (ör. "Geçerlilik") Türkçe kalır.
+- JSON-LD'de eksik çeviri alan bazında işaretlenmez; belgenin dili `inLanguage` ile verilir.
+- Polylang ve WPML ile uyum, resmi API'lerini taklit eden testlerle denendi; gerçek eklentilerle elle deneme yapılmadı.
+- Ana sayfadaki `Organization` JSON-LD'si dile göre değişmez (çevrilebilir alan içermez).
 
 ## Tarama ve rapor
 
