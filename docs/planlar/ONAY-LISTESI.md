@@ -27,6 +27,9 @@ iki dalda `composer check` temiz (PHP 8.1 + WordPress 7.1.2; 339 birim ve 174 en
   - PHP 8.1 + WordPress 6.9: 174/174 entegrasyon testi geçti.
   - PHP 8.3 + WordPress 7.1.2: 339 birim + 174 entegrasyon testi geçti.
   - PHP 8.3 + WordPress 6.9: 174/174 entegrasyon testi geçti.
+- Ara dallar da (`gorev-14`, `gorev-15`, `gorev-16`, `gorev-17-bot-listesi`, `gorev-18`, `gorev-18-botsuz`,
+  `duzeltme-sablon-sirasi`) PHP 8.3 + WordPress 6.9'da birim ve entegrasyon testleriyle yeşil; her biri ayrı
+  birleştirilip CI'dan geçeceği için önceden denendi.
 - **Deneme birleşimi:** `birlesim-deneme` dalı = `duzeltme-sablon-sirasi` (1.0.1) + `gorev-19` zinciri. Çakışmalar
   yalnızca CHANGELOG, sürüm satırı ve `readme.txt`'de, çözüldü; `composer check` temiz (340 birim, 177 entegrasyon).
   CI matrisinin dört kombinasyonunda da yeşil (PHP 8.1/8.3 × WordPress 6.9/7.1.2; yerelde, ayrı wp-env örneğinde).
