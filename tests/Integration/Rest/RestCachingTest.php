@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace AIHazirSite\Tests\Integration\Rest;
 
 use AIHazirSite\Core\Features;
+use AIHazirSite\Tests\Support\RateLimitWindow;
 use AIHazirSite\WordPress\Catalog\CatalogModule;
 use AIHazirSite\WordPress\Compliance\ComplianceModule;
 use AIHazirSite\WordPress\Llms\LlmsModule;
@@ -70,6 +71,7 @@ final class RestCachingTest extends RestTestCase {
 		remove_all_filters( 'aihs_rest_rate_limit' );
 		add_filter( 'aihs_rest_rate_limit', static fn(): int => 3 );
 		$_SERVER['REMOTE_ADDR'] = '198.51.100.77';
+		RateLimitWindow::away_from_edge();
 
 		for ( $i = 0; $i < 3; $i++ ) {
 			$this->assertSame( 200, self::get( '/profile' )->get_status() );

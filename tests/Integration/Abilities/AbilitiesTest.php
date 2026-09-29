@@ -12,6 +12,7 @@ namespace AIHazirSite\Tests\Integration\Abilities;
 use AIHazirSite\Adapters\Abilities\AbilitySchemas;
 use AIHazirSite\Core\Features;
 use AIHazirSite\Tests\Integration\Rest\RestTestCase;
+use AIHazirSite\Tests\Support\RateLimitWindow;
 use AIHazirSite\WordPress\Abilities\AbilitiesModule;
 use WP_Error;
 
@@ -168,6 +169,7 @@ final class AbilitiesTest extends RestTestCase {
 		remove_all_filters( 'aihs_abilities_rate_limit' );
 		add_filter( 'aihs_abilities_rate_limit', static fn(): int => 2 );
 		$_SERVER['REMOTE_ADDR'] = '192.0.2.44';
+		RateLimitWindow::away_from_edge();
 
 		self::execute( 'aihs/get-profile' );
 		self::execute( 'aihs/get-profile' );

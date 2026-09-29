@@ -3,6 +3,14 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [Yayımlanmamış]
+
+### Test güncellemesi (onay bekliyor)
+- `AbilitiesTest::test_rate_limit` ve `RestCachingTest::test_rate_limit` ara sıra kırılıyordu: hız sınırlayıcı dakikalık
+  pencere kullanıyor, istekler dakika dönümüne denk gelirse iki pencereye düşüp hepsi izinli sayılıyordu (0.10.0 /
+  0.11.0'dan beri). Testler artık dakikanın son 5 saniyesindeyse bir sonraki dakikayı bekleyip başlar
+  (`tests/Support/RateLimitWindow`). Doğrulamalar aynı; eklenti kodu değişmedi.
+
 ## [1.10.0] - 2026-09-29
 
 ### Eklendi
