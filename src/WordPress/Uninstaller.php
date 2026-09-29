@@ -19,6 +19,9 @@ use AIHazirSite\Core\Features;
 use AIHazirSite\Core\Migrations\Migrator;
 use AIHazirSite\WordPress\Catalog\CatalogModule;
 use AIHazirSite\WordPress\Discovery\DiscoveryModule;
+use AIHazirSite\WordPress\IndexNow\IndexNowModule;
+use AIHazirSite\WordPress\Inquiry\InquiryModule;
+use AIHazirSite\WordPress\Measurement\MeasurementModule;
 use AIHazirSite\WordPress\Integrations\LiteSpeedBypass;
 use AIHazirSite\WordPress\Integrations\LiteSpeedServerBypass;
 use AIHazirSite\Core\IndexNow\IndexNowService;
@@ -113,7 +116,28 @@ final class Uninstaller {
 		}
 		self::delete_transients();
 
+		// Last: removing the data above can fire hooks that schedule work (1.14.0: deleting listings made
+		// IndexNow schedule a submission after deactivation had cleared it).
+		foreach ( self::cron_hooks() as $hook ) {
+			wp_unschedule_hook( $hook );
+		}
+
 		return true;
+	}
+
+	/**
+	 * Scheduled events owned by the plugin.
+	 *
+	 * @return list<string>
+	 */
+	public static function cron_hooks(): array {
+		return array(
+			MeasurementModule::REFRESH_HOOK,
+			MeasurementModule::PRUNE_HOOK,
+			InquiryModule::PURGE_HOOK,
+			UpdateModule::TELEMETRY_HOOK,
+			IndexNowModule::HOOK,
+		);
 	}
 
 	/**
