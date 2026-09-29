@@ -18,7 +18,9 @@ temizleyin. 1.6.1'den beri `/ai-katalog/` ve `/llms.txt` önbelleğe alınmaz; e
 ## Özellik anahtarları
 
 Tüm özellikler **Ayarlar → AI Hazır Site** ekranından açılıp kapatılır (1.9.0; Eklentiler listesinde eklentinin
-satırındaki **Ayarlar** bağlantısı da oraya gider). Bir özelliğin önkoşulu kapalıysa ya da açık başka bir özellik ona
+satırındaki **Ayarlar** bağlantısı da oraya gider). Ekranın başındaki **Önerilen kurulum** (1.11.0) site türünüze
+uygun özellikleri tek seferde açar: ürün satıcısı/üretici/dağıtıcı, ihracatçı, tur operatörü, portal ya da yalnızca
+okuma hizmeti. Önce açılacakları gösterir, hiçbir şeyi kapatmaz; teklif kutusunu ayrıca kendi ekranından açarsınız. Bir özelliğin önkoşulu kapalıysa ya da açık başka bir özellik ona
 bağlıysa satırında yazar; hiçbir özellik kendiliğinden açılıp kapanmaz.
 
 | Anahtar | Ne açar | Önkoşul | Not |

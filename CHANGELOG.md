@@ -3,10 +3,24 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
-## [Yayımlanmamış]
+## [1.11.0] - 2026-09-29 (onay bekliyor, gece yapıldı)
 
-### Eklendi (geliştirme araçları, eklenti paketine girmez)
-- **A2A iki site demosu** (`tools/a2a-demo`, onay bekliyor): dagitici.test ve fabrika.test, Docker Compose + Caddy
+### Eklendi
+- **Önerilen kurulum** (Ayarlar → AI Hazır Site): site türü seçilir, açılacaklar önizlenir, tek tıkla uygulanır. PRD
+  pilot ağ tablosundan beş profil: ürün satıcısı/üretici/dağıtıcı, ihracatçı (+ çoklu dil), tur operatörü, portal
+  (+ portal modu), hizmet – yalnızca okuma (A2A yok). Yalnızca açar, hiçbir şeyi kapatmaz; önkoşul sırasına göre ve her
+  özelliğin kendi işlemiyle (entegrasyonlar, IndexNow anahtarı). Teklif kutusu ve eşleştirme hiçbir profilde otomatik
+  açılmaz. Profiller çekirdekte (`Core/Setup/SetupProfiles`). Plan: `docs/planlar/1.11.0-onerilen-kurulum.md`.
+  Testler: `SetupProfilesTest`, `SetupPresetTest`.
+
+### Eklendi (geliştirme ve yaygınlaştırma araçları, eklenti paketine girmez)
+- **`bin/tara`**: eklenti kurulmadan, yalnızca adresle AI uyum taraması (eklentinin kendi tarayıcısı ve puanlama
+  sürümü; WordPress gerekmez, PHP curl ile) ve kurulum ön kontrolü (WordPress/PHP, REST, önbellek/SEO/çoklu dil
+  eklentileri, başka MCP sunucusu, AI Hazır Site sürümü, sunucu bot koruması). `--md=klasor` ile rapor, `--json`.
+  PRD: "tarama eklenti kurulmadan, sadece site adresiyle de çalışabilecek".
+- **`docs/yayginlastirma/`**: Faz 3 süreci, site kontrol listesi, haftalık 10 soru testi, önce/sonra raporu yöntemi,
+  pilot siteler ve `bin/tara` ile alınmış ilk tarama raporları.
+- **A2A iki site demosu** (`tools/a2a-demo`): dagitici.test ve fabrika.test, Docker Compose + Caddy
   (`tls internal`) ile gerçek HTTPS. Eşleşme → önizleme → insan onayı işleyicisi → fabrikanın teklif kutusu; iki
   sitenin denetim kayıtları. Eklenti kodu değişmedi. Yerelde iki kez baştan sona çalıştırıldı; çıktı
   `docs/demo/a2a-yerel-2026-09-29.md`.

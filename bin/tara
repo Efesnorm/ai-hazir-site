@@ -1,0 +1,203 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Eklenti kurulmadan, yalnızca adresle AI uyum taraması ve kurulum ön kontrolü (PRD: "tarama ileride eklenti
+ * kurulmadan, sadece site adresi girilerek de çalışabilecek"). Eklentinin kendi tarayıcısını (src/Core/Compliance)
+ * aynı puanlama sürümüyle çalıştırır; WordPress gerekmez.
+ *
+ * Kullanım:
+ *   php bin/tara https://www.ornek.com [https://ikinci.com ...] [--json] [--md=klasor]
+ *
+ * --json      Sonuçları JSON olarak yazar.
+ * --md=klasor Her site için klasor/<alan-adi>-<tarih>.md raporu yazar (ör. docs/yayginlastirma/raporlar).
+ *
+ * @package AIHazirSite
+ */
+
+// phpcs:ignoreFile -- Komut satırı aracı; eklenti paketine girmez (bin/ export-ignore).
+
+declare(strict_types=1);
+
+use AIHazirSite\Core\Compliance\Scanner;
+use AIHazirSite\Core\Compliance\ScoreReport;
+use AIHazirSite\Core\Compliance\Site;
+use AIHazirSite\Tools\Tara\CurlPageFetcher;
+use AIHazirSite\Tools\Tara\SystemClock;
+
+$root = dirname( __DIR__ );
+require $root . '/vendor/autoload.php';
+require $root . '/tools/tara/CurlPageFetcher.php';
+require $root . '/tools/tara/SystemClock.php';
+
+if ( ! extension_loaded( 'curl' ) ) {
+	fwrite( STDERR, "PHP curl eklentisi gerekli.\n" );
+	exit( 2 );
+}
+
+$urls = array();
+$json = false;
+$md   = '';
+foreach ( array_slice( $argv, 1 ) as $arg ) {
+	if ( '--json' === $arg ) {
+		$json = true;
+	} elseif ( str_starts_with( $arg, '--md=' ) ) {
+		$md = rtrim( substr( $arg, 5 ), '/\\' );
+	} elseif ( '' !== $arg && ! str_starts_with( $arg, '--' ) ) {
+		$urls[] = $arg;
+	}
+}
+if ( array() === $urls ) {
+	fwrite( STDERR, "Kullanım: php bin/tara https://www.ornek.com [...] [--json] [--md=klasor]\n" );
+	exit( 2 );
+}
+
+const AIHS_TARA_LABELS = array(
+	'structured_data'   => 'Yapılandırılmış veri',
+	'readability'       => 'İçerik okunabilirliği',
+	'machine_interface' => 'Makine arayüzü (REST / MCP)',
+	'bot_access'        => 'AI bot erişimi',
+	'llms_txt'          => 'llms.txt',
+	'freshness'         => 'Tazelik',
+	'advanced'          => 'İleri standartlar (A2A kartviziti)',
+);
+
+/**
+ * Kurulum ön kontrolü: platform, sürüm, önbellek / SEO / çoklu dil eklentileri, AI Hazır Site durumu.
+ *
+ * @param string          $base    Site kökü.
+ * @param CurlPageFetcher $fetcher Getirici.
+ * @return array<string, mixed>
+ */
+function aihs_tara_on_kontrol( string $base, CurlPageFetcher $fetcher ): array {
+	$home  = $fetcher->fetch( $base, array(), 15 );
+	$api   = $fetcher->fetch( $base . 'wp-json/', array(), 15 );
+	$card  = $fetcher->fetch( $base . '.well-known/agent-card.json', array(), 15 );
+	$html  = $home->body;
+	$index = json_decode( $api->body, true );
+	$ns    = is_array( $index['namespaces'] ?? null ) ? $index['namespaces'] : array();
+	preg_match( '/<meta name="generator" content="WordPress ([0-9.]+)"/i', $html, $gen );
+	preg_match_all( '#wp-content/plugins/([a-z0-9_-]+)/#i', $html, $paths );
+	$plugins = array_unique( array_map( 'strtolower', $paths[1] ) );
+	$has     = static fn( string $plugin, string $namespace = '' ): bool => in_array( $plugin, $plugins, true ) || ( '' !== $namespace && in_array( $namespace, $ns, true ) );
+
+	$known = array(
+		'Önbellek'  => array(
+			'WP Rocket'       => $has( 'wp-rocket', 'wp-rocket/v1' ) || str_contains( $html, 'Performance optimized by WP Rocket' ),
+			'LiteSpeed Cache'                        => $has( 'litespeed-cache', 'litespeed/v1' ),
+			'LiteSpeed sunucusu (eklenti belirsiz)' => ! $has( 'litespeed-cache', 'litespeed/v1' ) && '' !== $home->header( 'x-litespeed-cache' ),
+			'W3 Total Cache'  => $has( 'w3-total-cache' ) || str_contains( $html, 'W3 Total Cache' ),
+			'WP Super Cache'  => $has( 'wp-super-cache' ) || str_contains( $html, 'WP-Super-Cache' ),
+		),
+		'SEO'       => array(
+			'Rank Math' => $has( 'seo-by-rank-math', 'rankmath/v1' ),
+			'Yoast SEO' => $has( 'wordpress-seo', 'yoast/v1' ),
+		),
+		'Çoklu dil' => array(
+			'TranslatePress' => $has( 'translatepress-multilingual' ),
+			'GTranslate'     => $has( 'gtranslate' ),
+			'Polylang'       => $has( 'polylang' ) || $has( 'polylang-pro' ),
+			'WPML'           => $has( 'sitepress-multilingual-cms', 'wpml/v1' ),
+		),
+	);
+	$found = array();
+	foreach ( $known as $group => $items ) {
+		$found[ $group ] = array_keys( array_filter( $items ) );
+	}
+
+	$aihs_version = '';
+	$card_data    = json_decode( $card->body, true );
+	if ( $card->ok() && is_array( $card_data ) && str_contains( (string) ( $card_data['name'] ?? '' ), 'AI Katalog' ) ) {
+		$aihs_version = (string) ( $card_data['version'] ?? '' );
+	}
+
+	return array(
+		'erisim'        => $home->reached() ? $home->status : 'erişilemedi: ' . $home->error,
+		'wordpress'     => '' !== ( $gen[1] ?? '' ) ? $gen[1] : ( str_contains( $html, 'wp-content' ) || array() !== $ns ? 'var (sürüm gizli)' : 'hayır' ),
+		'php'           => $home->header( 'x-powered-by' ),
+		'sunucu'        => $home->header( 'server' ),
+		'rest_api'      => $api->ok() ? 'açık' : ( $api->reached() ? 'HTTP ' . $api->status : 'erişilemedi' ),
+		'eklentiler'    => $found,
+		'mcp_ad_alani'  => in_array( 'mcp', $ns, true ),
+		'ai_hazir_site' => in_array( 'aihs/v1', $ns, true ) || '' !== $aihs_version ? ( '' === $aihs_version ? 'kurulu' : 'kurulu, ' . $aihs_version ) : 'yok',
+		'bot_korumasi'  => str_contains( $html, 'imunify' ) || '' !== $home->header( 'x-imunify' ) ? 'Imunify360 izi' : '',
+	);
+}
+
+$results = array();
+foreach ( $urls as $url ) {
+	$url  = preg_match( '#^https?://#i', $url ) ? $url : 'https://' . $url;
+	$host = (string) parse_url( $url, PHP_URL_HOST );
+	$base = strtolower( (string) parse_url( $url, PHP_URL_SCHEME ) ) . '://' . $host . '/';
+
+	$fetcher = new CurlPageFetcher();
+	$report  = ( new Scanner( Scanner::default_checks(), new SystemClock() ) )->scan( new Site( $base, $fetcher ) );
+	$results[] = array(
+		'site'       => $host,
+		'adres'      => $base,
+		'puan'       => $report->score(),
+		'olculen'    => $report->measured_weight(),
+		'toplam'     => $report->total_weight(),
+		'surum'      => $report->score_version,
+		'tarih'      => $report->scanned_at,
+		'kontroller' => array_map(
+			static fn( array $row ): array => array(
+				'id'         => $row['id'],
+				'ad'         => AIHS_TARA_LABELS[ $row['id'] ] ?? $row['id'],
+				'puan'       => null === $row['ratio'] ? null : $row['points'],
+				'agirlik'    => $row['weight'],
+				'bulgular'   => $row['findings'],
+				'duzeltme'   => $row['fix'],
+			),
+			$report->results
+		),
+		'on_kontrol' => aihs_tara_on_kontrol( $base, $fetcher ),
+	);
+}
+
+if ( $json ) {
+	echo json_encode( $results, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ), "\n";
+}
+
+foreach ( $results as $r ) {
+	$lines   = array();
+	$lines[] = '# AI uyum taraması: ' . $r['site'];
+	$lines[] = '';
+	$lines[] = sprintf( '- Tarih: %s · Puanlama sürümü: %d · Ölçülen ağırlık: %d/%d', $r['tarih'], $r['surum'], $r['olculen'], $r['toplam'] );
+	$lines[] = '- **AI uyum puanı: ' . ( null === $r['puan'] ? 'ölçülemedi' : $r['puan'] . '/100' ) . '**' . ( $r['olculen'] < $r['toplam'] ? ' (yalnızca ölçülebilen kontrollerin üzerinden)' : '' );
+	$lines[] = '';
+	$lines[] = '| Kontrol | Puan | Bulgular |';
+	$lines[] = '| --- | --- | --- |';
+	foreach ( $r['kontroller'] as $k ) {
+		$lines[] = sprintf( '| %s | %s | %s |', $k['ad'], null === $k['puan'] ? 'ölçülemedi' : $k['puan'] . '/' . $k['agirlik'], str_replace( '|', '/', implode( ' ', array_slice( $k['bulgular'], 0, 2 ) ) ) );
+	}
+	$o        = $r['on_kontrol'];
+	$eklenti  = static fn( array $list ): string => array() === $list ? '–' : implode( ', ', $list );
+	$lines[]  = '';
+	$lines[]  = '## Kurulum ön kontrolü';
+	$lines[]  = '';
+	$lines[]  = '| Konu | Durum |';
+	$lines[]  = '| --- | --- |';
+	$lines[]  = '| Ana sayfa | ' . $o['erisim'] . ' |';
+	$lines[]  = '| WordPress | ' . $o['wordpress'] . ' |';
+	$lines[]  = '| PHP / sunucu | ' . ( '' === $o['php'] ? '–' : $o['php'] ) . ' / ' . ( '' === $o['sunucu'] ? '–' : $o['sunucu'] ) . ' |';
+	$lines[]  = '| REST API | ' . $o['rest_api'] . ' |';
+	$lines[]  = '| Önbellek eklentisi | ' . $eklenti( $o['eklentiler']['Önbellek'] ) . ' |';
+	$lines[]  = '| SEO eklentisi | ' . $eklenti( $o['eklentiler']['SEO'] ) . ' |';
+	$lines[]  = '| Çoklu dil eklentisi | ' . $eklenti( $o['eklentiler']['Çoklu dil'] ) . ' |';
+	$lines[]  = '| Başka MCP sunucusu | ' . ( $o['mcp_ad_alani'] ? 'var (/wp-json/mcp)' : '–' ) . ' |';
+	$lines[]  = '| AI Hazır Site | ' . $o['ai_hazir_site'] . ' |';
+	$lines[]  = '| Sunucu bot koruması | ' . ( '' === $o['bot_korumasi'] ? '–' : $o['bot_korumasi'] ) . ' |';
+	$text     = implode( "\n", $lines ) . "\n";
+
+	if ( ! $json ) {
+		echo $text, "\n";
+	}
+	if ( '' !== $md ) {
+		if ( ! is_dir( $md ) ) {
+			mkdir( $md, 0775, true );
+		}
+		$file = $md . '/' . preg_replace( '/[^a-z0-9.-]/', '-', strtolower( $r['site'] ) ) . '-' . substr( $r['tarih'], 0, 10 ) . '.md';
+		file_put_contents( $file, $text );
+		fwrite( STDERR, "Yazıldı: {$file}\n" );
+	}
+}

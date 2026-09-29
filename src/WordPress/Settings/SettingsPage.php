@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace AIHazirSite\WordPress\Settings;
 
 use AIHazirSite\Core\Features;
+use AIHazirSite\Core\Setup\SetupProfiles;
 use AIHazirSite\WordPress\IndexNow\IndexNowModule;
 use AIHazirSite\WordPress\Inquiry\Admin\InquiryAdmin;
 use AIHazirSite\WordPress\Integrations\IntegrationsModule;
@@ -29,6 +30,7 @@ final class SettingsPage {
 	public const CAPABILITY  = 'manage_options';
 	public const TOGGLE      = 'aihs_settings_toggle';
 	public const DELETE_DATA = 'aihs_settings_delete_data';
+	public const PRESET      = 'aihs_settings_preset';
 
 	/**
 	 * Registers admin hooks.
@@ -36,6 +38,7 @@ final class SettingsPage {
 	public function register(): void {
 		add_action( 'admin_menu', array( $this, 'add_page' ) );
 		add_action( 'admin_post_' . self::TOGGLE, array( $this, 'on_toggle' ) );
+		add_action( 'admin_post_' . self::PRESET, array( $this, 'on_preset' ) );
 		add_action( 'admin_post_' . self::DELETE_DATA, array( $this, 'on_delete_data' ) );
 	}
 
@@ -115,16 +118,20 @@ final class SettingsPage {
 		}
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display-only message key.
 		$message = isset( $_GET['message'] ) && is_string( $_GET['message'] ) ? sanitize_key( wp_unslash( $_GET['message'] ) ) : '';
-		echo '<div class="wrap">' . self::render_html( $message ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in render_html().
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only preview; applying needs the nonce.
+		$profile = isset( $_GET['profil'] ) && is_string( $_GET['profil'] ) ? sanitize_key( wp_unslash( $_GET['profil'] ) ) : '';
+		echo '<div class="wrap">' . self::render_html( $message, $profile ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in render_html().
 	}
 
 	/**
 	 * Page HTML (everything escaped here).
 	 *
 	 * @param string $message Result message key.
+	 * @param string $profile Previewed setup profile ('' = none).
 	 */
-	public static function render_html( string $message = '' ): string {
+	public static function render_html( string $message = '', string $profile = '' ): string {
 		$notices = array(
+			'preset'  => array( 'success', __( 'Önerilen kurulum uygulandı. Aşağıda her özelliğin durumu görünür.', 'ai-hazir-site' ) ),
 			'on'      => array( 'success', __( 'Özellik açıldı.', 'ai-hazir-site' ) ),
 			'off'     => array( 'success', __( 'Özellik kapatıldı.', 'ai-hazir-site' ) ),
 			'blocked' => array( 'error', __( 'İşlem yapılmadı: önce satırda yazan özellikleri açın ya da kapatın.', 'ai-hazir-site' ) ),
@@ -134,7 +141,8 @@ final class SettingsPage {
 		if ( isset( $notices[ $message ] ) ) {
 			$html .= '<div class="notice notice-' . esc_attr( $notices[ $message ][0] ) . '"><p>' . esc_html( $notices[ $message ][1] ) . '</p></div>';
 		}
-		$html .= '<p class="description">' . esc_html__( 'Her özellik ayrı açılır ve kapanır; varsayılan olarak yalnızca AI ölçümü açıktır. Bir özelliğin önkoşulu kapalıysa ya da açık başka bir özellik ona bağlıysa satırında yazar.', 'ai-hazir-site' ) . '</p>';
+		$html .= '<p class="description">' . esc_html__( 'Her özellik ayrı açılır ve kapanır; varsayılan olarak yalnızca AI ölçümü açıktır. Bir özelliğin önkoşulu kapalıysa ya da açık başka bir özellik ona bağlıysa satırında yazar.', 'ai-hazir-site' ) . '</p>'
+			. self::preset_section( $profile );
 
 		$features = self::features();
 		foreach ( self::groups() as $group => $keys ) {
@@ -269,6 +277,17 @@ final class SettingsPage {
 			return self::url( array( 'message' => 'blocked' ) ) . '#aihs-feature-' . $key;
 		}
 
+		self::set_feature( $key, $on );
+		return self::url( array( 'message' => $on ? 'on' : 'off' ) ) . '#aihs-feature-' . $key;
+	}
+
+	/**
+	 * Turns a feature on or off with its own work (integrations, IndexNow key).
+	 *
+	 * @param string $key Feature key.
+	 * @param bool   $on  New state.
+	 */
+	private static function set_feature( string $key, bool $on ): void {
 		if ( Features::BOT_CACHE_BYPASS === $key ) {
 			IntegrationsModule::set_bypass( $on );
 		} elseif ( Features::CATALOG_SITEMAP === $key ) {
@@ -278,7 +297,87 @@ final class SettingsPage {
 		} else {
 			Features::set( $key, $on );
 		}
-		return self::url( array( 'message' => $on ? 'on' : 'off' ) ) . '#aihs-feature-' . $key;
+	}
+
+	/**
+	 * Profile names (1.11.0).
+	 *
+	 * @return array<string, string>
+	 */
+	public static function profiles(): array {
+		return array(
+			SetupProfiles::PRODUCT => __( 'Ürün satıcısı, üretici ya da dağıtıcı', 'ai-hazir-site' ),
+			SetupProfiles::EXPORT  => __( 'İhracatçı (çoklu dil ile)', 'ai-hazir-site' ),
+			SetupProfiles::TOUR    => __( 'Tur operatörü', 'ai-hazir-site' ),
+			SetupProfiles::PORTAL  => __( 'Portal (birçok işletme)', 'ai-hazir-site' ),
+			SetupProfiles::SERVICE => __( 'Hizmet, yalnızca okuma (ör. hukuk bürosu: A2A ve teklif kutusu yok)', 'ai-hazir-site' ),
+		);
+	}
+
+	/**
+	 * "Önerilen kurulum": choose a site type, preview what would be turned on, apply.
+	 *
+	 * @param string $profile Previewed profile ('' = none yet).
+	 */
+	private static function preset_section( string $profile ): string {
+		$names   = self::names();
+		$options = '<option value="">' . esc_html__( '— Site türü seçin —', 'ai-hazir-site' ) . '</option>';
+		foreach ( self::profiles() as $id => $label ) {
+			$options .= '<option value="' . esc_attr( $id ) . '"' . selected( $profile, $id, false ) . '>' . esc_html( $label ) . '</option>';
+		}
+		$html = '<h2>' . esc_html__( 'Önerilen kurulum', 'ai-hazir-site' ) . '</h2>'
+			. '<p class="description">' . esc_html__( 'Site türünüze uygun özellikleri tek seferde açar. Hiçbir özelliği kapatmaz. Önce neyin açılacağını gösterir.', 'ai-hazir-site' ) . '</p>'
+			. '<form method="get" action="' . esc_url( admin_url( 'options-general.php' ) ) . '"><input type="hidden" name="page" value="' . esc_attr( self::SLUG ) . '">'
+			. '<select name="profil">' . $options . '</select> '
+			. get_submit_button( __( 'Önizle', 'ai-hazir-site' ), 'secondary', 'submit', false ) . '</form>';
+
+		if ( ! isset( self::profiles()[ $profile ] ) ) {
+			return $html;
+		}
+		$plan    = SetupProfiles::plan( $profile );
+		$already = array_values( array_diff( SetupProfiles::all()[ $profile ], $plan ) );
+		$list    = static fn( array $keys ): string => array() === $keys ? '–' : implode( ', ', array_map( static fn( string $k ): string => $names[ $k ], $keys ) );
+		$html   .= '<div id="aihs-preset-preview" class="notice notice-info inline"><p><strong>' . esc_html( self::profiles()[ $profile ] ) . '</strong></p>'
+			. '<p>' . esc_html__( 'Açılacaklar:', 'ai-hazir-site' ) . ' ' . esc_html( $list( $plan ) ) . '</p>'
+			. '<p>' . esc_html__( 'Zaten açık:', 'ai-hazir-site' ) . ' ' . esc_html( $list( $already ) ) . '</p>'
+			. '<p>' . esc_html__( 'Ayrıca elle: teklif kutusu (KVKK uyarısıyla kendi ekranından), aranan ilanınız varsa eşleştirme, firma profilinde sektör şablonu.', 'ai-hazir-site' ) . '</p>';
+		if ( array() !== $plan ) {
+			$html .= '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">'
+				. '<input type="hidden" name="action" value="' . esc_attr( self::PRESET ) . '">'
+				. '<input type="hidden" name="profil" value="' . esc_attr( $profile ) . '">'
+				. wp_nonce_field( self::PRESET, '_wpnonce', true, false )
+				. get_submit_button( __( 'Uygula', 'ai-hazir-site' ), 'primary', 'submit', false ) . '</form>';
+		}
+		return $html . '</div>';
+	}
+
+	/**
+	 * `admin_post_aihs_settings_preset`.
+	 */
+	public function on_preset(): void {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Verified in handle_preset().
+		wp_safe_redirect( self::handle_preset( wp_unslash( $_POST ) ) );
+		exit;
+	}
+
+	/**
+	 * Turns on a profile's features in requirement order (never turns anything off); returns where to redirect.
+	 *
+	 * @param array<mixed> $post Unslashed $_POST.
+	 */
+	public static function handle_preset( array $post ): string {
+		self::authorize( self::PRESET );
+		$profile = isset( $post['profil'] ) && is_string( $post['profil'] ) ? sanitize_key( $post['profil'] ) : '';
+		if ( ! isset( self::profiles()[ $profile ] ) ) {
+			wp_die( esc_html__( 'Bilinmeyen site türü.', 'ai-hazir-site' ), 400 );
+		}
+		foreach ( SetupProfiles::plan( $profile ) as $key ) {
+			$missing = Features::missing_requirements( $key );
+			if ( array() === $missing['all'] && array() === $missing['any'] ) {
+				self::set_feature( $key, true );
+			}
+		}
+		return self::url( array( 'message' => 'preset' ) );
 	}
 
 	/**
