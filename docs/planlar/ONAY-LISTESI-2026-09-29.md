@@ -33,8 +33,8 @@ Kutusu'nda "yeni" → iki sitenin denetim kaydı. Eklenti kodu değişmedi; demo
 yalnızca `.test` adları için WordPress'in özel ağ engelini ve yerel sertifika doğrulamasını kapatır. Çıktı:
 `docs/demo/a2a-yerel-2026-09-29.md`.
 - [ ] Onay: birleştirilsin mi?
-- [ ] Karar: **canlı** demo hangi iki siteyle? Öneri: makedonya.tr (satıcı, turlar) ↔ kuzeymakedonya.com.tr
-  (alıcı: "Ohri turu, 4 kişi" aranan ilanı). İkisi de sizde; kurulum ve veri girişi sizde, adımlar `docs/kullanim/a2a.md`.
+- [ ] Karar: **canlı** demo çifti. Öneri (PRD Faz 4 ile birebir): intekarglobal.com (kablo fabrikası, satılan ilan) ↔
+  voltkab.com (kablo dağıtıcı, aranan ilan + eşleştirme + A2A). Kurulum ve veri girişi sizde, adımlar `docs/kullanim/a2a.md`.
 
 ## 4. Faz 3 altyapısı (1.11.0)
 - **Önerilen kurulum** (eklenti özelliği): Ayarlar ekranında site türü → önizleme → Uygula. Beş profil (PRD pilot
@@ -47,8 +47,9 @@ yalnızca `.test` adları için WordPress'in özel ağ engelini ve yerel sertifi
 - [ ] Onay: önerilen kurulum özelliği ve profillerin içeriği (özellikle önbellek entegrasyonu ve IndexNow'un
   profillerde olması; ikisi de önizlemede açıkça yazar).
 - [ ] Karar: kuzeymakedonya.com.tr ve kosova.org.tr tur operatörü mü, portal mı?
-- [ ] Karar: erenlegal.com (Next.js) – kapsam dışı mı, yoksa statik llms.txt + JSON-LD önerisi mi?
-- [ ] Bilgi: PRD 10 site hedefi için listede 5 WordPress sitesi var; kablo dağıtıcı/fabrika ve portallar eklenmeli.
+- [x] Düzeltildi (kullanıcı): hukuk firması erenlegal.com.tr (WordPress, kurulabilir); kablo dağıtıcı voltkab.com;
+  kablo fabrikası intekarglobal.com. `docs/yayginlastirma/siteler.md` güncellendi, iki yeni site tarandı.
+- [ ] Bilgi: PRD 10 site hedefi için listede 7 site var; diğer gezi portallarının adresleri eklenecek.
 
 ## 5. TranslatePress (1.12.0)
 Diller TranslatePress'ten okunur (resmi `trp_custom_language_switcher()`, ayarlardaki varsayılan dil, `$TRP_LANGUAGE`).
