@@ -3,7 +3,7 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
-## [1.12.1] - 2026-09-29 (onay bekliyor)
+## [1.12.1] - 2026-09-29
 
 ### Düzeltildi
 - Eklenti devre dışı bırakılınca `/ai-katalog/`, `/ai-hazir-dogrulama/` ve işletme sayfası adres kuralları WordPress'in
