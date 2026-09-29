@@ -138,6 +138,11 @@ final class Features {
 	public const INDEXNOW = 'indexnow';
 
 	/**
+	 * A LiteSpeed server's own page cache does not serve AI bots (.htaccess rule, no-store headers) (1.14.0).
+	 */
+	public const LITESPEED_SERVER_BYPASS = 'litespeed_server_bypass';
+
+	/**
 	 * Sector templates (0.8.0).
 	 */
 	public const TEMPLATES = 'templates';
@@ -202,29 +207,30 @@ final class Features {
 	 */
 	public static function defaults(): array {
 		return array(
-			self::MEASUREMENT       => true,
-			self::COMPLIANCE_SCAN   => false,
-			self::CATALOG           => false,
-			self::BOT_ACCESS        => false,
-			self::SCHEMA_OUTPUT     => false,
-			self::LLMS_TXT          => false,
-			self::TEMPLATES         => false,
-			self::COMPLIANCE_WIZARD => false,
-			self::REST_API          => false,
-			self::ABILITIES         => false,
-			self::MCP               => false,
-			self::INQUIRIES         => false,
-			self::COMPLIANCE_REPORT => false,
-			self::MULTILINGUAL      => false,
-			self::PORTAL_MODE       => false,
-			self::REMOTE_UPDATES    => false,
-			self::TELEMETRY         => false,
-			self::MATCHING          => false,
-			self::A2A               => false,
-			self::DISCOVERY         => false,
-			self::BOT_CACHE_BYPASS  => false,
-			self::CATALOG_SITEMAP   => false,
-			self::INDEXNOW          => false,
+			self::MEASUREMENT             => true,
+			self::COMPLIANCE_SCAN         => false,
+			self::CATALOG                 => false,
+			self::BOT_ACCESS              => false,
+			self::SCHEMA_OUTPUT           => false,
+			self::LLMS_TXT                => false,
+			self::TEMPLATES               => false,
+			self::COMPLIANCE_WIZARD       => false,
+			self::REST_API                => false,
+			self::ABILITIES               => false,
+			self::MCP                     => false,
+			self::INQUIRIES               => false,
+			self::COMPLIANCE_REPORT       => false,
+			self::MULTILINGUAL            => false,
+			self::PORTAL_MODE             => false,
+			self::REMOTE_UPDATES          => false,
+			self::TELEMETRY               => false,
+			self::MATCHING                => false,
+			self::A2A                     => false,
+			self::DISCOVERY               => false,
+			self::BOT_CACHE_BYPASS        => false,
+			self::CATALOG_SITEMAP         => false,
+			self::INDEXNOW                => false,
+			self::LITESPEED_SERVER_BYPASS => false,
 		);
 	}
 

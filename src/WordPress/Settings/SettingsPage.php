@@ -69,7 +69,7 @@ final class SettingsPage {
 			__( 'AI Katalog', 'ai-hazir-site' )        => array( Features::CATALOG, Features::TEMPLATES, Features::SCHEMA_OUTPUT, Features::LLMS_TXT, Features::MULTILINGUAL ),
 			__( 'AI kanalları', 'ai-hazir-site' )      => array( Features::REST_API, Features::ABILITIES, Features::MCP, Features::A2A, Features::DISCOVERY ),
 			__( 'Etkileşim', 'ai-hazir-site' )         => array( Features::INQUIRIES, Features::MATCHING, Features::PORTAL_MODE ),
-			__( 'Entegrasyonlar', 'ai-hazir-site' )    => array( Features::BOT_CACHE_BYPASS, Features::CATALOG_SITEMAP, Features::INDEXNOW ),
+			__( 'Entegrasyonlar', 'ai-hazir-site' )    => array( Features::BOT_CACHE_BYPASS, Features::LITESPEED_SERVER_BYPASS, Features::CATALOG_SITEMAP, Features::INDEXNOW ),
 			__( 'Merkezi hizmetler', 'ai-hazir-site' ) => array( Features::REMOTE_UPDATES, Features::TELEMETRY ),
 		);
 	}
@@ -83,29 +83,30 @@ final class SettingsPage {
 		$tools = static fn( string $slug ): string => admin_url( 'tools.php?page=' . $slug );
 		$admin = static fn( string $slug ): string => admin_url( 'admin.php?page=' . $slug );
 		return array(
-			Features::MEASUREMENT       => array( __( 'AI ölçümü', 'ai-hazir-site' ), __( 'AI botlarının ve AI platformlarından gelen ziyaretlerin sayımı (kişisel veri saklanmaz).', 'ai-hazir-site' ), $tools( 'aihs-measurement' ) ),
-			Features::COMPLIANCE_SCAN   => array( __( 'AI uyum taraması', 'ai-hazir-site' ), __( 'Sitenin AI uyum puanını ölçer.', 'ai-hazir-site' ), $tools( 'aihs-compliance' ) ),
-			Features::COMPLIANCE_WIZARD => array( __( 'AI uyum sihirbazı', 'ai-hazir-site' ), __( 'Eksikleri adım adım, geri alınabilir biçimde tamamlar.', 'ai-hazir-site' ), $tools( 'aihs-wizard' ) ),
-			Features::COMPLIANCE_REPORT => array( __( 'Uyum raporu ve rozet', 'ai-hazir-site' ), __( 'Önce/sonra raporu, AI Hazır rozeti ve doğrulama sayfası.', 'ai-hazir-site' ), $tools( 'aihs-report' ) ),
-			Features::BOT_ACCESS        => array( __( 'AI bot erişimi', 'ai-hazir-site' ), __( 'robots.txt\'de AI botlarına izin ya da engel.', 'ai-hazir-site' ), $tools( 'aihs-bot-access' ) ),
-			Features::CATALOG           => array( __( 'AI Katalog', 'ai-hazir-site' ), __( 'Firma profili ve ilanlar: ne satıyorum, ne arıyorum, ne tedarik edebilirim.', 'ai-hazir-site' ), $admin( 'aihs-catalog' ) ),
-			Features::TEMPLATES         => array( __( 'Sektör şablonları', 'ai-hazir-site' ), __( 'Ürün, hizmet, tur gibi sektöre özel ilan alanları.', 'ai-hazir-site' ), '' ),
-			Features::SCHEMA_OUTPUT     => array( __( 'Schema.org yapılandırılmış veri', 'ai-hazir-site' ), __( 'Firma ve ilanlar makine okunur (JSON-LD); /ai-katalog/ sayfası.', 'ai-hazir-site' ), '' ),
-			Features::LLMS_TXT          => array( __( 'llms.txt', 'ai-hazir-site' ), __( 'AI\'ların okuduğu /llms.txt özeti ve /ai-katalog/ sayfası.', 'ai-hazir-site' ), home_url( '/llms.txt' ) ),
-			Features::MULTILINGUAL      => array( __( 'Çoklu dil', 'ai-hazir-site' ), __( 'Çeviriler ve dile göre çıktılar (Polylang, WPML).', 'ai-hazir-site' ), $admin( 'aihs-catalog-translations' ) ),
-			Features::REST_API          => array( __( 'REST API', 'ai-hazir-site' ), __( 'Katalog JSON olarak: /wp-json/aihs/v1/.', 'ai-hazir-site' ), '' ),
-			Features::ABILITIES         => array( __( 'Yetenekler (Abilities)', 'ai-hazir-site' ), __( 'Katalog sorguları WordPress Abilities API ile.', 'ai-hazir-site' ), '' ),
-			Features::MCP               => array( __( 'MCP sunucusu', 'ai-hazir-site' ), __( 'AI asistanları kataloğu doğrudan sorgular: /wp-json/aihs/mcp.', 'ai-hazir-site' ), '' ),
-			Features::A2A               => array( __( 'A2A agent', 'ai-hazir-site' ), __( 'A2A kartviziti ve agent: müsaitlik sorusu, teklif isteği.', 'ai-hazir-site' ), home_url( '/.well-known/agent-card.json' ) ),
-			Features::DISCOVERY         => array( __( 'Sayfalardan keşif', 'ai-hazir-site' ), __( 'Sayfalarda llms.txt ve API\'ye standart bağlantılar.', 'ai-hazir-site' ), admin_url( 'admin.php?page=aihs-catalog-profile' ) ),
-			Features::INQUIRIES         => array( __( 'Teklif kutusu', 'ai-hazir-site' ), __( 'AI agentların ve ziyaretçilerin talep bırakması (kişisel veri: KVKK uyarısıyla açılır).', 'ai-hazir-site' ), InquiryAdmin::url() ),
-			Features::MATCHING          => array( __( 'Eşleştirme', 'ai-hazir-site' ), __( 'Aranan ilanlarınıza uyan satılan ve tedarik edilebilen ilanlar.', 'ai-hazir-site' ), $admin( 'aihs-matching' ) ),
-			Features::PORTAL_MODE       => array( __( 'Portal modu', 'ai-hazir-site' ), __( 'Birçok işletmenin ilanları tek sitede, işletme yetkilileriyle.', 'ai-hazir-site' ), $admin( 'aihs-portal' ) ),
-			Features::BOT_CACHE_BYPASS  => array( __( 'AI botlarına önbellekten sayfa sunma', 'ai-hazir-site' ), __( 'WP Rocket ve LiteSpeed Cache AI botlarına kayıtlı kopya sunmaz; botlar ölçülür ve güncel içerik görür.', 'ai-hazir-site' ), $tools( 'aihs-integrations' ) ),
-			Features::CATALOG_SITEMAP   => array( __( 'AI Katalog site haritasında', 'ai-hazir-site' ), __( '/ai-katalog/ sayfası sitenin site haritasına eklenir.', 'ai-hazir-site' ), $tools( 'aihs-integrations' ) ),
-			Features::INDEXNOW          => array( __( 'IndexNow bildirimi', 'ai-hazir-site' ), __( 'Katalog değişince Bing ve diğer IndexNow arama motorlarına haber verilir (yalnızca herkese açık adresler).', 'ai-hazir-site' ), $tools( 'aihs-integrations' ) ),
-			Features::REMOTE_UPDATES    => array( __( 'Merkezi güncelleme', 'ai-hazir-site' ), __( 'Güncellemeler kendi sunucumuzdan; sunucu adresi girilmedikçe hiçbir istek atılmaz.', 'ai-hazir-site' ), admin_url( 'options-general.php?page=' . UpdateModule::PAGE ) ),
-			Features::TELEMETRY         => array( __( 'Rapor paneline özet', 'ai-hazir-site' ), __( 'Haftalık toplam sayılar; gönderim için ayrıca açık onay gerekir.', 'ai-hazir-site' ), admin_url( 'options-general.php?page=' . UpdateModule::PAGE ) ),
+			Features::MEASUREMENT             => array( __( 'AI ölçümü', 'ai-hazir-site' ), __( 'AI botlarının ve AI platformlarından gelen ziyaretlerin sayımı (kişisel veri saklanmaz).', 'ai-hazir-site' ), $tools( 'aihs-measurement' ) ),
+			Features::COMPLIANCE_SCAN         => array( __( 'AI uyum taraması', 'ai-hazir-site' ), __( 'Sitenin AI uyum puanını ölçer.', 'ai-hazir-site' ), $tools( 'aihs-compliance' ) ),
+			Features::COMPLIANCE_WIZARD       => array( __( 'AI uyum sihirbazı', 'ai-hazir-site' ), __( 'Eksikleri adım adım, geri alınabilir biçimde tamamlar.', 'ai-hazir-site' ), $tools( 'aihs-wizard' ) ),
+			Features::COMPLIANCE_REPORT       => array( __( 'Uyum raporu ve rozet', 'ai-hazir-site' ), __( 'Önce/sonra raporu, AI Hazır rozeti ve doğrulama sayfası.', 'ai-hazir-site' ), $tools( 'aihs-report' ) ),
+			Features::BOT_ACCESS              => array( __( 'AI bot erişimi', 'ai-hazir-site' ), __( 'robots.txt\'de AI botlarına izin ya da engel.', 'ai-hazir-site' ), $tools( 'aihs-bot-access' ) ),
+			Features::CATALOG                 => array( __( 'AI Katalog', 'ai-hazir-site' ), __( 'Firma profili ve ilanlar: ne satıyorum, ne arıyorum, ne tedarik edebilirim.', 'ai-hazir-site' ), $admin( 'aihs-catalog' ) ),
+			Features::TEMPLATES               => array( __( 'Sektör şablonları', 'ai-hazir-site' ), __( 'Ürün, hizmet, tur gibi sektöre özel ilan alanları.', 'ai-hazir-site' ), '' ),
+			Features::SCHEMA_OUTPUT           => array( __( 'Schema.org yapılandırılmış veri', 'ai-hazir-site' ), __( 'Firma ve ilanlar makine okunur (JSON-LD); /ai-katalog/ sayfası.', 'ai-hazir-site' ), '' ),
+			Features::LLMS_TXT                => array( __( 'llms.txt', 'ai-hazir-site' ), __( 'AI\'ların okuduğu /llms.txt özeti ve /ai-katalog/ sayfası.', 'ai-hazir-site' ), home_url( '/llms.txt' ) ),
+			Features::MULTILINGUAL            => array( __( 'Çoklu dil', 'ai-hazir-site' ), __( 'Çeviriler ve dile göre çıktılar (Polylang, WPML).', 'ai-hazir-site' ), $admin( 'aihs-catalog-translations' ) ),
+			Features::REST_API                => array( __( 'REST API', 'ai-hazir-site' ), __( 'Katalog JSON olarak: /wp-json/aihs/v1/.', 'ai-hazir-site' ), '' ),
+			Features::ABILITIES               => array( __( 'Yetenekler (Abilities)', 'ai-hazir-site' ), __( 'Katalog sorguları WordPress Abilities API ile.', 'ai-hazir-site' ), '' ),
+			Features::MCP                     => array( __( 'MCP sunucusu', 'ai-hazir-site' ), __( 'AI asistanları kataloğu doğrudan sorgular: /wp-json/aihs/mcp.', 'ai-hazir-site' ), '' ),
+			Features::A2A                     => array( __( 'A2A agent', 'ai-hazir-site' ), __( 'A2A kartviziti ve agent: müsaitlik sorusu, teklif isteği.', 'ai-hazir-site' ), home_url( '/.well-known/agent-card.json' ) ),
+			Features::DISCOVERY               => array( __( 'Sayfalardan keşif', 'ai-hazir-site' ), __( 'Sayfalarda llms.txt ve API\'ye standart bağlantılar.', 'ai-hazir-site' ), admin_url( 'admin.php?page=aihs-catalog-profile' ) ),
+			Features::INQUIRIES               => array( __( 'Teklif kutusu', 'ai-hazir-site' ), __( 'AI agentların ve ziyaretçilerin talep bırakması (kişisel veri: KVKK uyarısıyla açılır).', 'ai-hazir-site' ), InquiryAdmin::url() ),
+			Features::MATCHING                => array( __( 'Eşleştirme', 'ai-hazir-site' ), __( 'Aranan ilanlarınıza uyan satılan ve tedarik edilebilen ilanlar.', 'ai-hazir-site' ), $admin( 'aihs-matching' ) ),
+			Features::PORTAL_MODE             => array( __( 'Portal modu', 'ai-hazir-site' ), __( 'Birçok işletmenin ilanları tek sitede, işletme yetkilileriyle.', 'ai-hazir-site' ), $admin( 'aihs-portal' ) ),
+			Features::BOT_CACHE_BYPASS        => array( __( 'AI botlarına önbellekten sayfa sunma', 'ai-hazir-site' ), __( 'WP Rocket ve LiteSpeed Cache AI botlarına kayıtlı kopya sunmaz; botlar ölçülür ve güncel içerik görür.', 'ai-hazir-site' ), $tools( 'aihs-integrations' ) ),
+			Features::CATALOG_SITEMAP         => array( __( 'AI Katalog site haritasında', 'ai-hazir-site' ), __( '/ai-katalog/ sayfası sitenin site haritasına eklenir.', 'ai-hazir-site' ), $tools( 'aihs-integrations' ) ),
+			Features::LITESPEED_SERVER_BYPASS => array( __( 'LiteSpeed sunucu önbelleği', 'ai-hazir-site' ), __( 'LiteSpeed sunucusunun kendi önbelleği AI botlarına kayıtlı kopya sunmaz (.htaccess kuralı).', 'ai-hazir-site' ), $tools( 'aihs-integrations' ) ),
+			Features::INDEXNOW                => array( __( 'IndexNow bildirimi', 'ai-hazir-site' ), __( 'Katalog değişince Bing ve diğer IndexNow arama motorlarına haber verilir (yalnızca herkese açık adresler).', 'ai-hazir-site' ), $tools( 'aihs-integrations' ) ),
+			Features::REMOTE_UPDATES          => array( __( 'Merkezi güncelleme', 'ai-hazir-site' ), __( 'Güncellemeler kendi sunucumuzdan; sunucu adresi girilmedikçe hiçbir istek atılmaz.', 'ai-hazir-site' ), admin_url( 'options-general.php?page=' . UpdateModule::PAGE ) ),
+			Features::TELEMETRY               => array( __( 'Rapor paneline özet', 'ai-hazir-site' ), __( 'Haftalık toplam sayılar; gönderim için ayrıca açık onay gerekir.', 'ai-hazir-site' ), admin_url( 'options-general.php?page=' . UpdateModule::PAGE ) ),
 		);
 	}
 
@@ -292,6 +293,8 @@ final class SettingsPage {
 			IntegrationsModule::set_bypass( $on );
 		} elseif ( Features::CATALOG_SITEMAP === $key ) {
 			IntegrationsModule::set_sitemap( $on );
+		} elseif ( Features::LITESPEED_SERVER_BYPASS === $key ) {
+			IntegrationsModule::set_server_bypass( $on );
 		} elseif ( Features::INDEXNOW === $key ) {
 			IndexNowModule::enable( $on );
 		} else {

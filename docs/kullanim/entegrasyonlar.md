@@ -19,6 +19,18 @@ sunma" listesine eklenir. İnsan ziyaretçiler için hiçbir şey değişmez.
 Bedeli: botlar önbelleksiz sayfa alır, sunucu yükü biraz artar. Barındırma firmanızın hız sınırı varsa botlar ona
 daha sık takılabilir.
 
+## LiteSpeed sunucu önbelleği (`litespeed_server_bypass`, 1.14.0)
+
+Bazı barındırmalar LiteSpeed sunucusunda, LiteSpeed Cache eklentisi olmadan da sayfaları önbelleğe alır (yanıt
+başlığında `X-LiteSpeed-Cache: hit`). O zaman AI botlarının istekleri WordPress'e hiç ulaşmaz. Bu satır yalnızca sunucu
+LiteSpeed ise ve LiteSpeed Cache eklentisi yoksa görünür.
+
+- Açınca `.htaccess`'in WordPress bölümünün başına AI botları için "önbellek kullanma" kuralı yazılır ve bot yanıtlarına
+  "saklama" başlıkları konur. İnsan ziyaretçiler için önbellek aynen çalışır.
+- Açmadan önce `.htaccess` yedeği alın. Dosya yazılamazsa ekranda elle eklenecek satırlar görünür.
+- Doğrulama: GPTBot kimliğiyle arka arkaya iki istek ikisi de `X-LiteSpeed-Cache: hit` **olmamalı**. Önde başka bir
+  önbellek katmanı hâlâ `hit` veriyorsa barındırma firmasından AI botları için istisna isteyin.
+
 ## AI Katalog'u site haritasına ekle (`catalog_sitemap`)
 
 Arama motorlarından okuyan AI agentlar ilanlarınızı ancak `/ai-katalog/` dizine girince görür. Açınca sayfa (portal
