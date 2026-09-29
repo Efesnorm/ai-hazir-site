@@ -20,6 +20,7 @@ Kod: `litespeed-sunucu-1.14.0` dalı (1.14.0, birleştirme onayı bekliyor).
 | 10 | **WordPress 6.9 + PHP 8.3** | ✅ 370 birim, 218 entegrasyon |
 | 11 | **WordPress 7.1.2 + PHP 8.4** | ✅ 370 birim, 218 entegrasyon; eskimiş kullanım uyarısı yok |
 | 12 | **Güvenlik yoklaması** | ✅ Bozuk JSON standart hatayla reddediliyor; aşırı `per_page` 400; arama parametresinde özel karakter sorunsuz; talepler dışarıdan okunamıyor (`/inquiries` yalnızca POST); iletişim e-postası veritabanında şifreli (düz metin yok); yönetim ekranında `<script>` ve `<img onerror>` kaçışlanmış (XSS yok) |
+| 14 | **Kurulum paketi içeriği** (1.14.0 zip) | ✅ Eklentinin test/araç/belge/geliştirme dosyaları yok; geliştirme bağımlılıkları (PHPUnit, PHPStan, PHPCS) yok; çeviri şablonu var; readme.txt başlığı WordPress standardına uygun |
 | 13 | **Performans** (sunucu içi PHP süresi ve sorgu sayısı, dönüşümlü ölçüm) | ⚠️ Ana sayfa: eklentiyle +11–13 sorgu (3 ilan). **153 ilanla ana sayfa 334, llms.txt 314 sorgu** (eklentisiz 23 / 17): ilan başına ayrı yazı + meta sorgusu (N+1). Ayrıntı aşağıda |
 
 ## Bulunan sorunlar ve durumları
@@ -32,6 +33,7 @@ Kod: `litespeed-sunucu-1.14.0` dalı (1.14.0, birleştirme onayı bekliyor).
 | **İlan sayısıyla doğrusal sorgu (N+1)**: ana sayfa JSON-LD'si yalnızca "son güncelleme" tarihi için tüm ilanları tek tek yüklüyor (`SchemaModule::home_document()` → `listings()` → `WpListingRepository::all()` → ilan başına `find()`); llms.txt de girdi özeti için aynısını yapıyor. 153 ilanda ana sayfa 334, llms.txt 314 sorgu | **Yüksek** (ölçeklenme; "AI botlarına önbellekten sayfa sunma" açıkken her bot isteği bu maliyeti öder) | **Not edildi, kodlanmadı.** Önerilen düzeltme (kanıtlanmış WordPress yöntemleri): `all()` kimlikleri aldıktan sonra `_prime_post_caches()` / `update_meta_cache( 'post', $ids )` ile tek seferde doldursun (tür başına 2 sorgu); ana sayfa "son güncelleme" tarihi tek sorguyla (`orderby=modified`, 1 kayıt) alınsın. Beklenen: ilan sayısından bağımsız ~10 sorgu |
 | Teklif mesajı veritabanına HTML'iyle olduğu gibi kaydediliyor (çıktıda kaçışlandığı için bugün XSS yok) | Düşük | Not edildi. Bildirim e-postası düz metin gidiyor; ama bir SMTP/e-posta şablonu eklentisi `wp_mail_content_type` ile tüm e-postaları HTML'e çevirirse mesajdaki HTML yorumlanabilir (ör. sahte bağlantı). Öneri: bildirimde mesajı `wp_strip_all_tags()` ile göndermek ya da `Content-Type: text/plain` başlığını açıkça vermek |
 | A2A'ya 2 MB'lık gövde kabul ediliyor (JSON-RPC hatasıyla yanıtlanıyor) | Düşük | Not edildi. Öneri: gövde boyutu üst sınırı (ör. 64 KB) ve üstünde 413 |
+| Eklenti kökünde lisans dosyası (`LICENSE`) yok; lisans yalnızca eklenti başlığında ve readme.txt'de (GPLv2 or later) | Düşük | Not edildi. Öneri: GPL-2.0 metnini `LICENSE` olarak eklemek (WordPress eklenti yönergelerinde önerilen) |
 | 28 Eylül makedonya.tr yardımcı dosyası (`aihs-deneme-ozellikleri-ac.php`) yalnızca WP-CLI'de denenmişti; web kapsayıcısında denenmemişti | Bilgi | Canlıda sorunsuz çalıştı; artık gerek yok (1.9.0 Ayarlar ekranı) |
 
 ## Ölçüm yöntemi (performans)
