@@ -19,6 +19,12 @@ Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, 
   - Yerelde yönetim ekranından açıp kapatarak denendi: kural doğru yere yazıldı, site 200, kapatınca silindi.
   - Testler: `UserAgentRewriteRuleTest`, `LiteSpeedServerTest`.
 
+### Düzeltildi
+- Kaldırmadan sonra zamanlanmış IndexNow bildirimi kalıyordu (paket denemesinde bulundu): kaldırma ilanları silerken
+  `deleted_post` IndexNow'u tetikliyordu. Kaldırmanın sonunda eklentinin bütün zamanlanmış görevleri silinir
+  (`Uninstaller::cron_hooks()`). Test: `UninstallCronTest`. Sistem kontrolü raporu:
+  `docs/planlar/SISTEM-KONTROLU-2026-09-30.md`.
+
 ### Test güncellemesi (onaylı)
 - `FeaturesTest`: anahtar listesine `litespeed_server_bypass`.
 
