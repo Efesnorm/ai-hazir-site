@@ -5,14 +5,13 @@
 
 ## Açma
 
-```bash
-wp eval 'AIHazirSite\Core\Features::set( "multilingual", true );'
-```
-
-`catalog` anahtarı da açık olmalıdır. Sonra **AI Katalog → Çeviriler**:
+**Ayarlar → AI Hazır Site** → Çoklu dil → Aç (1.9.0; önkoşul: AI Katalog). Sonra **AI Katalog → Çeviriler**:
 
 1. **Diller:** varsayılan dil (ilanları girdiğiniz dil, ör. `tr`) ve diğer diller (ör. `en, de, ar`).
-   Polylang veya WPML kuruluysa diller oradan okunur; bu bölüm yalnızca gösterir.
+   Polylang, WPML ya da TranslatePress (1.12.0) kuruluysa diller oradan okunur; bu bölüm yalnızca gösterir.
+   TranslatePress'te yayınlanan diller, varsayılan dil ve sayfanın dili okunur (`tr_TR` → `tr`). GTranslate gibi
+   çeviriyi tarayıcıda ya da kendi sunucusunda yapan eklentilerin dil listesi okunamaz; o sitelerde dilleri bu
+   bölümden kendiniz girin.
 2. **Firma profili:** sektörün diğer dillerdeki karşılığı.
 3. **İlanlar:** her ilanın dil başına durumu ("tamam" ya da "N alan eksik"); **Çevir** ile başlık, açıklama,
    kategori ve bölge girilir. Boş bırakılan alan, o dilde varsayılan dildeki metinle gösterilir.

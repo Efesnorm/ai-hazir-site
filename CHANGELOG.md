@@ -3,6 +3,20 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.12.0] - 2026-09-29
+
+### Eklendi
+- **TranslatePress desteği** (balkantrade.com.tr için): çoklu dil (`multilingual`) açıkken diller TranslatePress'ten
+  okunur, Polylang ve WPML gibi: yayınlanan diller `trp_custom_language_switcher()` ile (resmi geliştirici belgesi),
+  varsayılan dil TranslatePress ayarlarından (listede ilk sıraya alınır), sayfanın dili `$TRP_LANGUAGE`'dan
+  (`tr_TR` → `tr`). Yayınlanan dili yoksa izlenmez. Çeviriler ekranı dillerin TranslatePress'ten okunduğunu yazar.
+  Testler: `TranslatePressTest` (resmi API'yi taklit eden yardımcılarla); PHPStan taslakları
+  (`tests/stubs/translatepress.php`).
+
+### Bilinen sınırlar
+- Gerçek TranslatePress ile denenmedi; dil önekli adreslerde (`/en/ai-katalog/`) TranslatePress'in davranışı canlıda
+  denenmeli. GTranslate'in dil listesi okunamaz (elle girilir).
+
 ## [1.11.0] - 2026-09-29
 
 ### Eklendi

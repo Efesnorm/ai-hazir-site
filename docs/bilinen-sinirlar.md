@@ -25,7 +25,12 @@ Bu liste bilerek bırakılan veya henüz çözülmemiş konuları toplar. Her ma
 - Şablon alan etiketleri (ör. "Kalan yer"), müsaitlik cevabının gerekçeleri ve llms.txt / katalog sayfasının
   kalıp metinleri (ör. "Geçerlilik") Türkçe kalır.
 - JSON-LD'de eksik çeviri alan bazında işaretlenmez; belgenin dili `inLanguage` ile verilir.
-- Polylang ve WPML ile uyum, resmi API'lerini taklit eden testlerle denendi; gerçek eklentilerle elle deneme yapılmadı.
+- Polylang, WPML ve TranslatePress (1.12.0) ile uyum, resmi API'lerini taklit eden testlerle denendi; gerçek
+  eklentilerle elle deneme yapılmadı. TranslatePress'te yalnızca dil listesi, varsayılan ve sayfanın dili okunur;
+  TranslatePress'in `/en/ai-katalog/` gibi dil önekli adreslerde sayfamızı kendisinin çevirip çevirmediği canlıda
+  (balkantrade.com.tr) denenmelidir. Bizim çıktılarımızda dil `?lang=` ile seçilir.
+- GTranslate gibi çeviriyi tarayıcıda / kendi sunucusunda yapan eklentilerin dil listesi okunamaz (voltkab.com);
+  diller Çeviriler ekranından elle girilir.
 - Ana sayfadaki `Organization` JSON-LD'si dile göre değişmez (çevrilebilir alan içermez).
 
 ## Tarama ve rapor

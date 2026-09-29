@@ -12,20 +12,34 @@ namespace AIHazirSite\WordPress\I18n;
 use AIHazirSite\Core\I18n\LanguageSettings;
 
 /**
- * With Polylang or WPML active, their language list, default and current language are used
- * (read only here). Otherwise the list is our own `aihs_languages` setting, defaulting to the
+ * With Polylang, WPML or TranslatePress active, their language list, default and current language are
+ * used (read only here). Otherwise the list is our own `aihs_languages` setting, defaulting to the
  * site language.
  *
  * Polylang: pll_languages_list(), pll_default_language(), pll_current_language()
  * (https://polylang.pro/doc/function-reference/).
  * WPML: wpml_active_languages, wpml_default_language, wpml_current_language filters
  * (https://wpml.org/documentation/support/wpml-coding-api/wpml-hooks-reference/).
+ * TranslatePress (1.12.0): trp_custom_language_switcher() lists the published languages by locale
+ * (https://translatepress.com/docs/developers/custom-language-switcher/); the default language is the
+ * `default-language` of its settings component (TranslatePress puts it first among the published ones);
+ * the current language is its global $TRP_LANGUAGE (as its own trp_translate() uses it).
  */
 final class LanguageSource {
 
-	public const OPTION   = 'aihs_languages';
-	public const POLYLANG = 'polylang';
-	public const WPML     = 'wpml';
+	public const OPTION         = 'aihs_languages';
+	public const POLYLANG       = 'polylang';
+	public const WPML           = 'wpml';
+	public const TRANSLATEPRESS = 'translatepress';
+
+	/**
+	 * Display names of the multilingual plugins.
+	 */
+	public const NAMES = array(
+		self::POLYLANG       => 'Polylang',
+		self::WPML           => 'WPML',
+		self::TRANSLATEPRESS => 'TranslatePress',
+	);
 
 	/**
 	 * The active multilingual plugin, or null.
@@ -38,7 +52,36 @@ final class LanguageSource {
 		if ( defined( 'ICL_SITEPRESS_VERSION' ) || has_filter( 'wpml_active_languages' ) ) {
 			return self::WPML;
 		}
+		if ( array() !== self::translatepress_languages() ) {
+			return self::TRANSLATEPRESS;
+		}
 		return null;
+	}
+
+	/**
+	 * TranslatePress's published languages (locales, e.g. "tr_TR"), default first; empty without it.
+	 *
+	 * @return list<string>
+	 */
+	private static function translatepress_languages(): array {
+		if ( ! function_exists( 'trp_custom_language_switcher' ) || ! class_exists( 'TRP_Translate_Press' ) ) {
+			return array();
+		}
+		$languages = array_keys( (array) trp_custom_language_switcher() );
+		$default   = self::translatepress_default();
+		if ( '' !== $default && in_array( $default, $languages, true ) ) {
+			$languages = array_merge( array( $default ), array_diff( $languages, array( $default ) ) );
+		}
+		return self::strings( $languages );
+	}
+
+	/**
+	 * TranslatePress's default language (locale), or ''.
+	 */
+	private static function translatepress_default(): string {
+		$settings = class_exists( 'TRP_Translate_Press' ) ? \TRP_Translate_Press::get_trp_instance()->get_component( 'settings' ) : null;
+		$values   = is_object( $settings ) && method_exists( $settings, 'get_settings' ) ? $settings->get_settings() : array();
+		return is_array( $values ) && is_string( $values['default-language'] ?? null ) ? $values['default-language'] : '';
 	}
 
 	/**
@@ -55,6 +98,9 @@ final class LanguageSource {
 				$default = apply_filters( 'wpml_default_language', null ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML API.
 				$active  = apply_filters( 'wpml_active_languages', null, array( 'skip_missing' => 0 ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML API.
 				return new LanguageSettings( LanguageSettings::normalise( is_string( $default ) ? $default : '' ) ?? $site, self::strings( is_array( $active ) ? array_keys( $active ) : array() ) );
+			case self::TRANSLATEPRESS:
+				$list = self::translatepress_languages();
+				return new LanguageSettings( LanguageSettings::normalise( $list[0] ?? '' ) ?? $site, $list );
 		}
 		return LanguageSettings::from_array( get_option( self::OPTION, array() ), $site );
 	}
@@ -70,6 +116,9 @@ final class LanguageSource {
 				break;
 			case self::WPML:
 				$current = apply_filters( 'wpml_current_language', null ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML API.
+				break;
+			case self::TRANSLATEPRESS:
+				$current = $GLOBALS['TRP_LANGUAGE'] ?? null; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase -- TranslatePress's global.
 				break;
 		}
 		return is_string( $current ) ? LanguageSettings::normalise( $current ) : null;

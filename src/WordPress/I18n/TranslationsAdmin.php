@@ -120,7 +120,7 @@ final class TranslationsAdmin {
 		$plugin = LanguageSource::plugin();
 		if ( null !== $plugin ) {
 			/* translators: 1: plugin name, 2: languages. */
-			return $html . '<p id="aihs-languages-plugin">' . esc_html( sprintf( __( 'Diller %1$s eklentisinden okunuyor: %2$s (ilki varsayılan).', 'ai-hazir-site' ), LanguageSource::POLYLANG === $plugin ? 'Polylang' : 'WPML', implode( ', ', $settings->languages ) ) ) . '</p>';
+			return $html . '<p id="aihs-languages-plugin">' . esc_html( sprintf( __( 'Diller %1$s eklentisinden okunuyor: %2$s (ilki varsayılan).', 'ai-hazir-site' ), LanguageSource::NAMES[ $plugin ] ?? $plugin, implode( ', ', $settings->languages ) ) ) . '</p>';
 		}
 		return $html . '<form id="aihs-languages-form" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">'
 			. '<input type="hidden" name="action" value="' . esc_attr( self::SAVE_LANGUAGES ) . '">' . wp_nonce_field( self::SAVE_LANGUAGES, '_wpnonce', true, false )

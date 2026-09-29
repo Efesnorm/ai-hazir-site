@@ -8,3 +8,4 @@ parameters:
 		- tests/stubs/wp-cli.php
 		- tests/stubs/polylang.php
 		- tests/stubs/wp-rocket.php
+		- tests/stubs/translatepress.php
