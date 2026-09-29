@@ -62,3 +62,14 @@ Testler resmi API'yi taklit eder; gerçek eklentiyle denenmedi.
 - `bin/tara`: WordPress sitelerin hepsinde başka bir MCP sunucusu var ve bizim puanlama onu "makine arayüzü" olarak tam
   puanla sayıyor; eklentisiz puanlar (82–85) bu yüzden yüksek. Puanlama yöntemi değişikliği ayrı karar (puanlama
   sürümünü değiştirir).
+
+## Gündüz (2026-09-29) – dal `duzeltme-1.12.1`, onay bekliyor
+
+| İş | Ne | Karar |
+| --- | --- | --- |
+| Adres kuralları | Devre dışı bırakınca `/ai-katalog/`, doğrulama ve işletme sayfası kuralları artık temizleniyor (Eklenti El Kitabı yöntemi: önce unut, sonra yenile). Test eski kodda kırılıyor, yenide geçiyor. | Birleştirme onayı |
+| Rozet kapsamı | Rozet için ağırlığın en az %80'i ölçülmüş olmalı; kısmi ölçümde tarama ekranında uyarı. %80 değeri bir karar. | Onay + eşik (%80 uygun mu?) |
+| Çeviri şablonu | `languages/ai-hazir-site.pot` (536 metin, WP-CLI) ve `composer pot`. | Birleştirme onayı |
+| Puanlama sürümü 4 | Yalnızca plan: `docs/planlar/puanlama-4-oneri.md`. Başka eklentinin kimlik doğrulama isteyen MCP sunucusu (voltkab'da doğrulandı: 401) ve çekirdek REST API bugün tam puan alıyor. **Pilot "önce" taramalarından önce karar verilmeli.** | Seçenek 1/2/3 |
+
+Doğrulama: `composer check` temiz (365 birim, 213 entegrasyon).
