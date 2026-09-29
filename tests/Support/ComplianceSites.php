@@ -54,7 +54,7 @@ final class ComplianceSites {
 				self::BASE . 'iletisim/'                   => self::good_page( 'İletişim' ),
 				self::BASE . 'robots.txt'                  => new PageResponse( 200, array(), "User-agent: *\nDisallow: /wp-admin/\n" ),
 				self::BASE . 'llms.txt'                    => new PageResponse( 200, array(), "# Örnek Kablo A.Ş.\n\n> Enerji ve telekom kabloları üreticisi.\n" ),
-				self::BASE . 'wp-json/'                    => new PageResponse( 200, array(), '{"name":"Örnek","namespaces":["wp/v2"]}' ),
+				self::BASE . 'wp-json/'                    => new PageResponse( 200, array(), '{"name":"Örnek","namespaces":["wp/v2","aihs/v1"]}' ),
 				self::BASE . 'wp-json/mcp/mcp-adapter-default-server' => new PageResponse( 405, array(), '' ),
 				self::BASE . '.well-known/agent-card.json' => new PageResponse( 200, array(), self::AGENT_CARD ),
 			)

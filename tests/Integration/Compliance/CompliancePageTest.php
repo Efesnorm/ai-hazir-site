@@ -159,7 +159,7 @@ final class CompliancePageTest extends WP_UnitTestCase {
 		$this->assertSame( 'advanced', $order[1] );
 		$this->assertSame( '85/100', trim( $xpath->query( '//*[@id="aihs-score"]' )->item( 0 )->textContent ) ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		$this->assertSame( '(+85)', trim( $xpath->query( '//*[@id="aihs-delta"]' )->item( 0 )->textContent ) ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-		$this->assertStringContainsString( 'Puanlama sürümü: 3', $html );
+		$this->assertStringContainsString( 'Puanlama sürümü: 4', $html );
 	}
 
 	/**

@@ -156,7 +156,7 @@ final class ScannerTest extends TestCase {
 		$report = $this->scan( array( self::check( 'a', 60, 0.5 ), self::check( 'b', 40, null ) ) );
 
 		$this->assertSame( Scanner::SCORE_VERSION, $report->score_version );
-		$this->assertSame( 3, Scanner::SCORE_VERSION, '2 since 0.5.0 (intentional bot blocks); 3 since 1.4.0 (bot list 12 → 18).' );
+		$this->assertSame( 4, Scanner::SCORE_VERSION, '2 since 0.5.0 (intentional bot blocks); 3 since 1.4.0 (bot list 12 → 18); 4 since 1.13.0 (machine interface: data API, MCP authentication).' );
 		$this->assertSame( '2026-09-27T12:00:00Z', $report->scanned_at );
 
 		$copy = ScoreReport::from_array( json_decode( (string) json_encode( $report->to_array() ), true ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode

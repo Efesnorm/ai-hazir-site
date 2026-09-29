@@ -3,6 +3,24 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.13.0] - 2026-09-29
+
+### Değişti
+- **Puanlama sürümü 4** (onaylı, seçenek 1; plan `docs/planlar/puanlama-4-oneri.md`). "Makine arayüzü (REST / MCP)"
+  artık AI agentların sitenin **iş verisine** erişip erişemediğini ölçer:
+  - REST: herkese açık veri API'si (`aihs/v1`, WooCommerce Store API `wc/store/v1`) 0,5; yalnızca WordPress çekirdek API'si
+    (yazılar, sayfalar) 0,25 (önce keşfedilebilir her REST 0,5 alıyordu).
+  - MCP: kimlik doğrulama istemeyen uç nokta 0,5; yalnızca 401/403 dönen (AI agentlara kapalı) 0,1 (önce 0,5). Sitede
+    AI Hazır Site'nin MCP sunucusu (`aihs/mcp`) varsa o da denenir.
+  - Neden: pilot taramalarında eklentisiz siteler (ör. voltkab.com: çekirdek API + 401 dönen MCP sunucusu) bu kontrolden
+    20/20 alıyordu. Kural gereği eski taramalarla (sürüm 3) karşılaştırma yapılmaz; pilot "önce" taramaları sürüm 4 ile
+    yeniden alındı.
+  - Testler: `MachineInterfaceV4Test`.
+
+### Test güncellemesi (onaylı)
+- `ScannerTest` (`SCORE_VERSION` 4), `CompliancePageTest` ("Puanlama sürümü: 4"), tam puanlı örnek sitenin REST dizinine
+  `aihs/v1` (`tests/Support/ComplianceSites`).
+
 ## [1.12.1] - 2026-09-29
 
 ### Düzeltildi

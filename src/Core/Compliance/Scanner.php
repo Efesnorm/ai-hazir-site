@@ -33,8 +33,9 @@ final class Scanner {
 	 * 1: 0.3.0 – seven checks.
 	 * 2: 0.5.0 – bots blocked on purpose with the AI bot access setting no longer lower bot_access.
 	 * 3: 1.4.0 – bot list 12 → 18 (Mistral AI, DuckAssistBot, Meta fetcher/indexer): bot_access ratios change.
+	 * 4: 1.13.0 – machine_interface: full REST credit only with a public data API, MCP behind authentication 0.1.
 	 */
-	public const SCORE_VERSION = 3;
+	public const SCORE_VERSION = 4;
 
 	/**
 	 * Checks in display order.
