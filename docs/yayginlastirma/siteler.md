@@ -12,7 +12,9 @@
 | makedonya.tr | Turizm firması / deneme | Tur operatörü (`tur`) | WordPress 7.1.2 | **94** (eklentiyle, 1.8.0) | WP Rocket | Rank Math | – | Deneme sitesi. Barındırma hız sınırı (~20 istek → 1 saat 429), Imunify360. | Kurulu, deneme sürüyor |
 | kuzeymakedonya.com.tr | Turizm portalı | Tur / portal (karar) | WordPress 7.1.2 | 72 | WP Rocket | Rank Math | – | Imunify360. | Kurulmadı |
 | kosova.org.tr | Turizm portalı | Tur / portal (karar) | WordPress | 42 | LiteSpeed Cache | Rank Math | – | Ana sayfada JSON-LD yok. | Kurulmadı |
-| (diğer gezi portalları) | Turizm portalları | Portal (`portal`) | ? | – | – | – | – | Adresleri eklenecek; `bin/tara` ile taranır. | – |
+| arnavutluk.org.tr | Turizm portalı | Tur / portal (karar) | WordPress 7.1.2 | 68 | WP Rocket | Rank Math | – | Imunify360. | Kurulmadı |
+| makedonya.org.tr | Turizm portalı | Tur / portal (karar) | WordPress 7.1.2 | 74 (llms.txt ölçülemedi) | WP Rocket | Rank Math | – | `/llms.txt` isteği tamamlanmadı (Imunify360 olabilir). | Kurulmadı |
+| sirbistan.org.tr | Turizm portalı | Tur / portal (karar) | WordPress 7.1.2 | 38 | LiteSpeed Cache | – | – | Ana sayfada JSON-LD yok, SEO eklentisi yok: en çok kazanacak site. Imunify360. | Kurulmadı |
 
 Ortak gözlemler:
 - Sitelerin çoğunda başka bir MCP sunucusu (`/wp-json/mcp`) var ama kimlik doğrulama istiyor (AI agentlara kapalı); puanlama
@@ -25,4 +27,4 @@ Ortak gözlemler:
   istenmeli.
 - **Faz 4 canlı A2A demosu:** PRD'deki "fabrika ile dağıtıcı agentlarının konuşması" = intekarglobal.com (satılan ilan) ↔
   voltkab.com (aranan ilan + eşleştirme + A2A ile teklif isteği). Yerel provası: `tools/a2a-demo`.
-- PRD 10 site hedefi: listede 7 site var; kalan 3 site için diğer gezi portalları eklenecek.
+- PRD 10 site hedefi: **10 site listede** (dağıtıcı, fabrika, ihracat, hukuk, turizm firması ve 5 turizm portalı).
