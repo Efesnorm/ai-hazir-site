@@ -14,14 +14,13 @@ Kod: `litespeed-sunucu-1.14.0` dalı (1.14.0, birleştirme onayı bekliyor).
 | 5 | **14 yönetim ekranı** (Ayarlar, önizleme, Entegrasyonlar, Ölçüm, Uyum, Bot erişimi, Rapor, Katalog ×4, Teklif kutusu, Eklentiler, Başlangıç) | ✅ Hepsi 200, PHP hatası yok |
 | 6 | **Kaldırma** (verileri de sil açık) | ⚠️ **Sorun bulundu ve düzeltildi**: kaldırmadan sonra zamanlanmış IndexNow bildirimi (`aihs_indexnow_submit`) kalıyordu. Neden: kaldırma ilanları silerken `deleted_post` IndexNow'u tetikliyordu. Düzeltme: kaldırmanın sonunda eklentinin zamanlanmış görevlerinin hepsi silinir (`Uninstaller::cron_hooks()`). Test: `UninstallCronTest`. Diğer her şey temiz: seçenekler, 3 tablo, ilanlar, meta, adres kuralları (1.12.1 düzeltmesi canlıda doğrulandı) |
 | 7 | **LiteSpeed sunucu önbelleği** yönetim ekranından aç/kapat (yerel Apache) | ✅ Kural WordPress bloğunun başına yazıldı, site 200, kapatınca silindi. Not: WP-CLI'den açınca `.htaccess` yazılmıyor (WordPress'in kendi kuralı; ekrandan açılmalı) |
-
 | 8 | **A2A iki site demosu** (1.14.0 koduyla, `tools/a2a-demo`) | ✅ Eşleşme puan 100 → önizleme → onay → fabrikanın teklif kutusunda "yeni" |
 | 9 | **Canlı siteler** (yalnızca okuma, az istek) | ✅ makedonya.tr: tüm kanallar, IndexNow anahtar dosyası, keşif, site haritası satırı. ✅ voltkab.com: önce dönemi (llms.txt 404, beklenen), GPTBot güncel sayfa. ⚠️ intekarglobal.com: GPTBot'a sayfa LiteSpeed sunucu önbelleğinden (`hit`) → 1.14.0 ile çözülecek |
 | 10 | **WordPress 6.9 + PHP 8.3** | ✅ 370 birim, 218 entegrasyon |
 | 11 | **WordPress 7.1.2 + PHP 8.4** | ✅ 370 birim, 218 entegrasyon; eskimiş kullanım uyarısı yok |
 | 12 | **Güvenlik yoklaması** | ✅ Bozuk JSON standart hatayla reddediliyor; aşırı `per_page` 400; arama parametresinde özel karakter sorunsuz; talepler dışarıdan okunamıyor (`/inquiries` yalnızca POST); iletişim e-postası veritabanında şifreli (düz metin yok); yönetim ekranında `<script>` ve `<img onerror>` kaçışlanmış (XSS yok) |
-| 14 | **Kurulum paketi içeriği** (1.14.0 zip) | ✅ Eklentinin test/araç/belge/geliştirme dosyaları yok; geliştirme bağımlılıkları (PHPUnit, PHPStan, PHPCS) yok; çeviri şablonu var; readme.txt başlığı WordPress standardına uygun |
 | 13 | **Performans** (sunucu içi PHP süresi ve sorgu sayısı, dönüşümlü ölçüm) | ⚠️ Ana sayfa: eklentiyle +11–13 sorgu (3 ilan). **153 ilanla ana sayfa 334, llms.txt 314 sorgu** (eklentisiz 23 / 17): ilan başına ayrı yazı + meta sorgusu (N+1). Ayrıntı aşağıda |
+| 14 | **Kurulum paketi içeriği** (1.14.0 zip) | ✅ Eklentinin test/araç/belge/geliştirme dosyaları yok; geliştirme bağımlılıkları (PHPUnit, PHPStan, PHPCS) yok; çeviri şablonu var; readme.txt başlığı WordPress standardına uygun |
 
 ## Bulunan sorunlar ve durumları
 
