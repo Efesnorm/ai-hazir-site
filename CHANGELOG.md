@@ -3,6 +3,29 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.10.0] - 2026-09-29
+
+### Eklendi
+- **IndexNow ile değişiklik bildirimi** (`indexnow`, varsayılan kapalı; önkoşul: `schema_output` ya da `llms_txt`).
+  Plan: `docs/planlar/1.10.0-indexnow.md`. Protokol: https://www.indexnow.org/documentation.
+  - İlan, profil ya da işletme değişince 10 dakika sonra tek bildirim; iki bildirim arası en az 1 saat. Entegrasyonlar
+    ekranında "Şimdi bildir", son bildirimin zamanı, yanıtı ve Türkçe açıklaması (ör. 403 → bot koruması).
+  - Yalnızca herkese açık katalog adresleri (1.8.0 site haritası listesi), site adı ve anahtar gönderilir; kişisel veri
+    yok. Adresler sitenin kendi alan adında olmalı.
+  - Anahtar 32 karakter rastgele; `/{anahtar}.txt` bizim tarafımızdan sunulur (önbellek dışı). Her istekte
+    `keyLocation` verilir, böylece Rank Math'in kendi IndexNow anahtarıyla çakışmaz.
+  - Yeni sözleşme `HttpStatusPoster` (HTTP durum kodu); `WpHttpPoster` uygular, mevcut `HttpPoster` değişmedi.
+  - Açma/kapama: Araçlar → AI Hazır Entegrasyonlar ve Ayarlar → AI Hazır Site. Devre dışı bırakmada zamanlanmış
+    bildirim silinir; kaldırmada anahtar ve son sonuç (`aihs_indexnow`) silinir.
+  - Testler: `IndexNowServiceTest`, `IndexNowTest` (istek `pre_http_request` ile yakalanır, ağa çıkılmaz), yeni mimari
+    test `IndexNowSendsOnlyPublicUrlsTest`.
+
+### Test güncellemesi (onaylı)
+- `FeaturesTest`: anahtar listesine `indexnow`.
+- `PublicPagesNotCachedTest`: kendi sunduğumuz dosyalara anahtar dosyası (`IndexNowModule`).
+- `TelemetrySendsOnlyWithConsentTest`: izinli göndericilere `IndexNowService`; denetim yeni `->post_json()` çağrısını
+  da kapsar (kural gevşemedi, kapsamı genişledi).
+
 ## [1.9.0] - 2026-09-29
 
 ### Eklendi

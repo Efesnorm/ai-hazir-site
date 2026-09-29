@@ -10,6 +10,8 @@ declare(strict_types=1);
 namespace AIHazirSite\WordPress\Integrations;
 
 use AIHazirSite\Core\Features;
+use AIHazirSite\Core\IndexNow\IndexNowService;
+use AIHazirSite\WordPress\IndexNow\IndexNowModule;
 
 /**
  * Work that involves other plugins is offered as options: the page shows what it found on the site
@@ -24,6 +26,9 @@ final class IntegrationsPage {
 
 	public const BYPASS  = 'bot_cache_bypass';
 	public const SITEMAP = 'catalog_sitemap';
+
+	public const INDEXNOW     = 'indexnow';
+	public const INDEXNOW_NOW = 'indexnow_now';
 
 	/**
 	 * Registers admin hooks.
@@ -59,14 +64,48 @@ final class IntegrationsPage {
 	 */
 	public static function render_html( string $message = '' ): string {
 		$notices = array(
-			'on'  => __( 'Entegrasyon açıldı.', 'ai-hazir-site' ),
-			'off' => __( 'Entegrasyon kapatıldı.', 'ai-hazir-site' ),
+			'on'       => __( 'Entegrasyon açıldı.', 'ai-hazir-site' ),
+			'off'      => __( 'Entegrasyon kapatıldı.', 'ai-hazir-site' ),
+			'sent'     => __( 'IndexNow bildirimi gönderildi; sonuç aşağıda.', 'ai-hazir-site' ),
+			'not_sent' => __( 'Bildirim gönderilmedi: bildirilecek adres yok ya da son bildirimden bu yana 1 saat geçmedi.', 'ai-hazir-site' ),
 		);
 		$html    = '<h1>' . esc_html__( 'AI Hazır Entegrasyonlar', 'ai-hazir-site' ) . '</h1>'
 			. ( isset( $notices[ $message ] ) ? '<div class="notice notice-success"><p>' . esc_html( $notices[ $message ] ) . '</p></div>' : '' )
 			. '<p class="description">' . esc_html__( 'Sitenizdeki diğer eklentilerle yapılabilecek işler. Hiçbiri kendiliğinden yapılmaz; her birini buradan açıp kapatabilirsiniz. Kapatınca eklediğimiz her şey geri alınır.', 'ai-hazir-site' ) . '</p>';
 
-		return $html . self::bypass_section() . self::sitemap_section();
+		return $html . self::bypass_section() . self::sitemap_section() . self::indexnow_section();
+	}
+
+	/**
+	 * IndexNow: state, requirement, key file, last result, "Şimdi bildir".
+	 */
+	private static function indexnow_section(): string {
+		$on   = Features::is_enabled( Features::INDEXNOW );
+		$html = '<h2>' . esc_html__( 'Değişiklikleri IndexNow ile bildir', 'ai-hazir-site' ) . '</h2>'
+			. '<p>' . esc_html__( 'İlan ya da profil değişince /ai-katalog/ adresi Bing, Yandex ve diğer IndexNow arama motorlarına bildirilir (ChatGPT arama Bing dizinini kullanır; Google IndexNow kullanmaz). Yalnızca herkese açık adresler, site adı ve anahtar gönderilir. Değişiklikten 10 dakika sonra tek bildirim gider; iki bildirim arası en az 1 saattir.', 'ai-hazir-site' ) . '</p>';
+
+		$missing = Features::missing_requirements( Features::INDEXNOW );
+		if ( ! $on && array() !== $missing['any'] ) {
+			return $html . '<p><em>' . esc_html__( 'Önce Schema.org yapılandırılmış veriyi ya da llms.txt\'yi açın (Ayarlar → AI Hazır Site).', 'ai-hazir-site' ) . '</em></p>';
+		}
+		if ( $on ) {
+			$key_url = IndexNowModule::key_url();
+			$last    = IndexNowModule::service()->last();
+			$html   .= '<p>' . esc_html__( 'Anahtar dosyası:', 'ai-hazir-site' ) . ' <a href="' . esc_url( $key_url ) . '">' . esc_html( $key_url ) . '</a></p>'
+				. '<p>' . esc_html__( 'Son bildirim:', 'ai-hazir-site' ) . ' ' . esc_html(
+					null === $last
+						? __( 'henüz yok', 'ai-hazir-site' )
+						/* translators: 1: date, 2: number of addresses, 3: HTTP status, 4: meaning. */
+						: sprintf( __( '%1$s, %2$d adres, yanıt %3$d: %4$s', 'ai-hazir-site' ), wp_date( 'd.m.Y H:i', $last['at'] ), $last['count'], $last['status'], IndexNowService::meaning( $last['status'] ) )
+				) . '</p>'
+				. '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">'
+				. '<input type="hidden" name="action" value="' . esc_attr( self::ACTION ) . '">'
+				. '<input type="hidden" name="integration" value="' . esc_attr( self::INDEXNOW_NOW ) . '">'
+				. wp_nonce_field( self::ACTION, '_wpnonce', true, false )
+				. get_submit_button( __( 'Şimdi bildir', 'ai-hazir-site' ), 'secondary', 'submit', false )
+				. '</form>';
+		}
+		return $html . self::toggle( self::INDEXNOW, $on );
 	}
 
 	/**
@@ -156,6 +195,20 @@ final class IntegrationsPage {
 			IntegrationsModule::set_bypass( $on );
 		} elseif ( self::SITEMAP === $id ) {
 			IntegrationsModule::set_sitemap( $on );
+		} elseif ( self::INDEXNOW === $id ) {
+			$missing = Features::missing_requirements( Features::INDEXNOW );
+			if ( ! $on || array() === $missing['any'] ) {
+				IndexNowModule::enable( $on );
+			}
+		} elseif ( self::INDEXNOW_NOW === $id ) {
+			$result = IndexNowModule::submit();
+			return add_query_arg(
+				array(
+					'page'    => self::SLUG,
+					'message' => null === $result ? 'not_sent' : 'sent',
+				),
+				admin_url( 'tools.php' )
+			);
 		} else {
 			wp_die( esc_html__( 'Bilinmeyen entegrasyon.', 'ai-hazir-site' ), 400 );
 		}

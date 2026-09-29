@@ -28,3 +28,17 @@ modunda işletme sayfaları da) son değişiklik tarihiyle sitenizin site harita
 - **WordPress'in kendi site haritası**: `wp-sitemap-aihs-1.xml`.
 
 Açıp kapatınca Rank Math ve Yoast'un site haritası önbelleği temizlenir.
+
+## Değişiklikleri IndexNow ile bildir (`indexnow`, 1.10.0)
+
+İlan, profil ya da işletme değişince `/ai-katalog/` adresi IndexNow ile Bing, Yandex, Naver, Seznam ve Yep'e
+bildirilir. ChatGPT arama ve Copilot büyük ölçüde Bing dizinine dayanır. Google IndexNow kullanmaz (Google için site
+haritası).
+
+- Önkoşul: Schema.org yapılandırılmış veri ya da llms.txt açık (katalog sayfası yayında).
+- Değişiklikten 10 dakika sonra tek bildirim gider; iki bildirim arası en az 1 saattir. **Şimdi bildir** düğmesi de var.
+- Gönderilen: site adı, anahtar ve herkese açık katalog adresleri. Kişisel veri gönderilmez.
+- Anahtar dosyası `/{anahtar}.txt` otomatik yayınlanır; ekranda bağlantısı görünür. Rank Math'in "Instant Indexing"
+  modülü açıksa ikisi birlikte çalışır (her istekte anahtar dosyasının yeri verilir).
+- Son bildirimin yanıtı ekranda Türkçe açıklanır. **403** görürseniz arama motoru anahtar dosyasına ulaşamamıştır:
+  barındırma firmanızın bot korumasının `/{anahtar}.txt` adresini engelleyip engellemediğini kontrol edin.

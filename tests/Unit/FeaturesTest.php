@@ -127,6 +127,7 @@ final class FeaturesTest extends UnitTestCase {
 				'discovery'         => false,
 				'bot_cache_bypass'  => false,
 				'catalog_sitemap'   => false,
+				'indexnow'          => false,
 			),
 			Features::defaults()
 		);

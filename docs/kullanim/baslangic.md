@@ -43,6 +43,7 @@ bağlıysa satırında yazar; hiçbir özellik kendiliğinden açılıp kapanmaz
 | `portal_mode` | Portal: birçok işletme ([portal.md](portal.md)) | `catalog` | |
 | `bot_cache_bypass` | AI botlarına sayfa önbelleğinden kopya sunulmaz ([entegrasyonlar.md](entegrasyonlar.md)) | – | WP Rocket / LiteSpeed Cache'e yazar |
 | `catalog_sitemap` | AI Katalog site haritasında | `schema_output` ya da `llms_txt` | |
+| `indexnow` | Değişiklikleri IndexNow ile Bing ve diğerlerine bildirir ([entegrasyonlar.md](entegrasyonlar.md)) | `schema_output` ya da `llms_txt` | Dışarıya istek atar (yalnızca herkese açık adresler) |
 | `remote_updates` | Merkezi güncelleme ([guncelleme.md](guncelleme.md)) | – | Sunucu adresi girilmedikçe istek atılmaz |
 | `telemetry` | Rapor paneline haftalık özet | – | Gönderim için ayrıca açık onay (Ayarlar → AI Hazır Güncelleme) |
 

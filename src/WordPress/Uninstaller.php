@@ -20,6 +20,7 @@ use AIHazirSite\Core\Migrations\Migrator;
 use AIHazirSite\WordPress\Catalog\CatalogModule;
 use AIHazirSite\WordPress\Discovery\DiscoveryModule;
 use AIHazirSite\WordPress\Integrations\LiteSpeedBypass;
+use AIHazirSite\Core\IndexNow\IndexNowService;
 use AIHazirSite\WordPress\Catalog\WpProfileRepository;
 use AIHazirSite\WordPress\I18n\LanguageSource;
 use AIHazirSite\WordPress\Portal\Portal;
@@ -67,6 +68,7 @@ final class Uninstaller {
 			MatchingModule::OPTION,
 			DiscoveryModule::VISIBLE_OPTION,
 			LiteSpeedBypass::ADDED_OPTION,
+			IndexNowService::OPTION,
 		);
 	}
 

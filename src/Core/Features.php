@@ -133,6 +133,11 @@ final class Features {
 	public const CATALOG_SITEMAP = 'catalog_sitemap';
 
 	/**
+	 * Changed catalog pages are announced to search engines with IndexNow (1.10.0).
+	 */
+	public const INDEXNOW = 'indexnow';
+
+	/**
 	 * Sector templates (0.8.0).
 	 */
 	public const TEMPLATES = 'templates';
@@ -171,6 +176,7 @@ final class Features {
 	public const REQUIRES_ANY = array(
 		self::DISCOVERY       => array( self::LLMS_TXT, self::REST_API ),
 		self::CATALOG_SITEMAP => array( self::SCHEMA_OUTPUT, self::LLMS_TXT ),
+		self::INDEXNOW        => array( self::SCHEMA_OUTPUT, self::LLMS_TXT ),
 	);
 
 	/**
@@ -218,6 +224,7 @@ final class Features {
 			self::DISCOVERY         => false,
 			self::BOT_CACHE_BYPASS  => false,
 			self::CATALOG_SITEMAP   => false,
+			self::INDEXNOW          => false,
 		);
 	}
 
