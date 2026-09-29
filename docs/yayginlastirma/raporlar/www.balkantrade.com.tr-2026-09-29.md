@@ -21,7 +21,7 @@
 | WordPress | 7.1.2 |
 | PHP / sunucu | – / gws |
 | REST API | açık |
-| Önbellek eklentisi | WP Rocket, LiteSpeed Cache |
+| Önbellek eklentisi | WP Rocket, LiteSpeed sunucusu (eklenti belirsiz) |
 | SEO eklentisi | Rank Math |
 | Çoklu dil eklentisi | TranslatePress |
 | Başka MCP sunucusu | var (/wp-json/mcp) |
