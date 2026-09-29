@@ -3,7 +3,7 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
-## [1.11.0] - 2026-09-29 (onay bekliyor, gece yapıldı)
+## [1.11.0] - 2026-09-29
 
 ### Eklendi
 - **Önerilen kurulum** (Ayarlar → AI Hazır Site): site türü seçilir, açılacaklar önizlenir, tek tıkla uygulanır. PRD
@@ -25,7 +25,7 @@ Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, 
   sitenin denetim kayıtları. Eklenti kodu değişmedi. Yerelde iki kez baştan sona çalıştırıldı; çıktı
   `docs/demo/a2a-yerel-2026-09-29.md`.
 
-### Test güncellemesi (onay bekliyor)
+### Test güncellemesi (onaylı)
 - `AbilitiesTest::test_rate_limit` ve `RestCachingTest::test_rate_limit` ara sıra kırılıyordu: hız sınırlayıcı dakikalık
   pencere kullanıyor, istekler dakika dönümüne denk gelirse iki pencereye düşüp hepsi izinli sayılıyordu (0.10.0 /
   0.11.0'dan beri). Testler artık dakikanın son 5 saniyesindeyse bir sonraki dakikayı bekleyip başlar
