@@ -36,9 +36,15 @@ istek (`aihs_a2a_rate_limit` süzgeci).
 
 Önizleme sayfasını açmak hiçbir istek göndermez.
 
-## Uçtan uca demo (elle, iki site)
+## Uçtan uca demo
 
-Dağıtıcı sitesi (D) ve fabrika sitesi (F), ikisi de 1.6.0 ve https.
+**Yerel (otomatik):** `tools/a2a-demo/demo.sh` iki siteyi gerçek HTTPS ile kurar ve aşağıdaki akışı baştan sona
+çalıştırır ([tools/a2a-demo/README.md](../../tools/a2a-demo/README.md), örnek çıktı
+[docs/demo/a2a-yerel-2026-09-29.md](../demo/a2a-yerel-2026-09-29.md)).
+
+**Canlı (elle, iki gerçek site):** Dağıtıcı sitesi (D) ve fabrika sitesi (F), ikisi de 1.6.0 veya üstü ve https.
+1.9.0'dan beri özellikler **Ayarlar → AI Hazır Site** ekranından açılır (teklif kutusu kendi ekranından, KVKK
+uyarısıyla).
 
 1. **F:** `catalog`, `inquiries`, `rest_api`, `a2a` açık. Bir "satılan" ilan girin (ör. NYY 3x2,5, 5000 m, 5 gün).
    `https://F/.well-known/agent-card.json` adresinin açıldığını kontrol edin.

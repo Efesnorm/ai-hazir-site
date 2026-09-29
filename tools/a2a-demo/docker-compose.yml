@@ -1,0 +1,105 @@
+# A2A iki site demosu: dağıtıcı (D) ve fabrika (F), gerçek HTTPS ile.
+# Yalnızca yerel geliştirme içindir; eklenti paketine girmez (tools/ export-ignore).
+# Kullanım: tools/a2a-demo/demo.sh (bkz. tools/a2a-demo/README.md)
+
+name: aihs-a2a-demo
+
+x-wordpress: &wordpress
+  image: wordpress:php8.3-apache
+  depends_on:
+    - db
+  environment: &wp-env
+    WORDPRESS_DB_HOST: db
+    WORDPRESS_DB_USER: demo
+    WORDPRESS_DB_PASSWORD: demo
+    WORDPRESS_CONFIG_EXTRA: |
+      define( 'WP_ENVIRONMENT_TYPE', 'local' );
+      define( 'DISABLE_WP_CRON', true );
+
+x-cli: &cli
+  image: wordpress:cli-php8.3
+  user: "33:33"
+  depends_on:
+    - db
+  profiles: ["cli"]
+
+services:
+  db:
+    image: mariadb:11.4
+    environment:
+      MARIADB_ROOT_PASSWORD: demo
+      MARIADB_USER: demo
+      MARIADB_PASSWORD: demo
+    volumes:
+      - ./db-init.sql:/docker-entrypoint-initdb.d/db-init.sql:ro
+
+  dagitici:
+    <<: *wordpress
+    environment:
+      <<: *wp-env
+      WORDPRESS_DB_NAME: dagitici
+    volumes:
+      - wp_dagitici:/var/www/html
+      - ../..:/var/www/html/wp-content/plugins/ai-hazir-site:ro
+      - ./aihs-a2a-demo.php:/var/www/html/wp-content/mu-plugins/aihs-a2a-demo.php:ro
+
+  fabrika:
+    <<: *wordpress
+    environment:
+      <<: *wp-env
+      WORDPRESS_DB_NAME: fabrika
+    volumes:
+      - wp_fabrika:/var/www/html
+      - ../..:/var/www/html/wp-content/plugins/ai-hazir-site:ro
+      - ./aihs-a2a-demo.php:/var/www/html/wp-content/mu-plugins/aihs-a2a-demo.php:ro
+
+  # HTTPS önü: Caddy kendi yerel sertifika yetkilisiyle (tls internal) iki alan adına sertifika üretir.
+  # Kapsayıcılar dagitici.test ve fabrika.test adlarını bu vekile çözer.
+  proxy:
+    image: caddy:2.10
+    depends_on:
+      - dagitici
+      - fabrika
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+    networks:
+      default:
+        aliases:
+          - dagitici.test
+          - fabrika.test
+
+  cli-dagitici:
+    <<: *cli
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: demo
+      WORDPRESS_DB_PASSWORD: demo
+      WORDPRESS_DB_NAME: dagitici
+      WORDPRESS_CONFIG_EXTRA: |
+        define( 'WP_ENVIRONMENT_TYPE', 'local' );
+        define( 'DISABLE_WP_CRON', true );
+    volumes:
+      - wp_dagitici:/var/www/html
+      - ../..:/var/www/html/wp-content/plugins/ai-hazir-site:ro
+      - ./aihs-a2a-demo.php:/var/www/html/wp-content/mu-plugins/aihs-a2a-demo.php:ro
+      - ./adimlar.php:/demo/adimlar.php:ro
+
+  cli-fabrika:
+    <<: *cli
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: demo
+      WORDPRESS_DB_PASSWORD: demo
+      WORDPRESS_DB_NAME: fabrika
+      WORDPRESS_CONFIG_EXTRA: |
+        define( 'WP_ENVIRONMENT_TYPE', 'local' );
+        define( 'DISABLE_WP_CRON', true );
+    volumes:
+      - wp_fabrika:/var/www/html
+      - ../..:/var/www/html/wp-content/plugins/ai-hazir-site:ro
+      - ./aihs-a2a-demo.php:/var/www/html/wp-content/mu-plugins/aihs-a2a-demo.php:ro
+      - ./adimlar.php:/demo/adimlar.php:ro
+
+volumes:
+  wp_dagitici:
+  wp_fabrika:

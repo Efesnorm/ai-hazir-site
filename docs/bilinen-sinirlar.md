@@ -89,7 +89,8 @@ Bu liste bilerek bırakılan veya henüz çözülmemiş konuları toplar. Her ma
 - Yalnızca JSON-RPC bağlaması ve `SendMessage`; akış (SSE), anlık bildirim ve görev sorgulama yok (görevler anında sonuçlanır).
 - `A2A-Version` başlığı olmayan (0.3) istemciler reddedilir.
 - Kimlik doğrulama şeması yok (herkese açık; hız sınırı ve A7 güvenlik katmanı).
-- Uçtan uca iki site demosu henüz yapılmadı (adımlar: `docs/kullanim/a2a.md`).
+- Uçtan uca iki site demosu yerelde, gerçek HTTPS ile yapıldı (`tools/a2a-demo`); iki canlı siteyle demo henüz
+  yapılmadı (adımlar: `docs/kullanim/a2a.md`).
 
 ## Bilinen hata
 

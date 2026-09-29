@@ -5,6 +5,12 @@ Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, 
 
 ## [Yayımlanmamış]
 
+### Eklendi (geliştirme araçları, eklenti paketine girmez)
+- **A2A iki site demosu** (`tools/a2a-demo`, onay bekliyor): dagitici.test ve fabrika.test, Docker Compose + Caddy
+  (`tls internal`) ile gerçek HTTPS. Eşleşme → önizleme → insan onayı işleyicisi → fabrikanın teklif kutusu; iki
+  sitenin denetim kayıtları. Eklenti kodu değişmedi. Yerelde iki kez baştan sona çalıştırıldı; çıktı
+  `docs/demo/a2a-yerel-2026-09-29.md`.
+
 ### Test güncellemesi (onay bekliyor)
 - `AbilitiesTest::test_rate_limit` ve `RestCachingTest::test_rate_limit` ara sıra kırılıyordu: hız sınırlayıcı dakikalık
   pencere kullanıyor, istekler dakika dönümüne denk gelirse iki pencereye düşüp hepsi izinli sayılıyordu (0.10.0 /

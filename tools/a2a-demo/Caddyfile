@@ -1,0 +1,10 @@
+# A2A demosu: iki site HTTPS ile (Caddy yerel CA, "tls internal").
+dagitici.test {
+	tls internal
+	reverse_proxy dagitici:80
+}
+
+fabrika.test {
+	tls internal
+	reverse_proxy fabrika:80
+}
