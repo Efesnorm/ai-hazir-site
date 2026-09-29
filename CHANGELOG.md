@@ -3,6 +3,21 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.12.1] - 2026-09-29 (onay bekliyor)
+
+### Düzeltildi
+- Eklenti devre dışı bırakılınca `/ai-katalog/`, `/ai-hazir-dogrulama/` ve işletme sayfası adres kuralları WordPress'in
+  kayıtlı kurallarında kalıyordu (makedonya.tr öncesi paket denemesinde bulundu): devre dışı bırakma isteğinde kurallar
+  hâlâ kayıtlıyken yenileniyordu. Eklenti El Kitabı'nın yöntemiyle (önce kaydı sil, sonra yenile) her kural önce
+  unutulur, sonra kurallar yenilenir (`Platform/RewriteRules`). Yeni test: `DeactivateRewriteRulesTest` (eski kodda
+  kırılıyor).
+- **AI Hazır rozeti** yalnızca ölçülebilen kontrollerin üzerinden hesaplanan puanla kazanılabiliyordu (ör. ağırlığın
+  20/100'ü ölçülüp puan 100). Rozet için artık ağırlığın en az %80'i ölçülmüş olmalı (`Badge::MIN_COVERAGE`); tarama
+  ekranı kısmi ölçümde uyarı gösterir. Yeni test: `BadgeCoverageTest`.
+
+### Eklendi
+- Çeviri şablonu `languages/ai-hazir-site.pot` (WP-CLI `wp i18n make-pot`, 536 metin) ve `composer pot`.
+
 ## [1.12.0] - 2026-09-29
 
 ### Eklendi

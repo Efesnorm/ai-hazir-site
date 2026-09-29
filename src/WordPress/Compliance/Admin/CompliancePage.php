@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace AIHazirSite\WordPress\Compliance\Admin;
 
+use AIHazirSite\Core\Compliance\Badge;
 use AIHazirSite\Core\Compliance\CheckResult;
 use AIHazirSite\Core\Compliance\ScoreReport;
 use AIHazirSite\WordPress\Compliance\ComplianceModule;
@@ -107,6 +108,17 @@ final class CompliancePage {
 
 		if ( 0 === $report->measured_weight() ) {
 			$html .= '<div class="notice notice-warning inline" id="aihs-unreachable"><p>' . esc_html__( 'Site kendi adresine erişemedi, hiçbir kontrol ölçülemedi. Barındırma firmanız WordPress\'in kendine istek atmasını (loopback) engelliyor olabilir; Araçlar → Site Sağlığı ekranındaki "loopback" sonucuna bakın.', 'ai-hazir-site' ) . '</p></div>';
+		} elseif ( $report->measured_weight() < $report->total_weight() ) {
+			// 1.12.1: a score over part of the checks must not read as the whole picture.
+			$html .= '<div class="notice notice-warning inline" id="aihs-partial"><p>' . esc_html(
+				sprintf(
+					/* translators: 1: measured weight, 2: total weight, 3: minimum coverage percent for the badge. */
+					__( 'Puan yalnızca ölçülebilen kontrollerin üzerinden hesaplandı (%1$d/%2$d ağırlık). Ölçülemeyen kontroller aşağıda "ölçülemedi" diye görünür; çoğunlukla sitenin kendi adresine istek atamamasından ya da bot korumasından olur. AI Hazır rozeti için ağırlığın en az %%%3$d\'i ölçülmüş olmalı.', 'ai-hazir-site' ),
+					$report->measured_weight(),
+					$report->total_weight(),
+					Badge::MIN_COVERAGE
+				)
+			) . '</p></div>';
 		}
 
 		$html .= '<p>' . esc_html(

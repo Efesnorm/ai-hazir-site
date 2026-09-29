@@ -16,6 +16,7 @@ use AIHazirSite\Core\Features;
 use AIHazirSite\WordPress\Compliance\Admin\CompliancePage;
 use AIHazirSite\WordPress\Compliance\ComplianceModule;
 use AIHazirSite\WordPress\Module;
+use AIHazirSite\WordPress\Platform\RewriteRules;
 use AIHazirSite\WordPress\Platform\PageCache;
 
 /**
@@ -49,7 +50,7 @@ final class BadgeModule implements Module {
 	 * Removes the rewrite rule on deactivation.
 	 */
 	public function deactivate(): void {
-		flush_rewrite_rules( false );
+		RewriteRules::remove_and_flush( self::REWRITE );
 	}
 
 	/**

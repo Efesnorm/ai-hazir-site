@@ -57,7 +57,8 @@
 			"@phpstan",
 			"@test"
 		],
-		"paketle": "php bin/paketle"
+		"paketle": "php bin/paketle",
+		"pot": "npx wp-env run cli --env-cwd=wp-content/plugins/ai-hazir-site wp i18n make-pot . languages/ai-hazir-site.pot --slug=ai-hazir-site --domain=ai-hazir-site --exclude=vendor,tests,tools,bin,node_modules,dist,docs"
 	},
 	"scripts-descriptions": {
 		"test": "Birim ve entegrasyon testlerini çalıştırır (entegrasyon için wp-env açık olmalı).",
@@ -67,6 +68,7 @@
 		"phpcs": "WordPress Kodlama Standartları denetimi.",
 		"phpcbf": "Kod stili hatalarını otomatik düzeltir.",
 		"paketle": "Kurulabilir eklenti zip'ini dist/ altına üretir.",
+		"pot": "Çeviri şablonunu (languages/ai-hazir-site.pot) WP-CLI ile yeniden üretir (wp-env açık olmalı).",
 		"check": "phpcs + phpstan + tüm testler."
 	}
 }

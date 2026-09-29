@@ -21,6 +21,7 @@ use AIHazirSite\WordPress\Catalog\WpListingRepository;
 use AIHazirSite\WordPress\Catalog\WpProfileRepository;
 use AIHazirSite\WordPress\I18n\Multilingual;
 use AIHazirSite\WordPress\Module;
+use AIHazirSite\WordPress\Platform\RewriteRules;
 use AIHazirSite\WordPress\Platform\WpClock;
 use AIHazirSite\WordPress\Portal\Portal;
 use AIHazirSite\WordPress\Platform\WpSettings;
@@ -58,7 +59,7 @@ final class SchemaModule implements Module {
 	 * Removes the rewrite rule on deactivation.
 	 */
 	public function deactivate(): void {
-		flush_rewrite_rules( false );
+		RewriteRules::remove_and_flush( self::REWRITE );
 	}
 
 	/**

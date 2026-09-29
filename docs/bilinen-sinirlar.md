@@ -4,7 +4,8 @@ Bu liste bilerek bırakılan veya henüz çözülmemiş konuları toplar. Her ma
 
 ## Kullanım
 
-- Arayüz metinleri Türkçe; çeviri dosyası (`.pot`) henüz üretilmiyor.
+- Arayüz metinleri Türkçe. Çeviri şablonu `languages/ai-hazir-site.pot` (1.12.1, `composer pot`); eklentiyle hazır
+  çeviri (`.mo`) gelmiyor, çeviri Loco Translate gibi araçlarla ya da WordPress dil klasörüne konan dosyayla yapılır.
 - Ayarlar ekranındaki önkoşul kuralları yalnızca ekran içindir; WP-CLI ile önkoşulu kapalı bir özellik açılabilir
   (ör. katalog kapalıyken REST API boş katalog döndürür).
 

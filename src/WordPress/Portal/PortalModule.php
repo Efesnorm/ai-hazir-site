@@ -11,6 +11,7 @@ namespace AIHazirSite\WordPress\Portal;
 
 use AIHazirSite\Core\Features;
 use AIHazirSite\WordPress\Module;
+use AIHazirSite\WordPress\Platform\RewriteRules;
 use AIHazirSite\WordPress\Schema\SchemaModule;
 
 /**
@@ -43,7 +44,7 @@ final class PortalModule implements Module {
 	 * Removes the page rule on deactivation.
 	 */
 	public function deactivate(): void {
-		flush_rewrite_rules( false );
+		RewriteRules::remove_and_flush( Portal::REWRITE );
 	}
 
 	/**

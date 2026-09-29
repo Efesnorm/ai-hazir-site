@@ -28,6 +28,9 @@ geçmişteki en eski tarama kullanılır.
 
 Son taramanın puanı eşiğe (varsayılan **70**) ulaşınca "AI Hazır" rozeti gösterilir. Eşiğin altında,
 tarama yokken veya özellik kapalıyken hiçbir şey gösterilmez (kısa kodun kendisi de görünmez).
+1.12.1'den beri rozet için ayrıca kontrollerin ağırlığının **en az %80'i ölçülmüş** olmalıdır: puan yalnızca
+ölçülebilen kontrollerin üzerinden hesaplandığı için, çoğu kontrolü ölçülemeyen bir tarama yüksek puan gösterip yanıltıcı
+bir rozet üretmesin. Tarama ekranı bu durumda uyarı gösterir.
 
 - **Blok:** düzenleyicide "AI Hazır rozeti" bloğunu ekleyin (Widget'lar grubu).
 - **Kısa kod:** `[aihs_rozet]`
