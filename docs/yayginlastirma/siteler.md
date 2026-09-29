@@ -5,11 +5,11 @@
 
 | Site | PRD rolü | Önerilen kurulum | Platform | AI uyum puanı | Önbellek | SEO | Çoklu dil | Notlar | Durum |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| voltkab.com | **Kablo dağıtıcı** (ilk pilot) | Ürün (`urun`) + eşleştirme | WordPress, PHP 8.3 | 69 | WP Rocket | Rank Math | GTranslate | A2A canlı demosunun alıcı ucu (aranan ilan). GTranslate dil listesi okunamaz; diller elle. | Kurulmadı |
-| intekarglobal.com | **Kablo fabrikası** | Ürün (`urun`) | WordPress 7.1.2 | 42 | WP Rocket | – | – | A2A canlı demosunun satıcı ucu. Hiçbir sayfada JSON-LD yok: en çok kazanacak sitelerden. Imunify360. | Kurulmadı |
+| voltkab.com | **Kablo dağıtıcı** (ilk pilot) | Ürün (`urun`) + eşleştirme | WordPress, PHP 8.3 | 69 | WP Rocket | Rank Math | GTranslate | A2A canlı demosunun alıcı ucu (aranan ilan). GTranslate dil listesi okunamaz; diller elle. | **Kurulu (yalnızca ölçüm + önbellek entegrasyonu). Önce dönemi 2026-09-30 → 2026-10-21** |
+| intekarglobal.com | **Kablo fabrikası** | Ürün (`urun`) | WordPress 7.1.2 | 42 | WP Rocket | – | – | A2A canlı demosunun satıcı ucu. Hiçbir sayfada JSON-LD yok: en çok kazanacak sitelerden. Imunify360. **Barındırma sunucu önbelleği (LiteSpeed/gws) botlara eski kopya veriyor; barındırmaya istisna talebi gerekli.** | **Kurulu (yalnızca ölçüm + önbellek entegrasyonu). Önce dönemi 2026-09-30 → 2026-10-21** |
 | balkantrade.com.tr | İhracat firması | İhracatçı (`ihracat`) | WordPress 7.1.2 | 71 | WP Rocket | Rank Math | **TranslatePress** | 1.12.0 TranslatePress desteği bunun için; canlıda denenmeli. Imunify360. | Kurulmadı |
 | erenlegal.com.tr | Hukuk firması | Hizmet, yalnızca okuma (`hizmet`) | WordPress | 55 (llms.txt ölçülemedi) | WP Rocket | – | – | PRD: yalnızca okuma, metni firma onaylar. `/llms.txt` isteği tamamlanmadı (Imunify360 olabilir). | Kurulmadı |
-| makedonya.tr | Turizm firması / deneme | Tur operatörü (`tur`) | WordPress 7.1.2 | **94** (eklentiyle, 1.8.0) | WP Rocket | Rank Math | – | Deneme sitesi. Barındırma hız sınırı (~20 istek → 1 saat 429), Imunify360. | Kurulu, deneme sürüyor |
+| makedonya.tr | Turizm firması / deneme | Tur operatörü (`tur`) | WordPress 7.1.2 | **94** (eklentiyle, 1.8.0) | WP Rocket | Rank Math | – | Deneme sitesi, 1.13.0. IndexNow çalışıyor (2026-09-29: yanıt 202, anahtar dosyası Bing/Yandex'e açık). Barındırma hız sınırı (~20 istek → 1 saat 429), Imunify360. | Kurulu, deneme sürüyor |
 | kuzeymakedonya.com.tr | Turizm portalı | Tur / portal (karar) | WordPress 7.1.2 | 72 | WP Rocket | Rank Math | – | Imunify360. | Kurulmadı |
 | kosova.org.tr | Turizm portalı | Tur / portal (karar) | WordPress | 42 | LiteSpeed Cache | Rank Math | – | Ana sayfada JSON-LD yok. | Kurulmadı |
 | arnavutluk.org.tr | Turizm portalı | Tur / portal (karar) | WordPress 7.1.2 | 68 | WP Rocket | Rank Math | – | Imunify360. | Kurulmadı |
