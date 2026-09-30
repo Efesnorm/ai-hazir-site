@@ -27,6 +27,7 @@ final class IntegrationsPage {
 	public const BYPASS  = 'bot_cache_bypass';
 	public const SITEMAP = 'catalog_sitemap';
 
+	public const SERVER       = 'litespeed_server_bypass';
 	public const INDEXNOW     = 'indexnow';
 	public const INDEXNOW_NOW = 'indexnow_now';
 
@@ -73,7 +74,33 @@ final class IntegrationsPage {
 			. ( isset( $notices[ $message ] ) ? '<div class="notice notice-success"><p>' . esc_html( $notices[ $message ] ) . '</p></div>' : '' )
 			. '<p class="description">' . esc_html__( 'Sitenizdeki diğer eklentilerle yapılabilecek işler. Hiçbiri kendiliğinden yapılmaz; her birini buradan açıp kapatabilirsiniz. Kapatınca eklediğimiz her şey geri alınır.', 'ai-hazir-site' ) . '</p>';
 
-		return $html . self::bypass_section() . self::sitemap_section() . self::indexnow_section();
+		return $html . self::bypass_section() . self::server_section() . self::sitemap_section() . self::indexnow_section();
+	}
+
+	/**
+	 * LiteSpeed server cache without the LiteSpeed Cache plugin (1.14.0).
+	 */
+	private static function server_section(): string {
+		$on = Features::is_enabled( Features::LITESPEED_SERVER_BYPASS );
+		if ( ! $on && ! LiteSpeedServerBypass::detected() ) {
+			return '';
+		}
+		$html = '<h2>' . esc_html__( 'LiteSpeed sunucu önbelleği', 'ai-hazir-site' ) . '</h2>'
+			. '<p>' . esc_html__( 'Sunucunuz LiteSpeed. Bazı barındırmalar LiteSpeed Cache eklentisi olmadan da sayfaları sunucuda önbelleğe alır; AI botlarının istekleri o zaman WordPress\'e hiç ulaşmaz (AI Ölçüm sayamaz, botlar eski kopyayı görür). Açınca .htaccess dosyasının WordPress bölümünün başına, AI botlarına sunucu önbelleğinden sayfa sunulmamasını söyleyen tek bir kural eklenir ve bot yanıtlarına "saklama" başlıkları konur. İnsan ziyaretçiler için önbellek aynen çalışır.', 'ai-hazir-site' ) . '</p>';
+		if ( LiteSpeedBypass::detected() ) {
+			return $html . '<p><em>' . esc_html__( 'LiteSpeed Cache eklentisi kurulu: yukarıdaki "AI botlarına önbellekten sayfa sunma" yeterli; bu satıra gerek yok.', 'ai-hazir-site' ) . '</em></p>'
+				. ( $on ? self::toggle( self::SERVER, true ) : '' );
+		}
+		$html .= '<p class="description">' . esc_html__( 'Açmadan önce .htaccess dosyasının yedeğini alın. Kapatınca kural kaldırılır.', 'ai-hazir-site' ) . '</p>';
+
+		$last = LiteSpeedServerBypass::last();
+		if ( $on && null !== $last && ! $last['written'] ) {
+			$html .= '<div class="notice notice-warning inline"><p>' . esc_html__( '.htaccess yazılamadı (dosya yazılamıyor ya da kalıcı bağlantılar "Düz" ayarında). Aşağıdaki satırları .htaccess dosyasında "# BEGIN WordPress" satırının hemen altına elle ekleyin:', 'ai-hazir-site' ) . '</p>'
+				. '<pre>' . esc_html( implode( "\n", LiteSpeedServerBypass::lines() ) ) . '</pre></div>';
+		} elseif ( $on ) {
+			$html .= '<p>' . esc_html( LiteSpeedServerBypass::in_htaccess() ? __( '.htaccess: kural yerinde.', 'ai-hazir-site' ) : __( '.htaccess: kural bulunamadı (başka bir araç dosyayı değiştirmiş olabilir). Kapatıp yeniden açın.', 'ai-hazir-site' ) ) . '</p>';
+		}
+		return $html . self::toggle( self::SERVER, $on );
 	}
 
 	/**
@@ -195,6 +222,8 @@ final class IntegrationsPage {
 			IntegrationsModule::set_bypass( $on );
 		} elseif ( self::SITEMAP === $id ) {
 			IntegrationsModule::set_sitemap( $on );
+		} elseif ( self::SERVER === $id ) {
+			IntegrationsModule::set_server_bypass( $on );
 		} elseif ( self::INDEXNOW === $id ) {
 			$missing = Features::missing_requirements( Features::INDEXNOW );
 			if ( ! $on || array() === $missing['any'] ) {

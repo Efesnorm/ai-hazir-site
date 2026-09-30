@@ -3,6 +3,35 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.14.0] - 2026-09-30
+
+### Eklendi
+- **LiteSpeed sunucu önbelleği** (`litespeed_server_bypass`, varsayılan kapalı; plan onaylı:
+  `docs/planlar/1.14.0-litespeed-sunucu-onbellegi.md`). intekarglobal.com'da barındırmanın LiteSpeed sunucu önbelleği,
+  LiteSpeed Cache eklentisi olmadan da sayfaları saklayıp AI botlarına veriyordu; istekler WordPress'e ulaşmadığı için
+  AI Ölçüm sayamıyordu.
+  - Açınca `.htaccess`'teki WordPress bloğunun **başına** (WordPress'in `[L]` kurallarından önce) LiteSpeed'in belgelediği
+    kural yazılır: `RewriteCond %{HTTP_USER_AGENT} (GPTBot|…) [NC]` + `RewriteRule .* - [E=Cache-Control:no-cache]`,
+    `<IfModule LiteSpeed>` içinde. Yazma WordPress'in `mod_rewrite_rules` süzgeci ve `save_mod_rewrite_rules()` ile.
+  - AI botu olarak tanınan isteklerin yanıtına `Cache-Control: private, no-store` ve `X-LiteSpeed-Cache-Control: no-cache`.
+  - Entegrasyonlar ekranında yalnızca sunucu LiteSpeed ise ve LiteSpeed Cache eklentisi yoksa görünür; `.htaccess`
+    yazılamazsa elle eklenecek satırlar gösterilir. Kapatınca, devre dışı bırakınca kural kaldırılır.
+  - Yerelde yönetim ekranından açıp kapatarak denendi: kural doğru yere yazıldı, site 200, kapatınca silindi.
+  - Testler: `UserAgentRewriteRuleTest`, `LiteSpeedServerTest`.
+
+### Düzeltildi
+- Kaldırmadan sonra zamanlanmış IndexNow bildirimi kalıyordu (paket denemesinde bulundu): kaldırma ilanları silerken
+  `deleted_post` IndexNow'u tetikliyordu. Kaldırmanın sonunda eklentinin bütün zamanlanmış görevleri silinir
+  (`Uninstaller::cron_hooks()`). Test: `UninstallCronTest`. Sistem kontrolü raporu:
+  `docs/planlar/SISTEM-KONTROLU-2026-09-30.md`.
+
+### Test güncellemesi (onaylı)
+- `FeaturesTest`: anahtar listesine `litespeed_server_bypass`.
+
+### Bilinen sınırlar
+- WP-CLI'den açılınca `.htaccess` yazılmaz (WordPress `save_mod_rewrite_rules()` web sunucusu dışında yazmaz); ekrandan
+  açılmalı. Önde ayrı bir önbellek katmanı (ör. `gws`) varsa ve bu başlıklara uymuyorsa barındırma istisnası gerekir.
+
 ## [1.13.0] - 2026-09-29
 
 ### Değişti

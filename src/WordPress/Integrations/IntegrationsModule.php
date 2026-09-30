@@ -34,14 +34,20 @@ final class IntegrationsModule implements Module {
 		if ( Features::is_enabled( Features::CATALOG_SITEMAP ) ) {
 			CatalogSitemap::hook();
 		}
+		if ( Features::is_enabled( Features::LITESPEED_SERVER_BYPASS ) ) {
+			LiteSpeedServerBypass::hook();
+		}
 	}
 
 	/**
-	 * Reverts our entries in other plugins (their settings must not keep them without us).
+	 * Reverts our entries in other plugins and in .htaccess (they must not stay without us).
 	 */
 	public function deactivate(): void {
 		if ( Features::is_enabled( Features::BOT_CACHE_BYPASS ) ) {
 			self::set_bypass( false );
+		}
+		if ( Features::is_enabled( Features::LITESPEED_SERVER_BYPASS ) ) {
+			self::set_server_bypass( false );
 		}
 		if ( Features::is_enabled( Features::CATALOG_SITEMAP ) ) {
 			CatalogSitemap::flush_caches();
@@ -59,6 +65,17 @@ final class IntegrationsModule implements Module {
 			WpRocketBypass::apply( $on );
 		}
 		LiteSpeedBypass::apply( $on );
+	}
+
+	/**
+	 * Turns the LiteSpeed server cache rule on or off (1.14.0).
+	 *
+	 * @param bool $on New state.
+	 * @return bool Whether .htaccess was written.
+	 */
+	public static function set_server_bypass( bool $on ): bool {
+		Features::set( Features::LITESPEED_SERVER_BYPASS, $on );
+		return LiteSpeedServerBypass::apply( $on );
 	}
 
 	/**
