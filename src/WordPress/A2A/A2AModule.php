@@ -47,6 +47,11 @@ final class A2AModule implements Module {
 	public const DEFAULT_LIMIT = 30;
 
 	/**
+	 * Largest request body parsed, in bytes (1.14.2; filter `aihs_a2a_max_body`, at least 1 KB).
+	 */
+	public const MAX_BODY = 65536;
+
+	/**
 	 * Registers hooks.
 	 */
 	public function register(): void {
@@ -170,6 +175,13 @@ final class A2AModule implements Module {
 			$response = new WP_REST_Response( JsonRpcServer::error( null, -32000, 'Çok fazla istek.' ), 429 );
 			$response->header( 'Retry-After', (string) $retry );
 			return $response;
+		}
+
+		// 1.14.2: an oversized body is refused unparsed (HTTP 413, RFC 9110 section 15.5.14).
+		$max = max( 1024, (int) apply_filters( 'aihs_a2a_max_body', self::MAX_BODY ) );
+		if ( strlen( $request->get_body() ) > $max ) {
+			$audit->record( Inquiry::CHANNEL_A2A, $hash, 'message', AuditLog::OUTCOME_INVALID, null, 'error=-32600;too_large' );
+			return new WP_REST_Response( JsonRpcServer::error( null, -32600, 'İstek çok büyük.' ), 413 );
 		}
 
 		$body   = json_decode( $request->get_body(), true );
