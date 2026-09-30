@@ -3,7 +3,7 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
-## [1.14.0] - 2026-09-30 (onay bekliyor: birleştirme)
+## [1.14.0] - 2026-09-30
 
 ### Eklendi
 - **LiteSpeed sunucu önbelleği** (`litespeed_server_bypass`, varsayılan kapalı; plan onaylı:

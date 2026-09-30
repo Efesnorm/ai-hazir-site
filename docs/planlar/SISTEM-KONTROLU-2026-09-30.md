@@ -1,7 +1,7 @@
 # Sistem kontrolü – 2026-09-30 gecesi
 
 Kullanıcı isteği: "Sistemin çalışıp çalışmadığını kontrol edecek testlere devam; bulduğun sorunları not et."
-Kod: `litespeed-sunucu-1.14.0` dalı (1.14.0, birleştirme onayı bekliyor).
+Kod: `litespeed-sunucu-1.14.0` dalı (1.14.0, 2026-09-30 onaylandı ve birleştirildi).
 
 ## Sonuçlar
 
