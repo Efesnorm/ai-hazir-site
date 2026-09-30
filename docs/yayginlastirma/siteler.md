@@ -10,11 +10,11 @@
 | balkantrade.com.tr | İhracat firması | İhracatçı (`ihracat`) | WordPress 7.1.2 | 71 | WP Rocket | Rank Math | **TranslatePress** | 1.12.0 TranslatePress desteği bunun için; canlıda denenmeli. Imunify360. | Kurulmadı |
 | erenlegal.com.tr | Hukuk firması | Hizmet, yalnızca okuma (`hizmet`) | WordPress | 55 (llms.txt ölçülemedi) | WP Rocket | – | – | PRD: yalnızca okuma, metni firma onaylar. `/llms.txt` isteği tamamlanmadı (Imunify360 olabilir). | Kurulmadı |
 | makedonya.tr | Turizm firması / deneme | Tur operatörü (`tur`) | WordPress 7.1.2 | **94** (eklentiyle, 1.8.0) | WP Rocket | Rank Math | – | Deneme sitesi, 1.13.0. IndexNow çalışıyor (2026-09-29: yanıt 202, anahtar dosyası Bing/Yandex'e açık). Barındırma hız sınırı (~20 istek → 1 saat 429), Imunify360. | Kurulu, deneme sürüyor |
-| kuzeymakedonya.com.tr | Turizm portalı | Tur / portal (karar) | WordPress 7.1.2 | 72 | WP Rocket | Rank Math | – | Imunify360. | Kurulmadı |
-| kosova.org.tr | Turizm portalı | Tur / portal (karar) | WordPress | 42 | LiteSpeed Cache | Rank Math | – | Ana sayfada JSON-LD yok. | Kurulmadı |
-| arnavutluk.org.tr | Turizm portalı | Tur / portal (karar) | WordPress 7.1.2 | 68 | WP Rocket | Rank Math | – | Imunify360. | Kurulmadı |
-| makedonya.org.tr | Turizm portalı | Tur / portal (karar) | WordPress 7.1.2 | 74 (llms.txt ölçülemedi) | WP Rocket | Rank Math | – | `/llms.txt` isteği tamamlanmadı (Imunify360 olabilir). | Kurulmadı |
-| sirbistan.org.tr | Turizm portalı | Tur / portal (karar) | WordPress 7.1.2 | 38 | LiteSpeed Cache | – | – | Ana sayfada JSON-LD yok, SEO eklentisi yok: en çok kazanacak site. Imunify360. | Kurulmadı |
+| kuzeymakedonya.com.tr | Turizm portalı | Tur (`tur`, 2026-09-30 kararı) | WordPress 7.1.2 | 72 | WP Rocket | Rank Math | – | Imunify360. | Kurulmadı |
+| kosova.org.tr | Turizm portalı | Tur (`tur`, 2026-09-30 kararı) | WordPress | 42 | LiteSpeed Cache | Rank Math | – | Ana sayfada JSON-LD yok. | Kurulmadı |
+| arnavutluk.org.tr | Turizm portalı | Tur (`tur`, 2026-09-30 kararı) | WordPress 7.1.2 | 68 | WP Rocket | Rank Math | – | Imunify360. | Kurulmadı |
+| makedonya.org.tr | Turizm portalı | Tur (`tur`, 2026-09-30 kararı) | WordPress 7.1.2 | 74 (llms.txt ölçülemedi) | WP Rocket | Rank Math | – | `/llms.txt` isteği tamamlanmadı (Imunify360 olabilir). | Kurulmadı |
+| sirbistan.org.tr | Turizm portalı | Tur (`tur`, 2026-09-30 kararı) | WordPress 7.1.2 | 38 | LiteSpeed Cache | – | – | Ana sayfada JSON-LD yok, SEO eklentisi yok: en çok kazanacak site. Imunify360. | Kurulmadı |
 
 Ortak gözlemler:
 - Sitelerin çoğunda başka bir MCP sunucusu (`/wp-json/mcp`) var ama kimlik doğrulama istiyor (AI agentlara kapalı); puanlama
