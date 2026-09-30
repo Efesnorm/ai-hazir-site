@@ -3,6 +3,37 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.18.0] - 2026-10-01
+
+Plan onaylı: `docs/planlar/1.18.0-openapi-ve-llms-full.md`.
+
+### Eklendi
+- **OpenAPI 3.1 belgesi:** `GET /wp-json/aihs/v1/openapi.json` (`application/vnd.oai.openapi+json`). Sitede açık olan uç
+  noktaları tarif eder: profil, ilanlar (filtreler), tek ilan, şablonlar, JSON şemaları; portal açıksa işletmeler,
+  teklif kutusu açıksa `POST /inquiries` (gövde ve 201 yanıtı). Yanıt şemaları `RestSchemas`'tan, talep şemaları
+  yeteneklerin (`InquirySchemas`) kendi şemalarından gelir; tek kaynak. 304, 400, 404 ve 429 (`Retry-After`) yanıtları
+  tanımlı. Fonksiyon çağıran agentlar ve OpenAPI'den araç üreten araçlar (ör. ChatGPT "Actions") doğrudan kullanabilir.
+- Keşif: `rel="service-desc"` (RFC 8631) artık OpenAPI belgesini, IANA'da OpenAPI için kayıtlı ortam türüyle gösterir
+  (önceden REST kök adresi, `application/json`). llms.txt'nin Optional bölümünde "AI Katalog API tanımı (OpenAPI 3.1)".
+- /ai-katalog/ sayfasında `<link rel="alternate" type="text/markdown" href="/llms.txt">`: llms.txt önerisinin
+  (llmstxt.org) Markdown sürümü için tavsiye ettiği bağlantı; llms.txt aynı katalogu taşır.
+- Ayrı anahtar yok (onaylı): REST API'nin (`rest_api`) parçası; REST kapalıysa belge yok.
+
+### Değerlendirildi, yapılmadı
+- `llms-full.txt`: llms.txt önerisinin parçası değil (teamül); bizim llms.txt zaten her geçerli ilanı tüm ayrıntısıyla
+  içeriyor. Büyük kataloglar için `docs/planlar/GELISTIRME-ALANLARI.md`'ye yazıldı.
+
+### Test
+- `OpenApiDocumentTest`: belge, OpenAPI Initiative'in resmi 3.1 JSON Şemasına (spec.openapis.org, 2022-10-07;
+  `tests/fixtures/openapi/`) karşı her durumda doğrulanır; kayıtlı her `aihs/v1` rotası belgede ve belgede fazlası yok
+  (sapma testi); ortam türü; keşif, llms.txt ve katalog bağlantıları; REST kapalıyken 404.
+- Yalnızca geliştirmede: `opis/json-schema` (JSON Schema 2020-12 doğrulayıcı; pakete girmez). Bilinen sınır: kütüphane
+  resmi şemadaki `$dynamicRef: "#meta"` referansını standarda aykırı çözüyor; test, dosyayı değiştirmeden bellekte
+  standardın gösterdiği hedefe çevirir (ayrıntı: `tests/fixtures/openapi/KAYNAK.md`).
+
+### Test güncellemesi (onaylı)
+- `DiscoveryLinksTest`, `DiscoveryTest`: `service-desc` adresi `…/openapi.json`, türü `application/vnd.oai.openapi+json`.
+
 ## [1.17.0] - 2026-10-01
 
 ### Eklendi

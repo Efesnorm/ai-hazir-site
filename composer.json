@@ -11,6 +11,7 @@
 	},
 	"require-dev": {
 		"brain/monkey": "^2.6",
+		"opis/json-schema": "^2.3",
 		"phpcompatibility/phpcompatibility-wp": "^2.1",
 		"phpstan/extension-installer": "^1.4",
 		"phpstan/phpstan": "^2.1",

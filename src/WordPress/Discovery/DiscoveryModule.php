@@ -55,7 +55,7 @@ final class DiscoveryModule implements Module {
 	public static function links(): array {
 		return DiscoveryLinks::links(
 			Features::is_enabled( Features::LLMS_TXT ) && null === LlmsModule::physical_file() ? home_url( '/' . LlmsModule::FILE ) : '',
-			Features::is_enabled( Features::REST_API ) ? RestModule::url() : ''
+			Features::is_enabled( Features::REST_API ) ? RestModule::url( 'openapi.json' ) : ''
 		);
 	}
 

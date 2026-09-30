@@ -81,6 +81,13 @@ Geliştirme ortamında (wp-env) Claude Desktop, sunucuyu WP-CLI üzerinden doğr
 
 Canlı bir sunucuda WP-CLI ile bağlanacaksanız `--user` için yalnızca okuma yetkisi olan bir kullanıcı kullanın.
 
+## REST ve OpenAPI (1.18.0)
+
+MCP kullanmayan agentlar ve araçlar aynı kataloğu REST ile okuyabilir. `rest_api` açıkken API'nin tamamı OpenAPI 3.1
+belgesiyle tarif edilir: `https://siteniz.com/wp-json/aihs/v1/openapi.json`. Bu adres sayfalardaki keşif bağlantısında
+(`rel="service-desc"`) ve llms.txt'de de yer alır. OpenAPI'den araç üreten sistemlere (ör. ChatGPT'de özel GPT
+"Actions") bu adres verilebilir; kimlik doğrulama gerekmez.
+
 ## Güvenlik ve sınırlar
 
 - Katalog araçları yalnızca okur (`readOnlyHint`); talep aracı yazar ama hiçbir şeyi otomatik onaylamaz.

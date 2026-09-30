@@ -80,8 +80,8 @@ final class DiscoveryTest extends WP_UnitTestCase {
 
 		$head = self::output( 'wp_head' );
 		$this->assertStringContainsString( '<link rel="describedby" type="text/markdown" href="' . home_url( '/llms.txt' ) . '"', $head );
-		$this->assertStringContainsString( '<link rel="service-desc" type="application/json" href="' . RestModule::url() . '"', $head );
-		$this->assertSame( '<' . home_url( '/llms.txt' ) . '>; rel="describedby"; type="text/markdown", <' . RestModule::url() . '>; rel="service-desc"; type="application/json"', DiscoveryLinks::header( DiscoveryModule::links() ) );
+		$this->assertStringContainsString( '<link rel="service-desc" type="application/vnd.oai.openapi+json" href="' . RestModule::url( 'openapi.json' ) . '"', $head );
+		$this->assertSame( '<' . home_url( '/llms.txt' ) . '>; rel="describedby"; type="text/markdown", <' . RestModule::url( 'openapi.json' ) . '>; rel="service-desc"; type="application/vnd.oai.openapi+json"', DiscoveryLinks::header( DiscoveryModule::links() ) );
 		$this->assertNotFalse( has_action( 'template_redirect', array( DiscoveryModule::class, 'send_header' ) ) );
 
 		Features::set( Features::REST_API, false );

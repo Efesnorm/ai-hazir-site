@@ -20,7 +20,7 @@ use PHPUnit\Framework\TestCase;
 final class DiscoveryLinksTest extends TestCase {
 
 	private const LLMS = 'https://ornek.com/llms.txt';
-	private const API  = 'https://ornek.com/wp-json/aihs/v1/';
+	private const API  = 'https://ornek.com/wp-json/aihs/v1/openapi.json';
 
 	/**
 	 * Only the resources that are on.
@@ -40,7 +40,7 @@ final class DiscoveryLinksTest extends TestCase {
 	public function test_html(): void {
 		$this->assertSame(
 			'<link rel="describedby" type="text/markdown" href="https://ornek.com/llms.txt" title="llms.txt">' . "\n"
-			. '<link rel="service-desc" type="application/json" href="https://ornek.com/wp-json/aihs/v1/" title="AI Katalog API">' . "\n",
+			. '<link rel="service-desc" type="application/vnd.oai.openapi+json" href="https://ornek.com/wp-json/aihs/v1/openapi.json" title="AI Katalog API">' . "\n",
 			DiscoveryLinks::html( DiscoveryLinks::links( self::LLMS, self::API ) )
 		);
 	}
@@ -50,7 +50,7 @@ final class DiscoveryLinksTest extends TestCase {
 	 */
 	public function test_header(): void {
 		$this->assertSame(
-			'<https://ornek.com/llms.txt>; rel="describedby"; type="text/markdown", <https://ornek.com/wp-json/aihs/v1/>; rel="service-desc"; type="application/json"',
+			'<https://ornek.com/llms.txt>; rel="describedby"; type="text/markdown", <https://ornek.com/wp-json/aihs/v1/openapi.json>; rel="service-desc"; type="application/vnd.oai.openapi+json"',
 			DiscoveryLinks::header( DiscoveryLinks::links( self::LLMS, self::API ) )
 		);
 	}

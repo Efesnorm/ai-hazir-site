@@ -9,7 +9,9 @@ declare(strict_types=1);
 
 namespace AIHazirSite\WordPress\Rest;
 
+use AIHazirSite\Adapters\Abilities\InquirySchemas;
 use AIHazirSite\Adapters\Rest\ListingsQuery;
+use AIHazirSite\Adapters\Rest\OpenApiBuilder;
 use AIHazirSite\Adapters\Rest\RestResponder;
 use AIHazirSite\Adapters\Rest\RestSchemas;
 use AIHazirSite\Core\Catalog\CompanyProfile;
@@ -20,6 +22,7 @@ use AIHazirSite\WordPress\Catalog\CatalogReader;
 use AIHazirSite\WordPress\Catalog\WpListingRepository;
 use AIHazirSite\WordPress\Catalog\WpProfileRepository;
 use AIHazirSite\WordPress\I18n\Multilingual;
+use AIHazirSite\WordPress\Inquiry\InquiryChannels;
 use AIHazirSite\WordPress\Module;
 use AIHazirSite\WordPress\Platform\WpCache;
 use AIHazirSite\WordPress\Platform\WpClock;
@@ -100,6 +103,7 @@ final class RestModule implements Module {
 		);
 		register_rest_route( self::NAMESPACE, '/listings/(?P<id>\d+)', $get( array( self::class, 'get_listing' ) ) );
 		register_rest_route( self::NAMESPACE, '/templates', $get( array( self::class, 'get_templates' ) ) );
+		register_rest_route( self::NAMESPACE, '/openapi.json', $get( array( self::class, 'get_openapi' ) ) );
 		register_rest_route( self::NAMESPACE, '/schema/(?P<name>' . implode( '|', RestSchemas::NAMES ) . ')', $get( array( self::class, 'get_schema' ) ) );
 		if ( Portal::active() ) {
 			register_rest_route( self::NAMESPACE, '/businesses', $get( array( self::class, 'get_businesses' ) ) );
@@ -214,6 +218,46 @@ final class RestModule implements Module {
 		$responder = self::responder();
 		$used      = $responder->used_templates( ( new WpProfileRepository() )->get(), SchemaModule::listings(), ( new WpClock() )->today() );
 		return self::respond( $request, $responder->templates( $used ), null );
+	}
+
+	/**
+	 * GET /openapi.json: the RFC 8631 service description (1.18.0).
+	 *
+	 * @param WP_REST_Request $request Request.
+	 */
+	public static function get_openapi( WP_REST_Request $request ): WP_REST_Response {
+		$response = self::respond( $request, self::openapi(), null );
+		$response->header( 'Content-Type', OpenApiBuilder::MEDIA_TYPE . '; charset=utf-8' );
+		return $response;
+	}
+
+	/**
+	 * OpenAPI 3.1 document of the endpoints that are on now (1.18.0).
+	 *
+	 * @return array<string, mixed>
+	 */
+	public static function openapi(): array {
+		$request = array();
+		$receipt = array();
+		if ( InquiryChannels::rest_enabled() ) {
+			$request                         = InquirySchemas::input( InquiryChannels::kinds() );
+			$request['properties']['source'] = array(
+				'type'        => 'string',
+				'enum'        => array( 'ai', 'human' ),
+				'description' => __( 'Talebi kim yazıyor: bir AI agent mı, bir insan mı (isteğe bağlı).', 'ai-hazir-site' ),
+			);
+			$receipt                         = InquirySchemas::output();
+		}
+		$name = ( new WpProfileRepository() )->get()->name;
+		return OpenApiBuilder::build(
+			'' !== $name ? $name : (string) get_bloginfo( 'name' ),
+			defined( 'AIHS_VERSION' ) ? (string) AIHS_VERSION : '0',
+			untrailingslashit( self::url() ),
+			Multilingual::active(),
+			Portal::active(),
+			$request,
+			$receipt
+		);
 	}
 
 	/**
