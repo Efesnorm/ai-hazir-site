@@ -34,6 +34,11 @@ final class WpInquiryNotifier implements InquiryNotifier {
 		$listing = null === $inquiry->listing_id ? null : ( new WpListingRepository() )->find( $inquiry->listing_id );
 		$kinds   = InquiryAdmin::kind_labels();
 		$sources = InquiryAdmin::source_labels();
+		// 1.14.2: text written by the sender never reaches the e-mail as markup, even if another plugin
+		// turns outgoing mail into HTML.
+		$message = wp_strip_all_tags( $inquiry->message );
+		$title   = null === $listing ? '–' : wp_strip_all_tags( $listing->title );
+		$about   = wp_strip_all_tags( $inquiry->subject );
 
 		$subject = sprintf(
 			/* translators: 1: site name, 2: inquiry number. */
@@ -46,9 +51,9 @@ final class WpInquiryNotifier implements InquiryNotifier {
 			'',
 			__( 'Tür', 'ai-hazir-site' ) . ': ' . ( $kinds[ $inquiry->kind ] ?? $inquiry->kind ),
 			__( 'Kaynak', 'ai-hazir-site' ) . ': ' . ( $sources[ $inquiry->source ] ?? $inquiry->source ) . ' (' . $inquiry->channel . ')',
-			__( 'İlan', 'ai-hazir-site' ) . ': ' . ( null === $listing ? '–' : $listing->title ),
-			__( 'Konu', 'ai-hazir-site' ) . ': ' . ( '' === $inquiry->subject ? '–' : $inquiry->subject ),
-			__( 'Mesaj', 'ai-hazir-site' ) . ': ' . mb_substr( $inquiry->message, 0, 300 ) . ( mb_strlen( $inquiry->message ) > 300 ? '…' : '' ),
+			__( 'İlan', 'ai-hazir-site' ) . ': ' . ( '' === $title ? '–' : $title ),
+			__( 'Konu', 'ai-hazir-site' ) . ': ' . ( '' === $about ? '–' : $about ),
+			__( 'Mesaj', 'ai-hazir-site' ) . ': ' . mb_substr( $message, 0, 300 ) . ( mb_strlen( $message ) > 300 ? '…' : '' ),
 			'',
 			__( 'İletişim bilgileri güvenlik için e-postada yer almaz; panelde görünür:', 'ai-hazir-site' ),
 			InquiryAdmin::url(),

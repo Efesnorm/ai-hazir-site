@@ -3,6 +3,26 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.14.2] - 2026-09-30
+
+Sistem kontrolünün önemi düşük üç bulgusu (plan onaylı: `docs/planlar/1.14.2-kucuk-bulgular.md`). Yeni özellik yok,
+anahtar yok; veritabanı değişmedi.
+
+### Güvenlik
+- **Teklif bildirim e-postası düz metin:** talep mesajı, konusu ve ilan başlığı e-postaya `wp_strip_all_tags()` ile
+  girer; `wp_mail()`'e açık `Content-Type: text/plain; charset=UTF-8` başlığı verilir. Bir e-posta eklentisi postaları
+  HTML'e çevirse bile gönderenin yazdığı bağlantı/betik yorumlanmaz. Veritabanındaki kayıt değişmez.
+  Test: `InquiryNotifierPlainTextTest`.
+- **A2A gövde üst sınırı:** 64 KB'tan büyük istek çözümlenmeden HTTP 413 (RFC 9110 §15.5.14) ve JSON-RPC `-32600`
+  ile reddedilir, denetim kaydına "geçersiz" yazılır. Süzgeç: `aihs_a2a_max_body` (en az 1 KB). Test: `A2ABodyLimitTest`.
+
+### Eklendi
+- `LICENSE`: GPL-2.0 metni (Free Software Foundation'ın resmi `gpl-2.0.txt` dosyası, değiştirilmeden); kurulum
+  paketinde de var.
+
+### Bilinen sınırlar
+- MCP uç noktası gövdeyi hâlâ sınırsız çözümlüyor (kod MCP bağdaştırıcısından uyarlandı; ayrı karar).
+
 ## [1.14.1] - 2026-09-30
 
 ### Düzeltildi
