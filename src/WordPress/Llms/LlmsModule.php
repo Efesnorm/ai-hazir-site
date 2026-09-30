@@ -14,9 +14,13 @@ use AIHazirSite\Adapters\Llms\LlmsTxtBuilder;
 use AIHazirSite\Core\Catalog\CompanyProfile;
 use AIHazirSite\Core\Catalog\ListingType;
 use AIHazirSite\Core\Features;
+use AIHazirSite\Adapters\A2A\A2ASkills;
+use AIHazirSite\WordPress\A2A\A2AModule;
 use AIHazirSite\WordPress\Catalog\CatalogReader;
 use AIHazirSite\WordPress\Catalog\WpProfileRepository;
 use AIHazirSite\WordPress\I18n\Multilingual;
+use AIHazirSite\WordPress\Inquiry\InquiryChannels;
+use AIHazirSite\WordPress\Mcp\McpModule;
 use AIHazirSite\WordPress\Module;
 use AIHazirSite\WordPress\Platform\PageCache;
 use AIHazirSite\WordPress\Platform\WpClock;
@@ -138,13 +142,12 @@ final class LlmsModule implements Module {
 			);
 		}
 		if ( null === $language ) {
-			$builder = new LlmsTxtBuilder( home_url( '/' ), SchemaModule::catalog_url(), (string) get_bloginfo( 'name' ), self::labels(), TemplatesModule::registry(), Features::is_enabled( Features::REST_API ) ? RestModule::url() : '' );
+			$builder = self::builder( TemplatesModule::registry() );
 			return $builder->build( ( new WpProfileRepository() )->get(), $original, ( new WpClock() )->today(), (string) SchemaModule::last_modified( $original ), TemplatesModule::now(), null, $portal );
 		}
 		$profile                = Multilingual::profile( ( new WpProfileRepository() )->get(), $language );
 		[ $listings, $markers ] = CatalogReader::localized( $original, $language );
-		$api_url                = Features::is_enabled( Features::REST_API ) ? RestModule::url() : '';
-		$builder                = new LlmsTxtBuilder( home_url( '/' ), SchemaModule::catalog_url(), (string) get_bloginfo( 'name' ), self::labels(), TemplatesModule::registry(), $api_url );
+		$builder                = self::builder( TemplatesModule::registry() );
 		$settings               = Multilingual::settings();
 		$alternates             = array();
 		foreach ( $settings->languages as $code ) {
@@ -190,7 +193,7 @@ final class LlmsModule implements Module {
 		$modified = (string) SchemaModule::last_modified( $listings );
 		$registry = TemplatesModule::registry();
 		$api_url  = Features::is_enabled( Features::REST_API ) ? RestModule::url() : '';
-		$builder  = new LlmsTxtBuilder( home_url( '/' ), SchemaModule::catalog_url(), (string) get_bloginfo( 'name' ), self::labels(), $registry, $api_url );
+		$builder  = self::builder( $registry );
 		$now      = TemplatesModule::now();
 
 		// Short-lived values can turn stale within a day: then the text depends on the hour too.
@@ -208,9 +211,66 @@ final class LlmsModule implements Module {
 			'modified' => $modified,
 			'site'     => array( home_url( '/' ), SchemaModule::catalog_url(), get_bloginfo( 'name' ), $api_url ),
 			'labels'   => self::labels(),
+			'agents'   => self::agent_channels(),
 		);
 
 		return self::cache()->text( $input, static fn(): string => $builder->build( $profile, $listings, $today, $modified, $now ) );
+	}
+
+	/**
+	 * Builder with this site's addresses, texts and open agent channels.
+	 *
+	 * @param \AIHazirSite\Core\Templates\TemplateRegistry|null $registry Sector templates.
+	 */
+	private static function builder( ?\AIHazirSite\Core\Templates\TemplateRegistry $registry ): LlmsTxtBuilder {
+		return new LlmsTxtBuilder( home_url( '/' ), SchemaModule::catalog_url(), (string) get_bloginfo( 'name' ), self::labels(), $registry, Features::is_enabled( Features::REST_API ) ? RestModule::url() : '', self::agent_channels() );
+	}
+
+	/**
+	 * Ways an AI agent can act on this site (1.16.0), only those that are open: leaving an inquiry over REST,
+	 * the A2A agent and the MCP server. Each follows its own feature key.
+	 *
+	 * @return list<array{name: string, url: string, note: string}>
+	 */
+	public static function agent_channels(): array {
+		$channels = array();
+		if ( Features::is_enabled( Features::INQUIRIES ) && InquiryChannels::rest_enabled() ) {
+			$channels[] = array(
+				'name' => InquiryChannels::referral_only() ? __( 'Yönlendirme talebi bırakma (REST)', 'ai-hazir-site' ) : __( 'Teklif isteği veya talep bırakma (REST)', 'ai-hazir-site' ),
+				'url'  => RestModule::url() . 'inquiries',
+				'note' => sprintf(
+					/* translators: %s: allowed inquiry kinds. */
+					__( 'POST, JSON: kind (%s), subject, message, contact {name, email veya phone}; isteğe bağlı listing_id. Otomatik onay ve otomatik yanıt yok; firma inceleyip döner.', 'ai-hazir-site' ),
+					implode( ' | ', InquiryChannels::kinds() )
+				),
+			);
+		}
+		$skills = A2AModule::skills();
+		if ( array() !== $skills ) {
+			$names      = array(
+				A2ASkills::AVAILABILITY => __( 'müsaitlik sorma', 'ai-hazir-site' ),
+				A2ASkills::QUOTE        => __( 'teklif isteme', 'ai-hazir-site' ),
+			);
+			$channels[] = array(
+				'name' => __( 'A2A agent kartviziti', 'ai-hazir-site' ),
+				'url'  => home_url( '/.well-known/agent-card.json' ),
+				'note' => sprintf(
+					/* translators: %s: skills. */
+					__( 'A2A 1.0 (JSON-RPC); beceriler: %s.', 'ai-hazir-site' ),
+					implode( ', ', array_map( static fn( string $skill ): string => $names[ $skill ] ?? $skill, $skills ) )
+				),
+			);
+		}
+		if ( Features::is_enabled( Features::MCP ) && Features::is_enabled( Features::ABILITIES ) ) {
+			$channels[] = array(
+				'name' => __( 'MCP sunucusu', 'ai-hazir-site' ),
+				'url'  => McpModule::url(),
+				'note' => InquiryChannels::abilities_enabled()
+					? __( 'Model Context Protocol (Streamable HTTP, oturumsuz); katalog araçları ve talep bırakma aracı.', 'ai-hazir-site' )
+					: __( 'Model Context Protocol (Streamable HTTP, oturumsuz); salt okunur katalog araçları.', 'ai-hazir-site' ),
+			);
+		}
+		return $channels;
 	}
 
 	/**
@@ -285,6 +345,7 @@ final class LlmsModule implements Module {
 			/* translators: %s: JSON schema URL. */
 			'api_note'          => __( 'Geçerli ilanlar, sayfalı; şema: %s', 'ai-hazir-site' ),
 			'api_templates'     => __( 'Şablon alan tanımları (JSON)', 'ai-hazir-site' ),
+			'agents'            => __( 'AI agentlar için', 'ai-hazir-site' ),
 		);
 	}
 }

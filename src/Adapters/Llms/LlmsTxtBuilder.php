@@ -68,6 +68,7 @@ final class LlmsTxtBuilder {
 		'field_sector'      => 'sektör',
 		'businesses'        => 'İşletmeler',
 		'business'          => 'İşletme',
+		'agents'            => 'AI agentlar için',
 	);
 
 	/**
@@ -94,12 +95,14 @@ final class LlmsTxtBuilder {
 	/**
 	 * Constructor.
 	 *
-	 * @param string                $site_url    Site home URL.
-	 * @param string                $catalog_url AI catalog page URL (listing anchors: #ilan-{id}).
-	 * @param string                $site_name   Used when the profile has no name.
-	 * @param array<string, string> $labels      Translated texts (keys of self::LABELS).
-	 * @param TemplateRegistry|null $templates   Sector templates; null = every listing is "general".
-	 * @param string                $api_url     REST API base URL with trailing slash ('' when the API is off).
+	 * @param string                                                     $site_url    Site home URL.
+	 * @param string                                                     $catalog_url AI catalog page URL (listing anchors: #ilan-{id}).
+	 * @param string                                                     $site_name   Used when the profile has no name.
+	 * @param array<string, string>                                      $labels      Translated texts (keys of self::LABELS).
+	 * @param TemplateRegistry|null                                      $templates   Sector templates; null = every listing is "general".
+	 * @param string                                                     $api_url     REST API base URL with trailing slash ('' when the API is off).
+	 * @param array<int, array{name: string, url: string, note: string}> $agents Ways an agent can act on the site
+	 *                                      (1.16.0: inquiry, A2A, MCP), only the open ones; empty = no section.
 	 */
 	public function __construct(
 		private readonly string $site_url,
@@ -107,7 +110,8 @@ final class LlmsTxtBuilder {
 		private readonly string $site_name,
 		array $labels = array(),
 		private readonly ?TemplateRegistry $templates = null,
-		private readonly string $api_url = ''
+		private readonly string $api_url = '',
+		private readonly array $agents = array()
 	) {
 		$this->labels = array_merge( self::LABELS, $labels );
 	}
@@ -177,6 +181,10 @@ final class LlmsTxtBuilder {
 			static fn( string $value ): bool => '' !== $value
 		);
 		$blocks[] = '## ' . $this->labels['contact'] . "\n\n" . self::link( $this->labels['website'], $this->site_url, $this->pairs( $contact ) );
+		// 1.16.0: before "Optional", which the llms.txt proposal lets an agent skip.
+		if ( array() !== $this->agents ) {
+			$blocks[] = '## ' . $this->labels['agents'] . "\n\n" . implode( "\n", array_map( static fn( array $c ): string => self::link( $c['name'], $c['url'], self::inline( $c['note'] ) ), $this->agents ) );
+		}
 		$optional = array( self::link( $this->labels['catalog'], $this->catalog_url, $this->labels['catalog_note'] ) );
 		if ( '' !== $this->api_url ) {
 			$optional[] = self::link( $this->labels['api'], $this->api_url . 'listings', sprintf( $this->labels['api_note'], $this->api_url . 'schema/listings' ) );
