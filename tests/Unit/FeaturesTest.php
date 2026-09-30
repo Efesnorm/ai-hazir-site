@@ -58,7 +58,7 @@ final class FeaturesTest extends UnitTestCase {
 	 * below is updated on purpose (with a CHANGELOG rationale).
 	 */
 	public function test_all_defaults_are_disabled(): void {
-		$this->assertSame( array( 'measurement' ), Features::DEFAULT_ON, 'Only approved keys may default to on.' );
+		$this->assertSame( array( 'measurement', 'measurement_test_filter' ), Features::DEFAULT_ON, 'Only approved keys may default to on.' );
 
 		foreach ( Features::defaults() as $key => $default ) {
 			if ( in_array( $key, Features::DEFAULT_ON, true ) ) {
@@ -129,11 +129,12 @@ final class FeaturesTest extends UnitTestCase {
 				'catalog_sitemap'         => false,
 				'indexnow'                => false,
 				'litespeed_server_bypass' => false,
+				'measurement_test_filter' => true,
 			),
 			Features::defaults()
 		);
 
 		$enabled = array_keys( array_filter( array_map( array( Features::class, 'is_enabled' ), array_combine( array_keys( Features::defaults() ), array_keys( Features::defaults() ) ) ) ) );
-		$this->assertSame( array( 'measurement' ), $enabled, 'Fresh install: only measurement is on.' );
+		$this->assertSame( array( 'measurement', 'measurement_test_filter' ), $enabled, 'Fresh install: only measurement and its test filter are on.' );
 	}
 }

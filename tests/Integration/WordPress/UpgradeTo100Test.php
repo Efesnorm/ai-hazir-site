@@ -96,7 +96,7 @@ final class UpgradeTo100Test extends WP_UnitTestCase {
 		);
 
 		$enabled = array_keys( array_filter( array_combine( array_keys( Features::defaults() ), array_map( array( Features::class, 'is_enabled' ), array_keys( Features::defaults() ) ) ) ) );
-		$this->assertSame( array( 'measurement' ), $enabled, 'Every feature added after 0.2.0 arrives switched off.' );
+		$this->assertSame( array( 'measurement', 'measurement_test_filter' ), $enabled, 'Every feature added after 0.2.0 arrives switched off, except the approved measurement_test_filter (1.17.0).' );
 
 		// Turning the report on for a site without scans: empty report, no badge, honest page.
 		Features::set( Features::COMPLIANCE_REPORT, true );

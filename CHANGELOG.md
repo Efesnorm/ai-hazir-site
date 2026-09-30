@@ -3,6 +3,26 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.17.0] - 2026-10-01
+
+### Eklendi
+- **Test trafiğini ayırma** (`measurement_test_filter`; plan onaylı: `docs/planlar/1.17.0-test-trafigi.md`).
+  makedonya.tr 7 günlük dışa aktarımında canlı denemelerimiz (GPTBot kimliğiyle istekler, MCP denemeleri) gerçek bot
+  sayılarına karışıyordu. User-Agent'ında `AIHazirSite-Test/<sürüm>` ürün belirteci (RFC 9110 §10.1.5) olan istekler
+  ve MCP çağrıları artık bot, sayfa, AI dosyası ve MCP tablolarına girmez; ayrı sayılır (`Hit::KIND_TEST`, şema
+  değişmedi). AI Ölçüm ekranında "Test istekleri" tablosu ve CSV'de "Test (hariç tutuldu)" bölümü yalnızca test isteği
+  varsa görünür. Web analitiğindeki "iç trafiği hariç tutma" uygulamasının karşılığı.
+  - `bin/tara` her isteğine (bot erişim kontrolünün GPTBot isteği dahil) belirteci ekler.
+  - Geçmiş veri ayrılamaz: ölçüm ham User-Agent veya IP saklamıyor.
+- **Varsayılan açık (onaylı istisna, `Features::DEFAULT_ON`):** yalnızca belirteçli istekleri etkiler, gerçek trafiğe
+  dokunmaz; kapalı gelirse korumak istediği karşılaştırma verisi kirlenir. Ölçüme bağımlı değil (ölçüm kapatılabilir;
+  kapalıyken filtre hiçbir şey yapmaz).
+- Testler: `TestTrafficTest`, `TestTrafficMeasurementTest`.
+
+### Test güncellemesi (onaylı)
+- `FeaturesTest`: onaylı varsayılan açık listesi ve anahtar listesi `measurement_test_filter` ile.
+- `UpgradeTo100Test`, `ComplianceReportTest`: yükseltmede ve rapordaki açık özellik listesinde `measurement_test_filter`.
+
 ## [1.16.0] - 2026-10-01
 
 ### Eklendi

@@ -27,6 +27,7 @@ final class Report {
 	public const SECTION_REFERRALS = 'referrals';
 	public const SECTION_AI_FILES  = 'ai_files';
 	public const SECTION_MCP       = 'mcp';
+	public const SECTION_TEST      = 'test';
 
 	public const TOP_PAGES = 10;
 
@@ -88,6 +89,10 @@ final class Report {
 		}
 		foreach ( $this->hits->totals( Hit::KIND_MCP, $since, HitRepository::GROUP_SOURCE ) as $totals ) {
 			$rows[] = $this->row( self::SECTION_MCP, $totals['key'], '', $totals );
+		}
+		// 1.17.0: our own test requests, excluded from everything above (source: bot id, MCP tool or "test").
+		foreach ( $this->hits->totals( Hit::KIND_TEST, $since, HitRepository::GROUP_SOURCE ) as $totals ) {
+			$rows[] = $this->row( self::SECTION_TEST, $this->bot_name( $totals['key'] ), '', $totals );
 		}
 
 		return $rows;

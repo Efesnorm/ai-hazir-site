@@ -17,6 +17,7 @@ final class Hit {
 	public const KIND_BOT      = 'bot';
 	public const KIND_REFERRAL = 'referral';
 	public const KIND_MCP      = 'mcp';
+	public const KIND_TEST     = 'test';
 	public const PATH_MAX      = 191;
 
 	/**

@@ -71,6 +71,18 @@ final class Tracker {
 		$path = Hit::normalize_path( $request->uri );
 		$bot  = $this->classifier()->match_bot( $request->user_agent );
 
+		// 1.17.0: our own test requests are counted apart, never as bot or referral traffic.
+		if ( Features::is_enabled( Features::MEASUREMENT_TEST_FILTER ) && TestTraffic::is_test( $request->user_agent ) ) {
+			$this->pending = array(
+				'kind'      => Hit::KIND_TEST,
+				'source_id' => null === $bot ? 'test' : $bot->id,
+				'path'      => $path,
+				'bot'       => null,
+				'ip'        => '',
+			);
+			return;
+		}
+
 		if ( null !== $bot ) {
 			$this->pending = array(
 				'kind'      => Hit::KIND_BOT,

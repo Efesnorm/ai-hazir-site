@@ -13,6 +13,7 @@ namespace AIHazirSite\Tools\Tara;
 
 use AIHazirSite\Core\Contracts\PageFetcher;
 use AIHazirSite\Core\Contracts\PageResponse;
+use AIHazirSite\Core\Measurement\TestTraffic;
 
 /**
  * The same contract the plugin's scan uses (WpPageFetcher): GET, up to 3 redirects, bodies capped at 2 MB,
@@ -34,8 +35,10 @@ final class CurlPageFetcher implements PageFetcher {
 		$out   = array();
 		$body  = '';
 		$lines = array();
+		// 1.17.0: every request of this tool, including the bot-access check's GPTBot one, carries the test
+		// token, so the scanned site's AI measurement counts it apart from real traffic.
 		foreach ( $headers + array( 'User-Agent' => self::user_agent() ) as $name => $value ) {
-			$lines[] = $name . ': ' . $value;
+			$lines[] = $name . ': ' . ( 0 === strcasecmp( $name, 'User-Agent' ) ? TestTraffic::mark( $value ) : $value );
 		}
 
 		$handle = curl_init( $url );

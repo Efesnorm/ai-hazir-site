@@ -131,7 +131,7 @@ final class ComplianceReportTest extends WP_UnitTestCase {
 		foreach ( $xpath->query( '//li[@data-feature]' ) as $item ) {
 			$features[] = $item->getAttribute( 'data-feature' );
 		}
-		$this->assertSame( array( 'measurement', 'llms_txt', 'compliance_report' ), $features );
+		$this->assertSame( array( 'measurement', 'llms_txt', 'compliance_report', 'measurement_test_filter' ), $features );
 	}
 
 	/**
