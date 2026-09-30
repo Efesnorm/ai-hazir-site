@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: AI Hazır Site 1.15.0\n"
+"Project-Id-Version: AI Hazır Site 1.15.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ai-hazir-site\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-30T14:28:19+00:00\n"
+"POT-Creation-Date: 2026-09-30T20:22:15+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: ai-hazir-site\n"
@@ -70,7 +70,7 @@ msgstr ""
 msgid "Onay süresi doldu veya geçersiz; önizlemeyi yeniden açın."
 msgstr ""
 
-#: src/WordPress/A2A/A2AModule.php:235
+#: src/WordPress/A2A/A2AModule.php:240
 #: src/WordPress/Inquiry/InquiryChannels.php:185
 msgid "Talebiniz firmaya iletildi. Otomatik yanıt gönderilmez; firma inceleyip verdiğiniz iletişim bilgisinden size dönecek."
 msgstr ""
@@ -203,7 +203,7 @@ msgstr ""
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:110
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:263
 #: src/WordPress/Compliance/Wizard/WizardPage.php:69
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:109
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:122
 #: src/WordPress/Integrations/IntegrationsPage.php:55
 #: src/WordPress/Report/ReportModule.php:56
 #: src/WordPress/Settings/SettingsPage.php:127
@@ -298,7 +298,7 @@ msgstr ""
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:450
 #: src/WordPress/Compliance/Admin/CompliancePage.php:199
 #: src/WordPress/Compliance/Wizard/WizardPage.php:383
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:402
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:418
 #: src/WordPress/Integrations/IntegrationsPage.php:216
 #: src/WordPress/Measurement/Admin/ReportPage.php:244
 #: src/WordPress/Portal/BusinessAdmin.php:231
@@ -380,7 +380,7 @@ msgid "Bu ilan kalıcı olarak silinecek. Emin misiniz?"
 msgstr ""
 
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:174
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:176
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:192
 #: src/WordPress/Portal/BusinessAdmin.php:121
 msgid "Sil"
 msgstr ""
@@ -709,7 +709,7 @@ msgid "Önceki taramalar"
 msgstr ""
 
 #: src/WordPress/Compliance/Admin/CompliancePage.php:170
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:146
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:162
 msgid "Tarih"
 msgstr ""
 
@@ -934,7 +934,7 @@ msgid "İlanlar"
 msgstr ""
 
 #: src/WordPress/I18n/TranslationsAdmin.php:158
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:146
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:162
 #: src/WordPress/Inquiry/WpInquiryNotifier.php:54
 #: src/WordPress/Matching/MatchingAdmin.php:117
 #: src/WordPress/Portal/PortalAdmin.php:141
@@ -969,168 +969,172 @@ msgstr ""
 msgid "Anlaşılmayan dil kodları (yok sayıldı):"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:52
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:125
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:53
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:138
 msgid "Teklif Kutusu"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:71
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:72
 msgid "Yeni"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:72
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:73
 msgid "Onaylandı"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:73
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:74
 msgid "Reddedildi"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:74
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:75
 msgid "Karantina"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:85
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:98
 msgid "Teklif isteği"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:86
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:99
 msgid "Teklif"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:87
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:100
 msgid "Yönlendirme talebi"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:98
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:111
 msgid "AI agent"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:99
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:112
 msgid "İnsan"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:100
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:113
 msgid "Bilinmiyor"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:132
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:145
 msgid "AI agentların ve ziyaretçilerin bıraktığı talepler. Hiçbir talep otomatik onaylanmaz ve talep sahibine otomatik yanıt gitmez; aşağıdan inceleyip kendiniz dönün."
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:134
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:147
+msgid "Son yeni talep bildirimi e-postayla gönderilemedi. Sunucunuz e-posta gönderemiyor olabilir; bir SMTP eklentisi (ör. WP Mail SMTP) kurun. Talepler bu ekranda görünmeye devam eder."
+msgstr ""
+
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:150
 msgid "Profil şablonunuz ücret bilgisine izin vermediği için yalnızca yönlendirme talepleri alınıyor; ücret soran talepler kabul edilmiyor."
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:137
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:153
 msgid "Tümü"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:146
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:162
 msgid "Tür / kaynak"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:146
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:162
 #: src/WordPress/Portal/PortalAdmin.php:141
 msgid "Talep"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:146
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:162
 #: src/WordPress/Llms/LlmsModule.php:278
 msgid "İletişim"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:146
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:162
 msgid "Spam"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:146
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:162
 msgid "Durum"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:146
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:162
 msgid "İşlem"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:151
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:167
 msgid "Talep yok."
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:176
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:192
 msgid "Talep ve iletişim bilgileri kalıcı olarak silinecek. Emin misiniz?"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:183
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:199
 msgid "(çözülemedi)"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:196
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:212
 msgid "Onayla"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:197
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:213
 msgid "Reddet"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:198
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:214
 msgid "Karantinaya al"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:199
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:215
 msgid "Yeni olarak işaretle"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:227
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:243
 msgid "Talep bırakanların iletişim bilgileri (ad, firma, e-posta, telefon) kişisel veridir. Veritabanında şifreli saklanır ve yalnızca bu ekranda görünür."
 msgstr ""
 
 #. translators: %d: days.
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:229
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:245
 #, php-format
 msgid "Talepler %d gün sonra iletişim bilgileriyle birlikte otomatik silinir (ayarlanabilir); tek tek de silebilirsiniz."
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:230
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:246
 msgid "KVKK kapsamında aydınlatma metninizi hazırlayıp yayınlamanız gerekir; bu ekranda yeri gösterilir. Hukuki metni eklenti sağlamaz."
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:231
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:247
 msgid "Hiçbir talep otomatik onaylanmaz; talep sahibine otomatik yanıt gitmez. Yeni talepleri yönetici e-posta adresinize bildiririz."
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:232
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:248
 msgid "Kötüye kullanıma karşı istemci başına hız sınırı ve spam kuralları uygulanır; şüpheli talepler karantinaya düşer."
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:234
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:250
 msgid "Teklif kutusunu açmadan önce"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:238
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:254
 msgid "Yukarıdakileri okudum; kişisel verilerin işlenmesinden sitenin sahibi olarak sorumlu olduğumu biliyorum."
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:239
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:255
 msgid "Teklif kutusunu aç"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:248
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:264
 msgid "Saklama süresi (gün)"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:249
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:265
 msgid "İstemci başına dakikalık talep hakkı"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:250
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:266
 msgid "İstemci başına günlük talep hakkı"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:251
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:267
 msgid "Karantina eşiği (spam skoru, 1–100)"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:253
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:269
 #: src/WordPress/Matching/MatchingAdmin.php:154
 #: src/WordPress/Measurement/Admin/ReportPage.php:107
 #: src/WordPress/Settings/SettingsModule.php:51
@@ -1138,37 +1142,37 @@ msgstr ""
 msgid "Ayarlar"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:258
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:274
 msgid "Ayarları kaydet"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:265
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:281
 msgid "KVKK aydınlatma metni"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:266
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:282
 msgid "[Yer tutucu] Talep bırakanlara, kişisel verilerinin hangi amaçla işlendiğini, ne kadar saklandığını ve haklarını anlatan aydınlatma metninizi burada ve sitenizde yayınlayın. Metni hukuk danışmanınızla hazırlayın."
 msgstr ""
 
 #. translators: %d: days.
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:268
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:284
 #, php-format
 msgid "Eklentinin yaptığı: iletişim bilgilerini şifreli saklar, %d gün sonra siler, talep üzerine tek tek siler; IP adresini saklamaz (yalnızca tuzlu özet)."
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:275
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:291
 msgid "Son kayıtlar (denetim)"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:286
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:302
 msgid "Teklif kutusunu kapat"
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:288
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:304
 msgid "Yeni talep alınmaz; kayıtlı talepler saklama süresi dolunca silinmeye devam eder."
 msgstr ""
 
-#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:289
+#: src/WordPress/Inquiry/Admin/InquiryAdmin.php:305
 #: src/WordPress/Integrations/IntegrationsPage.php:196
 #: src/WordPress/Settings/SettingsPage.php:234
 msgid "Kapat"

@@ -59,6 +59,12 @@ final class WpInquiryNotifier implements InquiryNotifier {
 			InquiryAdmin::url(),
 		);
 
-		return (bool) wp_mail( $to, $subject, implode( "\n", $lines ) );
+		// 1.15.1: a host that disables PHP's mail() makes PHPMailer throw an Error (not a PHPMailer exception, so
+		// WordPress's wp_mail_failed never fires). The inquiry is already stored; the sender must still get an answer.
+		try {
+			return (bool) wp_mail( $to, $subject, implode( "\n", $lines ), array( 'Content-Type: text/plain; charset=UTF-8' ) );
+		} catch ( \Throwable $e ) {
+			return false;
+		}
 	}
 }

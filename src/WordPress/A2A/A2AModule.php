@@ -186,7 +186,12 @@ final class A2AModule implements Module {
 
 		$body   = json_decode( $request->get_body(), true );
 		$server = new JsonRpcServer( self::skills(), static fn( string $skill, array $data ): array => self::dispatch( $skill, $data, $ip ), static fn(): string => wp_generate_uuid4() );
-		$result = $server->handle( $body, (string) ( $request->get_header( 'a2a_version' ) ?? $request->get_param( 'A2A-Version' ) ?? '' ) );
+		try {
+			$result = $server->handle( $body, (string) ( $request->get_header( 'a2a_version' ) ?? $request->get_param( 'A2A-Version' ) ?? '' ) );
+		} catch ( \Throwable $e ) {
+			// 1.15.1: JSON-RPC 2.0 "Internal error" instead of an HTTP 500 carrying the server's stack trace.
+			$result = JsonRpcServer::error( is_array( $body ) && ( is_string( $body['id'] ?? null ) || is_int( $body['id'] ?? null ) ) ? $body['id'] : null, -32603, 'Internal error' );
+		}
 
 		$skill = is_array( $body ) && is_array( $body['params']['message']['parts'][0]['data'] ?? null ) && is_string( $body['params']['message']['parts'][0]['data']['skill'] ?? null ) ? $body['params']['message']['parts'][0]['data']['skill'] : '';
 		$state = $result['result']['task']['status']['state'] ?? '';

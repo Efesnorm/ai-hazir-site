@@ -3,6 +3,26 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.15.1] - 2026-09-30
+
+Canlı A2A denemesinde bulundu (plan onaylı: `docs/planlar/1.15.1-1.16.0-teklif-kanali.md`).
+
+### Düzeltildi
+- **E-posta gönderemeyen sunucuda teklif kutusu çöküyordu:** makedonya.tr'de barındırma PHP'nin `mail()` işlevini
+  kapatmış; bildirim e-postasında PHPMailer bir `Error` fırlattı ve A2A "teklif-iste" isteği HTTP 500 (yığın iziyle)
+  döndü. Talep kaydediliyordu ama agent başarısız sanıp tekrar deneyebilirdi. REST ve MCP talepleri de aynı yoldan
+  geçiyordu. Artık bildirim hatası yakalanır: talep kaydedilir, gönderen "talebiniz iletildi" yanıtını alır,
+  denetim kaydına `notify_failed` yazılır.
+- **A2A beklenmeyen hata:** bir beceride istisna olursa HTTP 500 ve yığın izi yerine JSON-RPC 2.0 `-32603 Internal
+  error` döner (sunucu yolu yok).
+- **1.14.2 düzeltmesi:** bildirim e-postasına açık `Content-Type: text/plain; charset=UTF-8` başlığı 1.14.2'de
+  CHANGELOG'da yazdığı hâlde eklenmemişti (düzenleme eşleşmemişti; PHPMailer'ın varsayılanı düz metin olduğu için
+  test yakalamadı). Artık ekleniyor ve test başlığı doğrudan denetliyor. Etiket temizleme 1.14.2'den beri çalışıyor.
+
+### Eklendi
+- Teklif Kutusu ekranında, son bildirim gönderilemediyse uyarı: SMTP eklentisi (ör. WP Mail SMTP) önerisi.
+- Test: `InquiryNotifierFailureTest` (eski kodda üç testin üçü de kalıyor).
+
 ## [1.15.0] - 2026-09-30
 
 Pilot sitelerden geri bildirim (plan onaylı: `docs/planlar/1.15.0-tek-menu-ve-bildirim.md`).

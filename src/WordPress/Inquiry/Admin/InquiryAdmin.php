@@ -13,6 +13,7 @@ use AIHazirSite\WordPress\Admin\AdminMenu;
 use AIHazirSite\Core\Features;
 use AIHazirSite\Core\Inquiry\Inquiry;
 use AIHazirSite\Core\Inquiry\InquirySettings;
+use AIHazirSite\Core\Security\AuditLog;
 use AIHazirSite\WordPress\Catalog\WpListingRepository;
 use AIHazirSite\WordPress\Inquiry\InquiryChannels;
 use AIHazirSite\WordPress\Inquiry\InquiryModule;
@@ -76,6 +77,18 @@ final class InquiryAdmin {
 	}
 
 	/**
+	 * Whether the most recent owner notification could not be sent (1.15.1; from the audit log).
+	 */
+	public static function last_notification_failed(): bool {
+		foreach ( ( new WpAuditRepository() )->latest( 100 ) as $entry ) {
+			if ( 'notify' === $entry['action'] ) {
+				return AuditLog::OUTCOME_NOTIFY_FAIL === $entry['outcome'];
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Kind labels.
 	 *
 	 * @return array<string, string>
@@ -130,6 +143,9 @@ final class InquiryAdmin {
 		$status = isset( self::status_labels()[ $status ] ) ? $status : '';
 		$source = isset( self::source_labels()[ $source ] ) ? $source : '';
 		$html  .= '<p>' . esc_html__( 'AI agentların ve ziyaretçilerin bıraktığı talepler. Hiçbir talep otomatik onaylanmaz ve talep sahibine otomatik yanıt gitmez; aşağıdan inceleyip kendiniz dönün.', 'ai-hazir-site' ) . '</p>';
+		if ( self::last_notification_failed() ) {
+			$html .= '<div class="notice notice-warning inline" id="aihs-notify-failed"><p>' . esc_html__( 'Son yeni talep bildirimi e-postayla gönderilemedi. Sunucunuz e-posta gönderemiyor olabilir; bir SMTP eklentisi (ör. WP Mail SMTP) kurun. Talepler bu ekranda görünmeye devam eder.', 'ai-hazir-site' ) . '</p></div>';
+		}
 		if ( InquiryChannels::referral_only() ) {
 			$html .= '<div class="notice notice-info inline"><p>' . esc_html__( 'Profil şablonunuz ücret bilgisine izin vermediği için yalnızca yönlendirme talepleri alınıyor; ücret soran talepler kabul edilmiyor.', 'ai-hazir-site' ) . '</p></div>';
 		}
