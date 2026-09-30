@@ -1,48 +1,77 @@
-# Not – ACP ve UCP (agent ticaret protokolleri) – geliştirme alanı
+# Araştırma notu – ACP ve UCP (agent ticaret protokolleri)
 
-Durum: **izlenecek alan / araştırma**. Kod yok; uygulanması ayrıca araştırma notu, plan ve onay ister.
-Kaynak: 2026-10-01 görüşmesi. Bilgiler web aramasından (ikincil kaynaklar); resmi belgeler henüz okunmadı.
+Durum: **izlenecek alan**. Kod yok. Resmi belgeler 2026-10-01'de okundu (kaynaklar en altta).
 
-## Protokoller
+## Kısa sonuç
+- İki protokol de **perakende satın alma** (sepet + ödeme) için; ikisinde de **B2B, teklif (quote/RFQ) veya hizmet
+  talebi kavramı yok.** Pilotlarımızın ihtiyacı olan "teklif iste" akışını karşılamıyorlar; bu alanda A2A + teklif
+  kutumuz farkımız olarak kalıyor.
+- **ACP bugün bize uygun değil:** ürün beslemesi herkese açık yayınlanmıyor, onaylı satıcıların OpenAI'ye SFTP ile
+  gönderdiği bir dosya; katılım başvuruyla.
+- **UCP teknik olarak bize en yakın olan:** açık keşif (`/.well-known/ucp`), MCP ve **A2A** bağları, ödemesiz
+  "yalnızca katalog" müzakeresi mümkün. Ama Google'ın kendi yüzeyleri (AI Mode, Gemini) için Merchant Center hesabı ve
+  ödeme için uygun ürün şartı var.
+- **Öneri:** şimdi uygulama yok; aşağıdaki tetikleyiciler gerçekleşirse "UCP yalnızca katalog profili" denemesi.
 
-| | ACP – Agentic Commerce Protocol | UCP – Universal Commerce Protocol |
-| --- | --- | --- |
-| Kim | OpenAI + Stripe; 29 Eylül 2025; açık standart (Apache 2.0) | Google + Shopify; 11 Ocak 2026 (NRF); ilk ortaklar Etsy, Wayfair, Target, Walmart |
-| Amaç | ChatGPT içinde satın alma ("Instant Checkout"): agent ödeme seçimini alır, satıcıya dar yetkili ödeme belirteci verir, satıcı kendi ödeme sağlayıcısıyla tahsil eder, satıcı sorumluluğu satıcıda kalır | Keşiften ödemeye ve satış sonrasına tüm alışveriş yolculuğu (Google AI Mode / Gemini) |
-| Gelişim | Ödeme ile başladı; ürün beslemesi, sepet, kimlik doğrulama, sipariş güncellemeleri eklendi; son kararlı sürüm 2026-04-17 (GitHub). PayPal ödeme sağlayıcısı (Ekim 2025); Stripe Agentic Commerce Suite (Aralık 2025) | Mart 2026: sepet, ürün kataloğu erişimi, kolay satıcı katılımı |
-| Taşıma / ilişki | Ödeme sağlayıcısından bağımsız | REST, **MCP** ve **A2A** bağları; ödeme için AP2 (Agent Payments Protocol) |
+## ACP – Agentic Commerce Protocol (resmi belgeler)
+- Sahipler ve lisans: OpenAI ve Stripe ("Founding Maintainers"), Apache 2.0, katkı için CLA. Son kararlı sürüm klasörü
+  `spec/2026-04-17/` (OpenAPI YAML + JSON Schema).
+- Kapsam: Agentic Checkout (durumlu ödeme oturumu oluştur/güncelle/tamamla), Delegate Payment (tek kullanımlık, tutar ve
+  süre sınırlı ödeme bilgisi), yetenek müzakeresi, ödeme işleyicileri, indirimler, sepet, siparişler, kimlik doğrulama,
+  MCP entegrasyonu, ürün beslemesi.
+- **Ürün beslemesi (OpenAI belgeleri):** "Push feeds to OpenAI via SFTP"; biçim parquet (tercihen), `jsonl.gz`,
+  `csv.gz`, `tsv.gz`; en az günlük. Örnek alanlar: `item_id`, `title`, `price`, `availability`, `url`.
+- **Katılım:** "Onboarding product feeds in ChatGPT is currently available to approved partners"; başvuru formu
+  (chatgpt.com/merchants); gerekirse PCI uyum beyanı (AOC). Satıcı sorumluluğu satıcıda ("OpenAI … not the merchant of
+  record"). Örnekler ABD odaklı; bölge listesi belgede yok.
+- `/.well-known` benzeri açık keşif yok; agenticcommerce.dev SSS: keşif mekanizmaları "still being developed".
+- B2B / teklif: yok.
 
-İsim karışıklığı: IBM'in "Agent Communication Protocol" (da ACP) 2025'te A2A'ya katıldı; buradaki ACP OpenAI/Stripe'ın
-ticaret protokolüdür.
+**Bize uyumu: düşük.** Besleme herkese açık değil ve başvuru + ödeme uyumluluğu istiyor; pilotlarımız ödeme almıyor.
+İleride onaylı bir satıcı olursa AI Katalog'dan ACP besleme dosyası (csv.gz/jsonl.gz) üretmek teknik olarak kolay; bugün
+değeri yok.
 
-## Bizimle ilişkisi
+## UCP – Universal Commerce Protocol (resmi belgeler)
+- Lisans: Apache 2.0; bakımcılar MAINTAINERS.md; ayrı **uygunluk testi** deposu (`Universal-Commerce-Protocol/conformance`).
+- Sürümleme tarihli (`YYYY-MM-DD`); belgelerdeki güncel sürüm `2026-08-25`.
+- Roller: Platform (agent), Business (satıcı), PSP, Credential Provider.
+- **Keşif:** satıcı `/.well-known/ucp` adresinde JSON profil yayınlar: `version`, `services` (zorunlu, boş olabilir),
+  `capabilities`, `payment_handlers` (zorunlu), üst düzeyde `keys` (RFC 7517 JWK, HTTP Message Signatures için).
+- **Taşıma bağları:** `rest` (OpenAPI 3.x şeması), `mcp` (OpenRPC, JSON-RPC 2.0), `a2a` (uç nokta =
+  `/.well-known/agent-card.json`), `embedded`.
+- **Yetenekler:** `dev.ucp.shopping.checkout`, `…catalog`, `…cart`, `…order`; uzantılar `discount`, `fulfillment`,
+  `dev.ucp.common.identity_linking`, `…location` vb. Her yetenek ayrı müzakere edilir; **ödemesiz, yalnızca keşif
+  modu mümkün.**
+- **Katalog yeteneği:** işlemler `dev.ucp.shopping.catalog.search` ve `…lookup`. Ürün alanları: `id`, `title`,
+  `description`, `url`, `categories`, `price_range`, `media`, `variants`…; varyant fiyatı `price.amount` **tam sayı,
+  para biriminin küçük birimi** + `currency` (ISO 4217); `availability`, `seller`.
+- **Google yüzeyleri:** "an active Merchant Center account", "products eligible for checkout" ve ilgi formu gerekli.
+  Protokolün kendisi ise "autonomous discovery by platforms" hedefliyor (başka platformlar onaysız keşfedebilir).
+- B2B / teklif: belgelerde yok.
 
-- **Doğru yöndeyiz:** UCP'nin MCP ve A2A üzerinden çalışması, MCP sunucumuzun (0.9.0), A2A agent'ımızın (1.6.0) ve
-  REST + OpenAPI 3.1'in (1.18.0) aynı yolları kullandığını gösteriyor.
-- **Doğrudan uygulama önerilmiyor (şimdilik):**
-  1. Bizim modelimiz **teklif**, onlarınki **ödeme**: pilotlar B2B / hizmet (kablo, fabrika, turizm, hukuk); ürün
-     sepete atılıp kartla ödenmiyor.
-  2. Ödeme ağır sorumluluk (PCI, satıcı sorumluluğu, iade, vergi). WooCommerce ile satan sitelerde bu iş Stripe,
-     PayPal ya da WooCommerce'in resmi entegrasyonlarının; eklentinin tekerleği yeniden icat etmesi yanlış.
-  3. Coğrafya: Instant Checkout ve Google'ın agent alışverişi ilk olarak ABD'de; Türkiye ve Balkanlar'da kullanılabilirlik
-     doğrulanmadı.
+**Bize uyumu: orta, geleceğe dönük.**
+- Zaten sahip olduklarımız UCP'nin bağlarıyla örtüşüyor: MCP sunucusu (0.9.0), A2A kartviziti (1.6.0), REST + OpenAPI 3.1
+  (1.18.0).
+- "Yalnızca katalog" profili mümkün: `/.well-known/ucp` + `dev.ucp.shopping.catalog` (search/lookup) → mevcut ilan arama
+  ve tek ilan okuma. Eşleme: yalnızca "satılan" ilanlar ürün olur (aranan/tedarik karşılığı yok); `price_min/max` →
+  `price_range`, tutarlar küçük birime çevrilir, `valid_until` / stok → `availability`.
+- Açık sorular (uygulamadan önce doğrulanmalı): `payment_handlers` boş olabilir mi; ödemesiz profilde `keys` (imza)
+  zorunlu mu; MCP bağı için ayrı bir UCP MCP uç noktası mı gerekir (OpenRPC araç adları) yoksa mevcut sunucuya araç
+  eklemek yeter mi.
 
-## Değer üretebileceğimiz yerler (araştırılacak)
-1. **Katalog beslemesi:** iki protokolün de ürün kataloğu/besleme bölümü var. İlanları bu biçimlerde yayınlamak agentların
-   kataloğu ticaret protokolüyle okumasını sağlar. Önce: herkese açık besleme mi, başvuruyla katılınan program mı?
-2. **Uyum taraması yönlendirmesi:** site WooCommerce ile satış yapıyorsa "ACP/UCP için resmi entegrasyonlar mevcut"
-   önerisi (sepet/ödeme bizde değil).
-3. **Teklif akışı eşlemesi:** UCP'de (ya da ACP'de) B2B / teklif (quote) akışı var mı? Varsa teklif kutumuz o protokolle
-   de konuşabilir.
+## Öneri ve tetikleyiciler
+- **Şimdi:** uygulama yok; bu not ve `GELISTIRME-ALANLARI.md` satırı.
+- **UCP "yalnızca katalog" denemesini tetikleyecek durumlar:**
+  1. Google veya başka bir platformun, ödemesiz (yalnızca katalog) UCP profillerini tükettiğine dair resmi duyuru; ya da
+  2. ölçümümüzde `/.well-known/ucp` isteklerinin görülmesi (bugün izlenmiyor; ölçüme bu yolun eklenmesi ucuz bir ilk adım
+     olabilir).
+- **WooCommerce ile satış yapan bir pilot olursa:** sepet/ödeme için resmi entegrasyonlara (Google Merchant Center/UCP,
+  Stripe/ACP) yönlendirme; eklenti ödeme yapmaz.
+- Uygulanırsa: UCP uygunluk testi deposuyla doğrulama, anahtarlı ve varsayılan kapalı.
 
-## Sonraki adım (onay gerekirse)
-Resmi belgeleri (ACP GitHub 2026-04-17 sürümü, UCP belgeleri) okuyup 1–3 için kanıtlı kısa araştırma notu; sonuç bu
-dosyaya ve `GELISTIRME-ALANLARI.md`'ye işlenir.
-
-## Kaynaklar (ikincil)
-- ACP: https://stellagent.ai/insights/openai-acp-agentic-commerce-protocol,
-  https://www.fynd.com/blog/agentic-commerce-protocol-acp-what-it-is-and-how-it-works,
-  https://eco.com/support/en/articles/14845478-acp-agentic-commerce-protocol-explained
-- UCP: https://stellagent.ai/insights/google-ucp-open-rails-agentic-commerce,
-  https://www.moin.ai/en/chatbot-wiki/universal-commerce-protocol,
-  https://forkast.news/glossary/universal-commerce-protocol-ucp/
+## Kaynaklar (resmi)
+- ACP: https://www.agenticcommerce.dev/ · https://github.com/agentic-commerce-protocol/agentic-commerce-protocol ·
+  https://developers.openai.com/commerce/llms-full.txt
+- UCP: https://ucp.dev/specification/overview/ · https://ucp.dev/specification/shopping/catalog/ ·
+  https://github.com/universal-commerce-protocol/ucp ·
+  https://developers.googleblog.com/en/under-the-hood-universal-commerce-protocol-ucp/
