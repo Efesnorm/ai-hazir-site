@@ -25,11 +25,11 @@ Plan onaylı: `docs/planlar/1.18.0-openapi-ve-llms-full.md`.
 
 ### Test
 - `OpenApiDocumentTest`: belge, OpenAPI Initiative'in resmi 3.1 JSON Şemasına (spec.openapis.org, 2022-10-07;
-  `tests/fixtures/openapi/`) karşı her durumda doğrulanır; kayıtlı her `aihs/v1` rotası belgede ve belgede fazlası yok
+  `tests/Fixtures/openapi/`) karşı her durumda doğrulanır; kayıtlı her `aihs/v1` rotası belgede ve belgede fazlası yok
   (sapma testi); ortam türü; keşif, llms.txt ve katalog bağlantıları; REST kapalıyken 404.
 - Yalnızca geliştirmede: `opis/json-schema` (JSON Schema 2020-12 doğrulayıcı; pakete girmez). Bilinen sınır: kütüphane
   resmi şemadaki `$dynamicRef: "#meta"` referansını standarda aykırı çözüyor; test, dosyayı değiştirmeden bellekte
-  standardın gösterdiği hedefe çevirir (ayrıntı: `tests/fixtures/openapi/KAYNAK.md`).
+  standardın gösterdiği hedefe çevirir (ayrıntı: `tests/Fixtures/openapi/KAYNAK.md`).
 
 ### Test güncellemesi (onaylı)
 - `DiscoveryLinksTest`, `DiscoveryTest`: `service-desc` adresi `…/openapi.json`, türü `application/vnd.oai.openapi+json`.

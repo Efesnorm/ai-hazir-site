@@ -23,7 +23,7 @@ use Opis\JsonSchema\CompliantValidator;
 use WP_REST_Request;
 
 /**
- * Checked against the official OpenAPI 3.1 JSON Schema (tests/fixtures/openapi, see KAYNAK.md).
+ * Checked against the official OpenAPI 3.1 JSON Schema (tests/Fixtures/openapi, see KAYNAK.md).
  *
  * @covers \AIHazirSite\Adapters\Rest\OpenApiBuilder
  * @covers \AIHazirSite\WordPress\Rest\RestModule
@@ -117,7 +117,7 @@ final class OpenApiDocumentTest extends RestTestCase {
 	 * `$ref: "#/$defs/schema"` in memory only. The file on disk stays byte-identical (see KAYNAK.md).
 	 */
 	private static function official_schema(): object {
-		$json = (string) file_get_contents( dirname( __DIR__, 2 ) . '/fixtures/openapi/oas-3.1-schema-2022-10-07.json' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local fixture.
+		$json = (string) file_get_contents( dirname( __DIR__, 2 ) . '/Fixtures/openapi/oas-3.1-schema-2022-10-07.json' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local fixture.
 		$json = str_replace( '"$dynamicRef": "#meta"', '"$ref": "#/$defs/schema"', $json );
 		return json_decode( $json, false, 512, JSON_THROW_ON_ERROR );
 	}
