@@ -345,6 +345,7 @@ final class LlmsModule implements Module {
 			/* translators: %s: JSON schema URL. */
 			'api_note'          => __( 'Geçerli ilanlar, sayfalı; şema: %s', 'ai-hazir-site' ),
 			'api_templates'     => __( 'Şablon alan tanımları (JSON)', 'ai-hazir-site' ),
+			'api_openapi'       => __( 'AI Katalog API tanımı (OpenAPI 3.1)', 'ai-hazir-site' ),
 			'agents'            => __( 'AI agentlar için', 'ai-hazir-site' ),
 		);
 	}

@@ -15,7 +15,8 @@ namespace AIHazirSite\Adapters\Discovery;
  *
  * - llms.txt: rel="describedby", type text/markdown, as the llms.txt proposal (https://llmstxt.org/)
  *   describes, in an HTML <link> or an HTTP Link header;
- * - REST API: rel="service-desc" (RFC 8631), the machine-readable service description.
+ * - REST API: rel="service-desc" (RFC 8631), the machine-readable service description: since 1.18.0 the
+ *   OpenAPI 3.1 document, with the media type IANA registered for OpenAPI.
  *
  * Both forms follow RFC 8288 (Web Linking). The A2A Agent Card is not linked: A2A defines its
  * discovery by the well-known URI only.
@@ -27,13 +28,13 @@ final class DiscoveryLinks {
 	public const LLMS_REL  = 'describedby';
 	public const LLMS_TYPE = 'text/markdown';
 	public const API_REL   = 'service-desc';
-	public const API_TYPE  = 'application/json';
+	public const API_TYPE  = 'application/vnd.oai.openapi+json';
 
 	/**
 	 * Links for the resources that are on ('' = off).
 	 *
 	 * @param string $llms_url /llms.txt URL, or ''.
-	 * @param string $api_url  REST API index URL, or ''.
+	 * @param string $api_url  OpenAPI document URL of the REST API, or ''.
 	 * @return list<array{rel: string, href: string, type: string, title: string}>
 	 */
 	public static function links( string $llms_url, string $api_url ): array {

@@ -57,6 +57,7 @@ final class LlmsTxtBuilder {
 		'api'               => 'AI Katalog API (JSON)',
 		'api_note'          => 'Geçerli ilanlar, sayfalı; şema: %s',
 		'api_templates'     => 'Şablon alan tanımları (JSON)',
+		'api_openapi'       => 'AI Katalog API tanımı (OpenAPI 3.1)',
 		'unverified'        => '%1$s (doğrulanmadı, son güncelleme %2$s)',
 		'language'          => 'Dil',
 		'untranslated'      => 'çevirisi yok, %1$s dilinde: %2$s',
@@ -189,6 +190,7 @@ final class LlmsTxtBuilder {
 		if ( '' !== $this->api_url ) {
 			$optional[] = self::link( $this->labels['api'], $this->api_url . 'listings', sprintf( $this->labels['api_note'], $this->api_url . 'schema/listings' ) );
 			$optional[] = self::link( $this->labels['api_templates'], $this->api_url . 'templates', '' );
+			$optional[] = self::link( $this->labels['api_openapi'], $this->api_url . 'openapi.json', '' );
 		}
 		foreach ( null === $i18n ? array() : $i18n['alternates'] as $language => $url ) {
 			if ( $language !== $i18n['language'] ) {

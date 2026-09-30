@@ -133,6 +133,7 @@ final class CatalogPage {
 			. '<meta name="viewport" content="width=device-width, initial-scale=1">'
 			. '<link rel="canonical" href="' . esc_url( null === $business ? SchemaModule::catalog_url( $language ) : Portal::page_url( $business ) ) . '">'
 			. ( null === $language || null !== $business ? '' : self::alternates() )
+			. ( null === $business ? self::markdown_alternate( $language ) : '' )
 			. ( Features::is_enabled( Features::SCHEMA_OUTPUT ) ? SchemaModule::script( SchemaModule::catalog_document( $language, $business ) ) : '' )
 			. '</head><body><main><h1>' . esc_html( $title ) . '</h1>'
 			. self::company( $profile, $sector ? $fallback : null )
@@ -154,6 +155,20 @@ final class CatalogPage {
 			$html .= '<li><a href="' . esc_url( Portal::page_url( $business ) ) . '">' . esc_html( $business->profile->name ) . '</a>' . ( '' === $business->profile->sector ? '' : ' – ' . esc_html( $business->profile->sector ) ) . '</li>';
 		}
 		return $html . '</ul></section>';
+	}
+
+	/**
+	 * The Markdown version of this page (1.18.0): our llms.txt carries the same catalog, so it is linked the way the
+	 * llms.txt proposal recommends, rel="alternate" type="text/markdown". Only while llms.txt is served by us.
+	 *
+	 * @param string|null $language Page language, or null.
+	 */
+	private static function markdown_alternate( ?string $language ): string {
+		if ( ! Features::is_enabled( Features::LLMS_TXT ) || null !== LlmsModule::physical_file() ) {
+			return '';
+		}
+		$url = home_url( '/' . LlmsModule::FILE );
+		return '<link rel="alternate" type="text/markdown" href="' . esc_url( null === $language ? $url : add_query_arg( 'lang', $language, $url ) ) . '">';
 	}
 
 	/**
