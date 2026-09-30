@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       AI Hazır Site
  * Description:       Sitenin sunduğu, aradığı ve tedarik edebildiği bilgiyi AI agentların okuyabileceği biçimde yayınlar.
- * Version:           1.14.2
+ * Version:           1.14.3
  * Requires at least: 6.9
  * Requires PHP:      8.1
  * License:           GPL-2.0-or-later
@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AIHS_VERSION', '1.14.2' );
+define( 'AIHS_VERSION', '1.14.3' );
 define( 'AIHS_FILE', __FILE__ );
 
 require_once __DIR__ . '/src/WordPress/Requirements.php';

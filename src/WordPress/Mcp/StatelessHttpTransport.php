@@ -32,6 +32,11 @@ use WP_REST_Response;
 final class StatelessHttpTransport implements McpRestTransportInterface {
 
 	/**
+	 * Largest request body parsed, in bytes (1.14.3; filter `aihs_mcp_max_body`, at least 1 KB).
+	 */
+	public const MAX_BODY = 65536;
+
+	/**
 	 * Transport context from the adapter.
 	 *
 	 * @var McpTransportContext
@@ -107,6 +112,12 @@ final class StatelessHttpTransport implements McpRestTransportInterface {
 	public function handle_request( WP_REST_Request $request ): WP_REST_Response {
 		if ( 'POST' !== $request->get_method() ) {
 			return new WP_REST_Response( null, 405, array( 'Allow' => 'POST' ) );
+		}
+
+		// 1.14.3: an oversized body is refused unparsed (HTTP 413, RFC 9110 section 15.5.14).
+		$max = max( 1024, (int) apply_filters( 'aihs_mcp_max_body', self::MAX_BODY ) );
+		if ( strlen( $request->get_body() ) > $max ) {
+			return new WP_REST_Response( McpErrorFactory::invalid_request( null, 'Request body too large' )->toArray(), 413 );
 		}
 
 		$body = json_decode( $request->get_body(), true );

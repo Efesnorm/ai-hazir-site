@@ -3,6 +3,14 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.14.3] - 2026-09-30
+
+### Güvenlik
+- **MCP gövde üst sınırı** (1.14.2'nin bilinen sınırı; plan onaylı: `docs/planlar/1.14.3-mcp-govde-siniri.md`):
+  `StatelessHttpTransport` 64 KB'tan büyük isteği çözümlemeden HTTP 413 (RFC 9110 §15.5.14) ve MCP bağdaştırıcısının
+  hata üreticisiyle JSON-RPC `-32600` döndürür. Süzgeç: `aihs_mcp_max_body` (en az 1 KB). Yeni özellik değil, anahtar
+  yok; veritabanı değişmedi. Test: `McpBodyLimitTest` (eski kodda 3 testin 2'si kalıyor).
+
 ## [1.14.2] - 2026-09-30
 
 Sistem kontrolünün önemi düşük üç bulgusu (plan onaylı: `docs/planlar/1.14.2-kucuk-bulgular.md`). Yeni özellik yok,
@@ -21,7 +29,7 @@ anahtar yok; veritabanı değişmedi.
   paketinde de var.
 
 ### Bilinen sınırlar
-- MCP uç noktası gövdeyi hâlâ sınırsız çözümlüyor (kod MCP bağdaştırıcısından uyarlandı; ayrı karar).
+- MCP uç noktası gövdeyi hâlâ sınırsız çözümlüyor (kod MCP bağdaştırıcısından uyarlandı; ayrı karar). 1.14.3'te giderildi.
 
 ## [1.14.1] - 2026-09-30
 
