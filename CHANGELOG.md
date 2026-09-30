@@ -3,6 +3,20 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.14.1] - 2026-09-30
+
+### Düzeltildi
+- **İlan sayısıyla artan sorgular (N+1)** (sistem kontrolünde bulundu, önem yüksek; plan onaylı:
+  `docs/planlar/1.14.1-performans-ilan-sorgulari.md`). `WpListingRepository::all()` her ilan için ayrı yazı ve meta
+  sorgusu yapıyordu: 153 ilanla ana sayfa 334, llms.txt 314 sorgu. Artık ilanlar WordPress'in `WP_Query` önbellek
+  doldurmasıyla (yazılar tek sorgu, bütün metalar tek sorgu) okunur; sorgu sayısı ilan sayısından bağımsız.
+  Ana sayfa JSON-LD'si, llms.txt, /ai-katalog/, REST, MCP, site haritası ve eşleştirme bu yoldan okur.
+  Dönen veri, sıra ve üst sınır aynı. Yeni özellik değil, anahtar yok.
+  - Test: `ListingQueryCountTest` (5 ve 40 ilanda aynı sorgu sayısı ≤ 12; eski kodda 14 → 84; toplu okunan ilanlar
+    tek tek okunanlarla aynı).
+  - Elle ölçüm (152 ilan, soğuk önbellek, eklentinin kendi sorguları): ana sayfa JSON-LD 312 → 16, llms.txt 311 → 14,
+    /ai-katalog/ JSON-LD 311 → 14.
+
 ## [1.14.0] - 2026-09-30
 
 ### Eklendi
