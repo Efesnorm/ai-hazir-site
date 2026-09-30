@@ -63,27 +63,30 @@ final class WpListingRepository implements ListingRepository, ListingTranslation
 	 * @return list<Listing>
 	 */
 	public function all( string $type, int $limit = 200 ): array {
-		$ids = get_posts(
+		// Whole posts, not ids (1.14.1): WP_Query then loads the posts and all their meta in one query each,
+		// so find() below reads from the cache instead of two queries per listing.
+		$posts = get_posts(
 			array(
-				'post_type'        => PostType::NAME,
-				'post_status'      => 'publish',
-				'numberposts'      => $limit,
+				'post_type'              => PostType::NAME,
+				'post_status'            => 'publish',
+				'numberposts'            => $limit,
 				// Newest id first among listings updated in the same second, so the order is stable.
-				'orderby'          => array(
+				'orderby'                => array(
 					'modified' => 'DESC',
 					'ID'       => 'DESC',
 				),
-				'fields'           => 'ids',
-				'meta_key'         => PostType::META['type'], // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Small private catalog.
-				'meta_value'       => $type, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Small private catalog.
-				'suppress_filters' => true,
-				'no_found_rows'    => true,
+				'meta_key'               => PostType::META['type'], // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Small private catalog.
+				'meta_value'             => $type, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Small private catalog.
+				'suppress_filters'       => true,
+				'no_found_rows'          => true,
+				'update_post_meta_cache' => true,
+				'update_post_term_cache' => false,
 			)
 		);
 
 		$listings = array();
-		foreach ( $ids as $id ) {
-			$listing = $this->find( (int) $id );
+		foreach ( $posts as $post ) {
+			$listing = $this->find( (int) $post->ID );
 			if ( null !== $listing ) {
 				$listings[] = $listing;
 			}
