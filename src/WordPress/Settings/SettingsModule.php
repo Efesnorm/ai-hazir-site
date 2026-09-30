@@ -9,10 +9,12 @@ declare(strict_types=1);
 
 namespace AIHazirSite\WordPress\Settings;
 
+use AIHazirSite\WordPress\Admin\AdminMenu;
+use AIHazirSite\WordPress\Admin\AdminNotices;
 use AIHazirSite\WordPress\Module;
 
 /**
- * Settings → AI Hazır Site, and the standard "Ayarlar" link on the Plugins screen
+ * AI Hazır Site → Ayarlar (the plugin's top-level menu since 1.15.0), and the standard "Ayarlar" link on the Plugins screen
  * (`plugin_action_links_{plugin file}`). Not behind a feature key: the screen changes nothing by
  * itself, it is how keys are changed (approved exception, see CHANGELOG 1.9.0).
  */
@@ -26,6 +28,8 @@ final class SettingsModule implements Module {
 			return;
 		}
 		( new SettingsPage() )->register();
+		AdminMenu::register();
+		AdminNotices::register();
 		if ( defined( 'AIHS_FILE' ) ) {
 			add_filter( 'plugin_action_links_' . plugin_basename( (string) AIHS_FILE ), array( self::class, 'action_links' ) );
 		}

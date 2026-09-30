@@ -1,6 +1,6 @@
 # Entegrasyonlar (1.8.0)
 
-**Araçlar → AI Hazır Entegrasyonlar**: sitenizdeki diğer eklentilerle yapılabilecek işler. Hiçbiri kendiliğinden
+**AI Hazır Site → Entegrasyonlar**: sitenizdeki diğer eklentilerle yapılabilecek işler. Hiçbiri kendiliğinden
 yapılmaz; her biri bu ekrandan **Aç / Kapat** ile yönetilir ve kapatınca eklediklerimiz geri alınır. Eklenti devre
 dışı bırakılınca önbellek entegrasyonu kapanır ve önbellek eklentinizdeki satırlarımız silinir.
 

@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace AIHazirSite\WordPress;
 
+use AIHazirSite\WordPress\Admin\AdminNotices;
 use AIHazirSite\Adapters\Llms\LlmsCache;
 use AIHazirSite\Core\Compliance\Wizard\WizardJournal;
 use AIHazirSite\Core\Inquiry\InquirySettings;
@@ -113,6 +114,16 @@ final class Uninstaller {
 		);
 		foreach ( $users as $user_id ) {
 			delete_user_meta( (int) $user_id, Portal::USER_META );
+		}
+		// 1.15.0: dismissed information notices.
+		$users = get_users(
+			array(
+				'meta_key' => AdminNotices::META, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Runs once, on uninstall.
+				'fields'   => 'ID',
+			)
+		);
+		foreach ( $users as $user_id ) {
+			delete_user_meta( (int) $user_id, AdminNotices::META );
 		}
 		self::delete_transients();
 

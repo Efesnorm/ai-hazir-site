@@ -27,7 +27,7 @@ istek (`aihs_a2a_rate_limit` süzgeci).
 
 ## Giden istek (onayla)
 
-1. **AI Katalog → Eşleşmeler**'de bir aranan ilanı eşleştirin. Ortak siteden gelen adayın yanında
+1. **AI Hazır Site → Eşleşmeler**'de bir aranan ilanı eşleştirin. Ortak siteden gelen adayın yanında
    **A2A ile teklif iste** düğmesi çıkar (A2A açıkken).
 2. Açılan sayfada gönderilecek JSON-RPC mesajının tamamı ve alıcı adres görünür. Alıcının kartviziti, ortak sitenin
    kendi alan adındaki `/.well-known/agent-card.json` adresinden okunur ve doğrulanır. Geçersizse gönderim yapılmaz.
@@ -43,7 +43,7 @@ istek (`aihs_a2a_rate_limit` süzgeci).
 [docs/demo/a2a-yerel-2026-09-29.md](../demo/a2a-yerel-2026-09-29.md)).
 
 **Canlı (elle, iki gerçek site):** Dağıtıcı sitesi (D) ve fabrika sitesi (F), ikisi de 1.6.0 veya üstü ve https.
-1.9.0'dan beri özellikler **Ayarlar → AI Hazır Site** ekranından açılır (teklif kutusu kendi ekranından, KVKK
+1.9.0'dan beri özellikler **AI Hazır Site → Ayarlar** ekranından açılır (teklif kutusu kendi ekranından, KVKK
 uyarısıyla).
 
 1. **F:** `catalog`, `inquiries`, `rest_api`, `a2a` açık. Bir "satılan" ilan girin (ör. NYY 3x2,5, 5000 m, 5 gün).
@@ -52,6 +52,6 @@ uyarısıyla).
    (NYY, 2000 m, 10 gün). Eşleşmeler → Ayarlar'da ortak site olarak `https://F/wp-json/aihs/v1/` girin.
 3. **D:** Eşleşmeler'de aranan ilanı seçin; F'nin ilanı listede. **A2A ile teklif iste** → mesajı okuyun →
    **Onaylıyorum, gönder**. (İnsan onayı 1.)
-4. **F:** AI Katalog → Teklif Kutusu'nda talep "yeni" olarak görünür (kanal a2a). İnceleyip **Onayla** ve e-postayla
+4. **F:** AI Hazır Site → Teklif Kutusu'nda talep "yeni" olarak görünür (kanal a2a). İnceleyip **Onayla** ve e-postayla
    dönün. (İnsan onayı 2.)
 5. Kayıt: iki sitenin denetim kayıtları (D: `send`, F: `message` + `submit`) ve ekran görüntüleri.

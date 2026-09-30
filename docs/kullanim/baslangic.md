@@ -7,7 +7,8 @@ Bu belge eklentiyi kuran site sahibi içindir. Geliştirme ortamı için: [READM
 1. **Yedek alın.** Güncellemelerden önce de sitenin dosyalarının ve veritabanının yedeğini alın.
 2. Eklentiler → Yeni Ekle → **Eklenti Yükle** ile `ai-hazir-site-<sürüm>.zip` dosyasını yükleyin ve etkinleştirin.
    Gereksinimler: WordPress 6.9+, PHP 8.1+.
-3. Etkinleştirmeden sonra yalnızca **AI ölçümü** açıktır. Diğer özellikleri **Ayarlar → AI Hazır Site**
+3. Etkinleştirmeden sonra yalnızca **AI ölçümü** açıktır. Eklentinin bütün ekranları sol menüdeki **AI Hazır Site**
+   menüsündedir (1.15.0; önceki Ayarlar/Araçlar adresleri oraya yönlendirilir). Diğer özellikleri **AI Hazır Site → Ayarlar**
    ekranından açın.
 
 Güncelleme: yeni zip dosyasını aynı yoldan yükleyin, WordPress "mevcut eklentiyi değiştir" diye sorar.
@@ -17,7 +18,7 @@ temizleyin. 1.6.1'den beri `/ai-katalog/` ve `/llms.txt` önbelleğe alınmaz; e
 
 ## Özellik anahtarları
 
-Tüm özellikler **Ayarlar → AI Hazır Site** ekranından açılıp kapatılır (1.9.0; Eklentiler listesinde eklentinin
+Tüm özellikler **AI Hazır Site → Ayarlar** ekranından açılıp kapatılır (1.9.0; Eklentiler listesinde eklentinin
 satırındaki **Ayarlar** bağlantısı da oraya gider). Ekranın başındaki **Önerilen kurulum** (1.11.0) site türünüze
 uygun özellikleri tek seferde açar: ürün satıcısı/üretici/dağıtıcı, ihracatçı, tur operatörü, portal ya da yalnızca
 okuma hizmeti. Önce açılacakları gösterir, hiçbir şeyi kapatmaz; teklif kutusunu ayrıca kendi ekranından açarsınız. Bir özelliğin önkoşulu kapalıysa ya da açık başka bir özellik ona
@@ -25,11 +26,11 @@ bağlıysa satırında yazar; hiçbir özellik kendiliğinden açılıp kapanmaz
 
 | Anahtar | Ne açar | Önkoşul | Not |
 | --- | --- | --- | --- |
-| `measurement` | AI bot ve yönlendirme ölçümü (Araçlar → AI Ölçüm) | – | Açık gelir |
-| `compliance_scan` | AI uyum taraması ve puanı (Araçlar → AI Uyum) | – | |
+| `measurement` | AI bot ve yönlendirme ölçümü (AI Hazır Site → AI Ölçüm) | – | Açık gelir |
+| `compliance_scan` | AI uyum taraması ve puanı (AI Hazır Site → AI Uyum) | – | |
 | `compliance_wizard` | AI Uyum Sihirbazı | – | Sihirbaz gereken özellikleri kendisi açar |
 | `compliance_report` | AI Uyum Raporu, rozet, doğrulama sayfası | `compliance_scan` | |
-| `bot_access` | robots.txt'de AI bot izinleri (Araçlar → AI Bot Erişimi) | – | |
+| `bot_access` | robots.txt'de AI bot izinleri (AI Hazır Site → AI Bot Erişimi) | – | |
 | `catalog` | AI Katalog: firma profili ve ilanlar | – | |
 | `templates` | Sektör şablonları | `catalog` | |
 | `schema_output` | Schema.org JSON-LD ve /ai-katalog/ | `catalog` | |
@@ -47,7 +48,7 @@ bağlıysa satırında yazar; hiçbir özellik kendiliğinden açılıp kapanmaz
 | `catalog_sitemap` | AI Katalog site haritasında | `schema_output` ya da `llms_txt` | |
 | `indexnow` | Değişiklikleri IndexNow ile Bing ve diğerlerine bildirir ([entegrasyonlar.md](entegrasyonlar.md)) | `schema_output` ya da `llms_txt` | Dışarıya istek atar (yalnızca herkese açık adresler) |
 | `remote_updates` | Merkezi güncelleme ([guncelleme.md](guncelleme.md)) | – | Sunucu adresi girilmedikçe istek atılmaz |
-| `telemetry` | Rapor paneline haftalık özet | – | Gönderim için ayrıca açık onay (Ayarlar → AI Hazır Güncelleme) |
+| `telemetry` | Rapor paneline haftalık özet | – | Gönderim için ayrıca açık onay (AI Hazır Site → Güncelleme) |
 
 Aynı ekranda **"Eklentiyi silerken tüm verilerini de sil"** seçeneği de vardır.
 
@@ -61,7 +62,7 @@ wp eval 'AIHazirSite\Core\Features::set( "compliance_scan", true );'
 
 1. **AI Uyum** taramasını açın ve puanınızı görün.
 2. **AI Uyum Sihirbazı** ile eksikleri tamamlayın: firma profili, ilk ilan, Schema.org, llms.txt, bot erişimi.
-3. İlanlarınızı **AI Katalog** menüsünden girin; gerekiyorsa bir sektör şablonu seçin.
+3. İlanlarınızı **AI Hazır Site** menüsündeki ilan ekranlarından girin; gerekiyorsa bir sektör şablonu seçin.
 4. AI asistanlarının kataloğu doğrudan sorgulaması için REST, Abilities ve MCP'yi açın:
    [mcp-baglanti.md](mcp-baglanti.md).
 5. Talep almak istiyorsanız **Teklif Kutusu**'nu açın.
@@ -69,7 +70,7 @@ wp eval 'AIHazirSite\Core\Features::set( "compliance_scan", true );'
 
 ## Eklentiyi silme
 
-Varsayılan olarak veriler korunur. **Ayarlar → AI Hazır Site** ekranının altındaki "Eklentiyi silerken tüm verilerini
+Varsayılan olarak veriler korunur. **AI Hazır Site → Ayarlar** ekranının altındaki "Eklentiyi silerken tüm verilerini
 de sil" seçeneğini işaretlerseniz silmede her şey kaldırılır. WP-CLI ile de açılabilir: silmede tüm verinin (tablolar, ayarlar, ilanlar ve çevirileri, talepler, işletmeler
 ve işletme yetkililerinin kullanıcı bağları, önbellekler) kaldırılması için
 silmeden önce şunu çalıştırın:

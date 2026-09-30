@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace AIHazirSite\WordPress\Measurement\Admin;
 
+use AIHazirSite\WordPress\Admin\AdminMenu;
 use AIHazirSite\Core\Features;
 use AIHazirSite\Core\Measurement\CsvExport;
 use AIHazirSite\Core\Measurement\Report;
@@ -40,13 +41,7 @@ final class ReportPage {
 	 * Adds the page under Tools.
 	 */
 	public function add_page(): void {
-		add_management_page(
-			__( 'AI Ölçüm', 'ai-hazir-site' ),
-			__( 'AI Ölçüm', 'ai-hazir-site' ),
-			self::CAPABILITY,
-			self::SLUG,
-			array( $this, 'render' )
-		);
+		AdminMenu::add( __( 'AI Ölçüm', 'ai-hazir-site' ), self::CAPABILITY, self::SLUG, array( $this, 'render' ) );
 	}
 
 	/**
@@ -55,7 +50,7 @@ final class ReportPage {
 	 * @param array<string, string|int> $args Extra query arguments.
 	 */
 	public static function url( array $args = array() ): string {
-		return add_query_arg( array_merge( array( 'page' => self::SLUG ), $args ), admin_url( 'tools.php' ) );
+		return AdminMenu::url( self::SLUG, $args );
 	}
 
 	/**

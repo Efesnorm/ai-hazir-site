@@ -87,7 +87,7 @@ final class ComplianceReportView {
 		$html .= '<p>' . esc_html( (string) $data['site'] ) . ' · ' . esc_html__( 'Oluşturulma', 'ai-hazir-site' ) . ': ' . esc_html( $date( (string) $data['generated_at'] ) ) . '</p>';
 
 		if ( null === $latest ) {
-			return $html . '<p id="aihs-report-empty">' . esc_html__( 'Henüz uyum taraması yapılmamış. Araçlar → AI Uyum sayfasından tarama yapın.', 'ai-hazir-site' ) . '</p></div>';
+			return $html . '<p id="aihs-report-empty">' . esc_html__( 'Henüz uyum taraması yapılmamış. AI Hazır Site → AI Uyum sayfasından tarama yapın.', 'ai-hazir-site' ) . '</p></div>';
 		}
 
 		$score = static fn( ?array $s ): string => null === $s || null === $s['score'] ? '–' : (string) $s['score'];

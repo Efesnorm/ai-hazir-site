@@ -1,6 +1,6 @@
 <?php
 /**
- * AI Katalog → Teklif Kutusu.
+ * AI Hazır Site → Teklif Kutusu.
  *
  * @package AIHazirSite
  */
@@ -9,10 +9,10 @@ declare(strict_types=1);
 
 namespace AIHazirSite\WordPress\Inquiry\Admin;
 
+use AIHazirSite\WordPress\Admin\AdminMenu;
 use AIHazirSite\Core\Features;
 use AIHazirSite\Core\Inquiry\Inquiry;
 use AIHazirSite\Core\Inquiry\InquirySettings;
-use AIHazirSite\WordPress\Catalog\Admin\CatalogAdmin;
 use AIHazirSite\WordPress\Catalog\WpListingRepository;
 use AIHazirSite\WordPress\Inquiry\InquiryChannels;
 use AIHazirSite\WordPress\Inquiry\InquiryModule;
@@ -46,15 +46,10 @@ final class InquiryAdmin {
 	}
 
 	/**
-	 * Under AI Katalog when the catalog menu exists, else under Tools.
+	 * Under the plugin's menu (1.15.0).
 	 */
 	public function add_page(): void {
-		$title = __( 'Teklif Kutusu', 'ai-hazir-site' );
-		if ( Features::is_enabled( Features::CATALOG ) ) {
-			add_submenu_page( CatalogAdmin::SLUGS['offer'], $title, $title, self::CAPABILITY, self::SLUG, array( $this, 'render' ) );
-			return;
-		}
-		add_management_page( $title, $title, self::CAPABILITY, self::SLUG, array( $this, 'render' ) );
+		AdminMenu::add( __( 'Teklif Kutusu', 'ai-hazir-site' ), self::CAPABILITY, self::SLUG, array( $this, 'render' ) );
 	}
 
 	/**
@@ -63,7 +58,7 @@ final class InquiryAdmin {
 	 * @param array<string, string|int> $args Extra query args.
 	 */
 	public static function url( array $args = array() ): string {
-		return add_query_arg( array_merge( array( 'page' => self::SLUG ), $args ), admin_url( 'admin.php' ) );
+		return AdminMenu::url( self::SLUG, $args );
 	}
 
 	/**

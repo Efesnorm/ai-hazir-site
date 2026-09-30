@@ -1,6 +1,6 @@
 <?php
 /**
- * AI Katalog → Eşleşmeler.
+ * AI Hazır Site → Eşleşmeler.
  *
  * @package AIHazirSite
  */
@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace AIHazirSite\WordPress\Matching;
 
+use AIHazirSite\WordPress\Admin\AdminMenu;
 use AIHazirSite\Core\Catalog\ListingType;
 use AIHazirSite\Core\Matching\MatchWeights;
 use AIHazirSite\WordPress\A2A\A2AAdmin;
@@ -36,7 +37,7 @@ final class MatchingAdmin {
 	 * Submenu under AI Katalog.
 	 */
 	public function add_menu(): void {
-		add_submenu_page( CatalogAdmin::SLUGS[ ListingType::OFFER ], __( 'Eşleşmeler', 'ai-hazir-site' ), __( 'Eşleşmeler', 'ai-hazir-site' ), CatalogAdmin::CAPABILITY, self::SLUG, array( $this, 'render' ) );
+		AdminMenu::add( __( 'Eşleşmeler', 'ai-hazir-site' ), CatalogAdmin::CAPABILITY, self::SLUG, array( $this, 'render' ) );
 	}
 
 	/**
@@ -45,7 +46,7 @@ final class MatchingAdmin {
 	 * @param array<string, string|int> $args Extra query args.
 	 */
 	public static function url( array $args = array() ): string {
-		return add_query_arg( array_merge( array( 'page' => self::SLUG ), $args ), admin_url( 'admin.php' ) );
+		return AdminMenu::url( self::SLUG, $args );
 	}
 
 	/**

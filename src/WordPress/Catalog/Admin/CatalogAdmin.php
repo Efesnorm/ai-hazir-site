@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace AIHazirSite\WordPress\Catalog\Admin;
 
+use AIHazirSite\WordPress\Admin\AdminMenu;
 use AIHazirSite\Core\Catalog\CompanyProfile;
 use AIHazirSite\Core\Catalog\Listing;
 use AIHazirSite\Core\Catalog\ListingType;
@@ -72,11 +73,10 @@ final class CatalogAdmin {
 	 */
 	public function add_menus(): void {
 		$labels = self::type_labels();
-		add_menu_page( __( 'AI Katalog', 'ai-hazir-site' ), __( 'AI Katalog', 'ai-hazir-site' ), self::CAPABILITY, self::SLUGS[ ListingType::OFFER ], array( $this, 'render_offer' ), 'dashicons-store', 58 );
-		add_submenu_page( self::SLUGS[ ListingType::OFFER ], $labels[ ListingType::OFFER ], $labels[ ListingType::OFFER ], self::CAPABILITY, self::SLUGS[ ListingType::OFFER ], array( $this, 'render_offer' ) );
-		add_submenu_page( self::SLUGS[ ListingType::OFFER ], $labels[ ListingType::DEMAND ], $labels[ ListingType::DEMAND ], self::CAPABILITY, self::SLUGS[ ListingType::DEMAND ], array( $this, 'render_demand' ) );
-		add_submenu_page( self::SLUGS[ ListingType::OFFER ], $labels[ ListingType::SUPPLY ], $labels[ ListingType::SUPPLY ], self::CAPABILITY, self::SLUGS[ ListingType::SUPPLY ], array( $this, 'render_supply' ) );
-		add_submenu_page( self::SLUGS[ ListingType::OFFER ], __( 'Firma Profili', 'ai-hazir-site' ), __( 'Firma Profili', 'ai-hazir-site' ), self::CAPABILITY, self::PROFILE_SLUG, array( $this, 'render_profile' ) );
+		AdminMenu::add( $labels[ ListingType::OFFER ], self::CAPABILITY, self::SLUGS[ ListingType::OFFER ], array( $this, 'render_offer' ) );
+		AdminMenu::add( $labels[ ListingType::DEMAND ], self::CAPABILITY, self::SLUGS[ ListingType::DEMAND ], array( $this, 'render_demand' ) );
+		AdminMenu::add( $labels[ ListingType::SUPPLY ], self::CAPABILITY, self::SLUGS[ ListingType::SUPPLY ], array( $this, 'render_supply' ) );
+		AdminMenu::add( __( 'Firma Profili', 'ai-hazir-site' ), self::CAPABILITY, self::PROFILE_SLUG, array( $this, 'render_profile' ) );
 	}
 
 	/**

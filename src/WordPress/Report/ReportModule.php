@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace AIHazirSite\WordPress\Report;
 
+use AIHazirSite\WordPress\Admin\AdminMenu;
 use AIHazirSite\Core\Features;
 use AIHazirSite\WordPress\Module;
 
@@ -44,7 +45,7 @@ final class ReportModule implements Module {
 	 * Adds the page under Tools.
 	 */
 	public static function add_page(): void {
-		add_management_page( __( 'AI Uyum Raporu', 'ai-hazir-site' ), __( 'AI Uyum Raporu', 'ai-hazir-site' ), self::CAPABILITY, self::SLUG, array( self::class, 'render' ) );
+		AdminMenu::add( __( 'AI Uyum Raporu', 'ai-hazir-site' ), self::CAPABILITY, self::SLUG, array( self::class, 'render' ) );
 	}
 
 	/**

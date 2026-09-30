@@ -9,7 +9,7 @@ wp eval 'AIHazirSite\Core\Features::set( "compliance_report", true );'
 
 ## Rapor
 
-**Araçlar → AI Uyum Raporu** sayfası şunları gösterir:
+**AI Hazır Site → AI Uyum Raporu** sayfası şunları gösterir:
 
 - **Özet:** son tarama puanı ve tarihi; ilk tarama puanı ve aradaki fark.
 - **Kontroller:** yedi kriterin her biri için ağırlık, ilk ve son puan, değişim ve kalan kazanım.
