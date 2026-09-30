@@ -162,6 +162,17 @@ final class ReportPage {
 			array_map( static fn( array $r ): array => array( $r['source'], $r['total'] ), Report::section( $rows, Report::SECTION_MCP ) )
 		);
 
+		// 1.17.0: only when there were test requests; they are not in any table above.
+		$tests = Report::section( $rows, Report::SECTION_TEST );
+		if ( array() !== $tests ) {
+			$html .= self::table(
+				'test',
+				__( 'Test istekleri (yukarıdaki tablolara katılmadı)', 'ai-hazir-site' ),
+				array( __( 'Kaynak', 'ai-hazir-site' ), __( 'İstek', 'ai-hazir-site' ) ),
+				array_map( static fn( array $r ): array => array( $r['source'], $r['total'] ), $tests )
+			);
+		}
+
 		return $html;
 	}
 
@@ -231,6 +242,7 @@ final class ReportPage {
 			Report::SECTION_REFERRALS => __( 'Yönlendirme', 'ai-hazir-site' ),
 			Report::SECTION_AI_FILES  => __( 'AI dosyası', 'ai-hazir-site' ),
 			Report::SECTION_MCP       => __( 'MCP', 'ai-hazir-site' ),
+			Report::SECTION_TEST      => __( 'Test (hariç tutuldu)', 'ai-hazir-site' ),
 		);
 	}
 

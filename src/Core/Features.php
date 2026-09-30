@@ -143,6 +143,11 @@ final class Features {
 	public const LITESPEED_SERVER_BYPASS = 'litespeed_server_bypass';
 
 	/**
+	 * Requests carrying the "AIHazirSite-Test/" User-Agent token are counted apart from real traffic (1.17.0).
+	 */
+	public const MEASUREMENT_TEST_FILTER = 'measurement_test_filter';
+
+	/**
 	 * Sector templates (0.8.0).
 	 */
 	public const TEMPLATES = 'templates';
@@ -152,8 +157,10 @@ final class Features {
 	 *
 	 * - measurement: the "before" baseline must be collected from the moment the
 	 *   plugin is installed; it stores only aggregated, non-personal counters.
+	 * - measurement_test_filter (1.17.0): affects only requests carrying our own test token, never real
+	 *   traffic; switched off by default it would let our tests blur the baseline it protects.
 	 */
-	public const DEFAULT_ON = array( self::MEASUREMENT );
+	public const DEFAULT_ON = array( self::MEASUREMENT, self::MEASUREMENT_TEST_FILTER );
 
 	/**
 	 * Features that need ALL of the listed features (1.9.0). Used by the settings screen, which only
@@ -231,6 +238,7 @@ final class Features {
 			self::CATALOG_SITEMAP         => false,
 			self::INDEXNOW                => false,
 			self::LITESPEED_SERVER_BYPASS => false,
+			self::MEASUREMENT_TEST_FILTER => true,
 		);
 	}
 

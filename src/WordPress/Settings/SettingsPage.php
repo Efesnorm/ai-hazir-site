@@ -69,7 +69,7 @@ final class SettingsPage {
 	 */
 	public static function groups(): array {
 		return array(
-			__( 'Ölçüm ve uyum', 'ai-hazir-site' )     => array( Features::MEASUREMENT, Features::COMPLIANCE_SCAN, Features::COMPLIANCE_WIZARD, Features::COMPLIANCE_REPORT, Features::BOT_ACCESS ),
+			__( 'Ölçüm ve uyum', 'ai-hazir-site' )     => array( Features::MEASUREMENT, Features::MEASUREMENT_TEST_FILTER, Features::COMPLIANCE_SCAN, Features::COMPLIANCE_WIZARD, Features::COMPLIANCE_REPORT, Features::BOT_ACCESS ),
 			__( 'AI Katalog', 'ai-hazir-site' )        => array( Features::CATALOG, Features::TEMPLATES, Features::SCHEMA_OUTPUT, Features::LLMS_TXT, Features::MULTILINGUAL ),
 			__( 'AI kanalları', 'ai-hazir-site' )      => array( Features::REST_API, Features::ABILITIES, Features::MCP, Features::A2A, Features::DISCOVERY ),
 			__( 'Etkileşim', 'ai-hazir-site' )         => array( Features::INQUIRIES, Features::MATCHING, Features::PORTAL_MODE ),
@@ -93,6 +93,7 @@ final class SettingsPage {
 			. ( null === $seo ? '' : ' ' . sprintf( __( 'Firma (Organization) şemasını %s üretiyor; AI Hazır Site yalnızca ilanları ekliyor.', 'ai-hazir-site' ), $seo ) );
 		return array(
 			Features::MEASUREMENT             => array( __( 'AI ölçümü', 'ai-hazir-site' ), __( 'AI botlarının ve AI platformlarından gelen ziyaretlerin sayımı (kişisel veri saklanmaz).', 'ai-hazir-site' ), $tools( 'aihs-measurement' ) ),
+			Features::MEASUREMENT_TEST_FILTER => array( __( 'Test trafiğini ayır', 'ai-hazir-site' ), __( 'User-Agent\'ında "AIHazirSite-Test/" belirteci olan istekler (bizim denemelerimiz) gerçek trafiğe katılmaz, ayrı sayılır.', 'ai-hazir-site' ), $tools( 'aihs-measurement' ) ),
 			Features::COMPLIANCE_SCAN         => array( __( 'AI uyum taraması', 'ai-hazir-site' ), __( 'Sitenin AI uyum puanını ölçer.', 'ai-hazir-site' ), $tools( 'aihs-compliance' ) ),
 			Features::COMPLIANCE_WIZARD       => array( __( 'AI uyum sihirbazı', 'ai-hazir-site' ), __( 'Eksikleri adım adım, geri alınabilir biçimde tamamlar.', 'ai-hazir-site' ), $tools( 'aihs-wizard' ) ),
 			Features::COMPLIANCE_REPORT       => array( __( 'Uyum raporu ve rozet', 'ai-hazir-site' ), __( 'Önce/sonra raporu, AI Hazır rozeti ve doğrulama sayfası.', 'ai-hazir-site' ), $tools( 'aihs-report' ) ),

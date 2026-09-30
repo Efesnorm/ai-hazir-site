@@ -28,6 +28,7 @@ final class CsvExport {
 		Report::SECTION_REFERRALS => 'Yönlendirme',
 		Report::SECTION_AI_FILES  => 'AI dosyası',
 		Report::SECTION_MCP       => 'MCP',
+		Report::SECTION_TEST      => 'Test (hariç tutuldu)',
 	);
 
 	/**

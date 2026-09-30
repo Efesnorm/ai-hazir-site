@@ -35,10 +35,11 @@ final class McpCalls {
 	 * Counts one tool call.
 	 *
 	 * @param string $tool     MCP tool name.
-	 * @param string $endpoint Endpoint path (e.g. /wp-json/aihs/mcp).
+	 * @param string $endpoint   Endpoint path (e.g. /wp-json/aihs/mcp).
+	 * @param string $user_agent Client User-Agent (1.17.0: test calls are counted apart).
 	 * @return bool True when counted.
 	 */
-	public function count( string $tool, string $endpoint ): bool {
+	public function count( string $tool, string $endpoint, string $user_agent = '' ): bool {
 		if ( ! Features::is_enabled( Features::MEASUREMENT ) ) {
 			return false;
 		}
@@ -46,6 +47,7 @@ final class McpCalls {
 		if ( '' === $tool ) {
 			return false;
 		}
-		return $this->hits->increment( $this->clock->today(), Hit::KIND_MCP, $tool, Hit::normalize_path( $endpoint ), false );
+		$kind = Features::is_enabled( Features::MEASUREMENT_TEST_FILTER ) && TestTraffic::is_test( $user_agent ) ? Hit::KIND_TEST : Hit::KIND_MCP;
+		return $this->hits->increment( $this->clock->today(), $kind, $tool, Hit::normalize_path( $endpoint ), false );
 	}
 }
