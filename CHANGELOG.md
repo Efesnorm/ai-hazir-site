@@ -3,6 +3,19 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.16.0] - 2026-10-01
+
+### Eklendi
+- **llms.txt'de "AI agentlar için" bölümü** (plan onaylı: `docs/planlar/1.15.1-1.16.0-teklif-kanali.md`). Canlıda
+  bulundu: makedonya.tr'de teklif kutusu, A2A ve MCP açıktı ama agentların okuduğu llms.txt bunların hiçbirini
+  anmıyordu. Artık `## Optional`'dan önce (llms.txt önerisinde Optional "atlanabilir" demek) yalnızca açık kanallar
+  listelenir: teklif/talep bırakma (REST; alanlar ve izin verilen talep türleri), A2A kartviziti (açık beceriler),
+  MCP sunucusu (talep aracı varsa belirtilir). Kanal kapanınca satırı kalkar; önbellek anahtarı kanalları içerir.
+  Çok dilli ve portal llms.txt'leri de aynı bölümü taşır.
+- Ayrı anahtar yok (onaylı): her satır kendi kanalının anahtarına bağlı; hiçbir kanal açık değilse llms.txt aynen
+  eskisi gibi.
+- Testler: `LlmsAgentChannelsTest`, `LlmsTxtBuilderAgentsTest`.
+
 ## [1.15.1] - 2026-09-30
 
 Canlı A2A denemesinde bulundu (plan onaylı: `docs/planlar/1.15.1-1.16.0-teklif-kanali.md`).

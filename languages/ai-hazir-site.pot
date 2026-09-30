@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: AI Hazır Site 1.15.1\n"
+"Project-Id-Version: AI Hazır Site 1.16.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ai-hazir-site\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-30T20:22:15+00:00\n"
+"POT-Creation-Date: 2026-09-30T21:00:31+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: ai-hazir-site\n"
@@ -89,7 +89,7 @@ msgstr ""
 
 #: src/WordPress/Abilities/AbilitiesModule.php:68
 #: src/WordPress/Discovery/DiscoveryModule.php:96
-#: src/WordPress/Llms/LlmsModule.php:282
+#: src/WordPress/Llms/LlmsModule.php:342
 #: src/WordPress/Settings/SettingsPage.php:73
 #: src/WordPress/Settings/SettingsPage.php:100
 msgid "AI Katalog"
@@ -249,7 +249,7 @@ msgstr ""
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:143
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:226
 #: src/WordPress/I18n/TranslationsAdmin.php:191
-#: src/WordPress/Llms/LlmsModule.php:268
+#: src/WordPress/Llms/LlmsModule.php:328
 #: src/WordPress/Portal/BusinessAdmin.php:141
 msgid "Kategori"
 msgstr ""
@@ -309,12 +309,12 @@ msgid "Bu işlem için yetkiniz yok."
 msgstr ""
 
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:65
-#: src/WordPress/Llms/LlmsModule.php:257
+#: src/WordPress/Llms/LlmsModule.php:317
 msgid "Satılanlar"
 msgstr ""
 
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:66
-#: src/WordPress/Llms/LlmsModule.php:258
+#: src/WordPress/Llms/LlmsModule.php:318
 msgid "Arananlar"
 msgstr ""
 
@@ -347,17 +347,17 @@ msgid "Tür"
 msgstr ""
 
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:144
-#: src/WordPress/Llms/LlmsModule.php:270
+#: src/WordPress/Llms/LlmsModule.php:330
 msgid "Fiyat"
 msgstr ""
 
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:145
-#: src/WordPress/Llms/LlmsModule.php:276
+#: src/WordPress/Llms/LlmsModule.php:336
 msgid "Geçerlilik"
 msgstr ""
 
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:146
-#: src/WordPress/Llms/LlmsModule.php:267
+#: src/WordPress/Llms/LlmsModule.php:327
 msgid "Son güncelleme"
 msgstr ""
 
@@ -417,7 +417,7 @@ msgid "Açıklama"
 msgstr ""
 
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:227
-#: src/WordPress/Llms/LlmsModule.php:269
+#: src/WordPress/Llms/LlmsModule.php:329
 #: src/WordPress/Portal/BusinessAdmin.php:142
 msgid "Miktar"
 msgstr ""
@@ -449,7 +449,7 @@ msgstr ""
 
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:232
 #: src/WordPress/I18n/TranslationsAdmin.php:192
-#: src/WordPress/Llms/LlmsModule.php:272
+#: src/WordPress/Llms/LlmsModule.php:332
 #: src/WordPress/Portal/BusinessAdmin.php:147
 msgid "Bölge"
 msgstr ""
@@ -464,7 +464,7 @@ msgid "Geçerlilik tarihi"
 msgstr ""
 
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:235
-#: src/WordPress/Llms/LlmsModule.php:277
+#: src/WordPress/Llms/LlmsModule.php:337
 msgid "Özellikler"
 msgstr ""
 
@@ -499,7 +499,7 @@ msgid "Sektör"
 msgstr ""
 
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:300
-#: src/WordPress/Llms/LlmsModule.php:262
+#: src/WordPress/Llms/LlmsModule.php:322
 msgid "Ülke"
 msgstr ""
 
@@ -509,7 +509,7 @@ msgstr ""
 
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:301
 #: src/WordPress/I18n/TranslationsAdmin.php:120
-#: src/WordPress/Llms/LlmsModule.php:263
+#: src/WordPress/Llms/LlmsModule.php:323
 msgid "Diller"
 msgstr ""
 
@@ -533,7 +533,7 @@ msgid "Kurumsal telefon"
 msgstr ""
 
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:304
-#: src/WordPress/Llms/LlmsModule.php:264
+#: src/WordPress/Llms/LlmsModule.php:324
 msgid "Sertifikalar"
 msgstr ""
 
@@ -1040,7 +1040,7 @@ msgid "Talep"
 msgstr ""
 
 #: src/WordPress/Inquiry/Admin/InquiryAdmin.php:162
-#: src/WordPress/Llms/LlmsModule.php:278
+#: src/WordPress/Llms/LlmsModule.php:338
 msgid "İletişim"
 msgstr ""
 
@@ -1387,72 +1387,121 @@ msgstr ""
 msgid "Bilinmeyen entegrasyon."
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:244
+#: src/WordPress/Llms/LlmsModule.php:239
+msgid "Yönlendirme talebi bırakma (REST)"
+msgstr ""
+
+#: src/WordPress/Llms/LlmsModule.php:239
+msgid "Teklif isteği veya talep bırakma (REST)"
+msgstr ""
+
+#. translators: %s: allowed inquiry kinds.
+#: src/WordPress/Llms/LlmsModule.php:243
+#, php-format
+msgid "POST, JSON: kind (%s), subject, message, contact {name, email veya phone}; isteğe bağlı listing_id. Otomatik onay ve otomatik yanıt yok; firma inceleyip döner."
+msgstr ""
+
+#: src/WordPress/Llms/LlmsModule.php:251
+msgid "müsaitlik sorma"
+msgstr ""
+
+#: src/WordPress/Llms/LlmsModule.php:252
+msgid "teklif isteme"
+msgstr ""
+
+#: src/WordPress/Llms/LlmsModule.php:255
+msgid "A2A agent kartviziti"
+msgstr ""
+
+#. translators: %s: skills.
+#: src/WordPress/Llms/LlmsModule.php:259
+#, php-format
+msgid "A2A 1.0 (JSON-RPC); beceriler: %s."
+msgstr ""
+
+#: src/WordPress/Llms/LlmsModule.php:266
+#: src/WordPress/Settings/SettingsPage.php:107
+msgid "MCP sunucusu"
+msgstr ""
+
+#: src/WordPress/Llms/LlmsModule.php:269
+msgid "Model Context Protocol (Streamable HTTP, oturumsuz); katalog araçları ve talep bırakma aracı."
+msgstr ""
+
+#: src/WordPress/Llms/LlmsModule.php:270
+msgid "Model Context Protocol (Streamable HTTP, oturumsuz); salt okunur katalog araçları."
+msgstr ""
+
+#: src/WordPress/Llms/LlmsModule.php:304
 msgid "AI Hazır Site: Sitenin kök dizininde bir llms.txt dosyası var; sunucu onu gösterdiği için AI Hazır Site kendi llms.txt çıktısını yayınlamıyor ve dosyaya dokunmuyor. Kendi içeriğimizi kullanmak için dosyayı kaldırın ya da aşağıdaki metni dosyaya ekleyin."
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:245
+#: src/WordPress/Llms/LlmsModule.php:305
 msgid "Eklenecek metin"
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:259
+#: src/WordPress/Llms/LlmsModule.php:319
 msgid "Tedarik edilebilenler"
 msgstr ""
 
 #. translators: %s: company name (and sector).
-#: src/WordPress/Llms/LlmsModule.php:261
+#: src/WordPress/Llms/LlmsModule.php:321
 #, php-format
 msgid "%s: sattığı, aradığı ve tedarik edebildiği ürünlerin güncel özeti."
 msgstr ""
 
 #. translators: 1: value, 2: time of the last confirmation.
-#: src/WordPress/Llms/LlmsModule.php:266
+#: src/WordPress/Llms/LlmsModule.php:326
 #, php-format
 msgid "%1$s (doğrulanmadı, son güncelleme %2$s)"
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:271
+#: src/WordPress/Llms/LlmsModule.php:331
 msgid "Bütçe"
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:273
+#: src/WordPress/Llms/LlmsModule.php:333
 msgid "Teslim süresi"
 msgstr ""
 
 #. translators: %d: number of days.
-#: src/WordPress/Llms/LlmsModule.php:275
+#: src/WordPress/Llms/LlmsModule.php:335
 #, php-format
 msgid "%d gün"
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:279
+#: src/WordPress/Llms/LlmsModule.php:339
 msgid "Web sitesi"
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:280
+#: src/WordPress/Llms/LlmsModule.php:340
 msgid "E-posta"
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:281
+#: src/WordPress/Llms/LlmsModule.php:341
 msgid "Telefon"
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:283
+#: src/WordPress/Llms/LlmsModule.php:343
 msgid "Tüm geçerli ilanların sade HTML listesi"
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:284
+#: src/WordPress/Llms/LlmsModule.php:344
 msgid "AI Katalog API (JSON)"
 msgstr ""
 
 #. translators: %s: JSON schema URL.
-#: src/WordPress/Llms/LlmsModule.php:286
+#: src/WordPress/Llms/LlmsModule.php:346
 #, php-format
 msgid "Geçerli ilanlar, sayfalı; şema: %s"
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:287
+#: src/WordPress/Llms/LlmsModule.php:347
 msgid "Şablon alan tanımları (JSON)"
+msgstr ""
+
+#: src/WordPress/Llms/LlmsModule.php:348
+msgid "AI agentlar için"
 msgstr ""
 
 #: src/WordPress/Matching/MatchingAdmin.php:40
@@ -2108,10 +2157,6 @@ msgstr ""
 
 #: src/WordPress/Settings/SettingsPage.php:106
 msgid "Katalog sorguları WordPress Abilities API ile."
-msgstr ""
-
-#: src/WordPress/Settings/SettingsPage.php:107
-msgid "MCP sunucusu"
 msgstr ""
 
 #: src/WordPress/Settings/SettingsPage.php:107
