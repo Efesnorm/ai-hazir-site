@@ -1,6 +1,6 @@
 <?php
 /**
- * AI Katalog → Çeviriler.
+ * AI Hazır Site → Çeviriler.
  *
  * @package AIHazirSite
  */
@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace AIHazirSite\WordPress\I18n;
 
+use AIHazirSite\WordPress\Admin\AdminMenu;
 use AIHazirSite\Core\Catalog\CompanyProfile;
 use AIHazirSite\Core\Catalog\Listing;
 use AIHazirSite\Core\Catalog\ListingType;
@@ -46,7 +47,7 @@ final class TranslationsAdmin {
 	 * Adds the submenu under AI Katalog.
 	 */
 	public function add_menu(): void {
-		add_submenu_page( CatalogAdmin::SLUGS[ ListingType::OFFER ], __( 'Çeviriler', 'ai-hazir-site' ), __( 'Çeviriler', 'ai-hazir-site' ), CatalogAdmin::CAPABILITY, self::SLUG, array( $this, 'render' ) );
+		AdminMenu::add( __( 'Çeviriler', 'ai-hazir-site' ), CatalogAdmin::CAPABILITY, self::SLUG, array( $this, 'render' ) );
 	}
 
 	/**
@@ -55,7 +56,7 @@ final class TranslationsAdmin {
 	 * @param array<string, string|int> $args Extra query args.
 	 */
 	public static function url( array $args = array() ): string {
-		return add_query_arg( array_merge( array( 'page' => self::SLUG ), $args ), admin_url( 'admin.php' ) );
+		return AdminMenu::url( self::SLUG, $args );
 	}
 
 	/**

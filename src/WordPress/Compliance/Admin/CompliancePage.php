@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace AIHazirSite\WordPress\Compliance\Admin;
 
+use AIHazirSite\WordPress\Admin\AdminMenu;
 use AIHazirSite\Core\Compliance\Badge;
 use AIHazirSite\Core\Compliance\CheckResult;
 use AIHazirSite\Core\Compliance\ScoreReport;
@@ -35,7 +36,7 @@ final class CompliancePage {
 	 * Adds the page under Tools.
 	 */
 	public function add_page(): void {
-		add_management_page( __( 'AI Uyum', 'ai-hazir-site' ), __( 'AI Uyum', 'ai-hazir-site' ), self::CAPABILITY, self::SLUG, array( $this, 'render' ) );
+		AdminMenu::add( __( 'AI Uyum', 'ai-hazir-site' ), self::CAPABILITY, self::SLUG, array( $this, 'render' ) );
 	}
 
 	/**
@@ -186,7 +187,7 @@ final class CompliancePage {
 		}
 		ComplianceModule::run();
 
-		wp_safe_redirect( add_query_arg( array( 'page' => self::SLUG, 'scanned' => 1 ), admin_url( 'tools.php' ) ) ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
+		wp_safe_redirect( AdminMenu::url( self::SLUG, array( 'scanned' => 1 ) ) );
 		exit;
 	}
 

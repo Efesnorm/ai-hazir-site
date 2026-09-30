@@ -9,7 +9,7 @@
 wp eval 'AIHazirSite\Core\Features::set( "remote_updates", true );'
 ```
 
-Adres **Ayarlar → AI Hazır Güncelleme** ekranından ya da `wp-config.php` içinde verilir (sabit, ayarı geçersiz kılar):
+Adres **AI Hazır Site → Güncelleme** ekranından ya da `wp-config.php` içinde verilir (sabit, ayarı geçersiz kılar):
 
 ```php
 define( 'AIHS_UPDATE_SERVER', 'https://guncelleme.ornek.com/ai-hazir-site.json' );
@@ -53,7 +53,7 @@ Pilot sitelerde sorun çıkarsa bildirimden sürüm kaldırılır ve genel sitel
 
 ### Önceki sürüme dönüş
 
-**Ayarlar → AI Hazır Güncelleme → Önceki sürüme dön** tek işlemdir. İki adımda yürür:
+**AI Hazır Site → Güncelleme → Önceki sürüme dön** tek işlemdir. İki adımda yürür:
 
 1. Veritabanı, önceki sürümün şemasına iner: yeni geçişlerin `down()` işlemi en yeniden başlanarak çalışır.
 2. Önceki paket, WordPress'in kendi yükleyicisiyle kurulu eklentinin üzerine kurulur.

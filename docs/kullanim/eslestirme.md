@@ -8,7 +8,7 @@ gönderilmez.**
 wp eval 'AIHazirSite\Core\Features::set( "matching", true );'
 ```
 
-## Kullanım: AI Katalog → Eşleşmeler
+## Kullanım: AI Hazır Site → Eşleşmeler
 
 Bir aranan ilan seçip **Eşleştir**'e basın. Adaylar puan sırasıyla listelenir. Her satırda ölçüt başına alınan puan
 görünür (ör. "Özellik uyumu 25/25 · Miktar karşılama 12,5/25 · …"); bu puanların toplamı adayın puanıdır.

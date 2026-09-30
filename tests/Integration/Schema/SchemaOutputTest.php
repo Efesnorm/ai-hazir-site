@@ -159,8 +159,10 @@ final class SchemaOutputTest extends WP_UnitTestCase {
 		$this->assertArrayNotHasKey( '@id', $feed['publisher'] );
 
 		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
+		$GLOBALS['plugin_page'] = 'aihs-settings'; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- 1.15.0: the notice shows on the plugin's own screens.
 		ob_start();
 		SchemaModule::admin_notice();
+		unset( $GLOBALS['plugin_page'] );
 		$this->assertStringContainsString( 'Yoast SEO zaten Organization şeması üretiyor', (string) ob_get_clean() );
 	}
 

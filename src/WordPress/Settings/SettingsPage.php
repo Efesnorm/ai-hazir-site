@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace AIHazirSite\WordPress\Settings;
 
+use AIHazirSite\WordPress\Schema\SeoConflict;
+use AIHazirSite\WordPress\Admin\AdminMenu;
 use AIHazirSite\Core\Features;
 use AIHazirSite\Core\Setup\SetupProfiles;
 use AIHazirSite\WordPress\IndexNow\IndexNowModule;
@@ -36,17 +38,19 @@ final class SettingsPage {
 	 * Registers admin hooks.
 	 */
 	public function register(): void {
-		add_action( 'admin_menu', array( $this, 'add_page' ) );
+		// First: the other screens add themselves under this top-level entry (1.15.0).
+		add_action( 'admin_menu', array( $this, 'add_page' ), 1 );
 		add_action( 'admin_post_' . self::TOGGLE, array( $this, 'on_toggle' ) );
 		add_action( 'admin_post_' . self::PRESET, array( $this, 'on_preset' ) );
 		add_action( 'admin_post_' . self::DELETE_DATA, array( $this, 'on_delete_data' ) );
 	}
 
 	/**
-	 * Adds the page under Settings.
+	 * Adds the plugin's top-level menu (1.15.0) with this screen as its first entry, "Ayarlar".
 	 */
 	public function add_page(): void {
-		add_options_page( __( 'AI Hazır Site', 'ai-hazir-site' ), __( 'AI Hazır Site', 'ai-hazir-site' ), self::CAPABILITY, self::SLUG, array( $this, 'render' ) );
+		add_menu_page( __( 'AI Hazır Site', 'ai-hazir-site' ), __( 'AI Hazır Site', 'ai-hazir-site' ), self::CAPABILITY, AdminMenu::PARENT, array( $this, 'render' ), 'dashicons-rest-api', AdminMenu::POSITION );
+		AdminMenu::add( __( 'Ayarlar', 'ai-hazir-site' ), self::CAPABILITY, self::SLUG, array( $this, 'render' ) );
 	}
 
 	/**
@@ -55,7 +59,7 @@ final class SettingsPage {
 	 * @param array<string, string> $args Extra query args.
 	 */
 	public static function url( array $args = array() ): string {
-		return add_query_arg( array_merge( array( 'page' => self::SLUG ), $args ), admin_url( 'options-general.php' ) );
+		return AdminMenu::url( self::SLUG, $args );
 	}
 
 	/**
@@ -80,8 +84,13 @@ final class SettingsPage {
 	 * @return array<string, array{0: string, 1: string, 2: string}>
 	 */
 	public static function features(): array {
-		$tools = static fn( string $slug ): string => admin_url( 'tools.php?page=' . $slug );
-		$admin = static fn( string $slug ): string => admin_url( 'admin.php?page=' . $slug );
+		$tools = static fn( string $slug ): string => AdminMenu::url( $slug );
+		$admin = $tools;
+		// 1.15.0: the SEO plugin note lives here for good; its admin notice can be dismissed.
+		$seo    = SeoConflict::detect();
+		$schema = __( 'Firma ve ilanlar makine okunur (JSON-LD); /ai-katalog/ sayfası.', 'ai-hazir-site' )
+			/* translators: %s: SEO plugin name. */
+			. ( null === $seo ? '' : ' ' . sprintf( __( 'Firma (Organization) şemasını %s üretiyor; AI Hazır Site yalnızca ilanları ekliyor.', 'ai-hazir-site' ), $seo ) );
 		return array(
 			Features::MEASUREMENT             => array( __( 'AI ölçümü', 'ai-hazir-site' ), __( 'AI botlarının ve AI platformlarından gelen ziyaretlerin sayımı (kişisel veri saklanmaz).', 'ai-hazir-site' ), $tools( 'aihs-measurement' ) ),
 			Features::COMPLIANCE_SCAN         => array( __( 'AI uyum taraması', 'ai-hazir-site' ), __( 'Sitenin AI uyum puanını ölçer.', 'ai-hazir-site' ), $tools( 'aihs-compliance' ) ),
@@ -90,14 +99,14 @@ final class SettingsPage {
 			Features::BOT_ACCESS              => array( __( 'AI bot erişimi', 'ai-hazir-site' ), __( 'robots.txt\'de AI botlarına izin ya da engel.', 'ai-hazir-site' ), $tools( 'aihs-bot-access' ) ),
 			Features::CATALOG                 => array( __( 'AI Katalog', 'ai-hazir-site' ), __( 'Firma profili ve ilanlar: ne satıyorum, ne arıyorum, ne tedarik edebilirim.', 'ai-hazir-site' ), $admin( 'aihs-catalog' ) ),
 			Features::TEMPLATES               => array( __( 'Sektör şablonları', 'ai-hazir-site' ), __( 'Ürün, hizmet, tur gibi sektöre özel ilan alanları.', 'ai-hazir-site' ), '' ),
-			Features::SCHEMA_OUTPUT           => array( __( 'Schema.org yapılandırılmış veri', 'ai-hazir-site' ), __( 'Firma ve ilanlar makine okunur (JSON-LD); /ai-katalog/ sayfası.', 'ai-hazir-site' ), '' ),
+			Features::SCHEMA_OUTPUT           => array( __( 'Schema.org yapılandırılmış veri', 'ai-hazir-site' ), $schema, '' ),
 			Features::LLMS_TXT                => array( __( 'llms.txt', 'ai-hazir-site' ), __( 'AI\'ların okuduğu /llms.txt özeti ve /ai-katalog/ sayfası.', 'ai-hazir-site' ), home_url( '/llms.txt' ) ),
 			Features::MULTILINGUAL            => array( __( 'Çoklu dil', 'ai-hazir-site' ), __( 'Çeviriler ve dile göre çıktılar (Polylang, WPML).', 'ai-hazir-site' ), $admin( 'aihs-catalog-translations' ) ),
 			Features::REST_API                => array( __( 'REST API', 'ai-hazir-site' ), __( 'Katalog JSON olarak: /wp-json/aihs/v1/.', 'ai-hazir-site' ), '' ),
 			Features::ABILITIES               => array( __( 'Yetenekler (Abilities)', 'ai-hazir-site' ), __( 'Katalog sorguları WordPress Abilities API ile.', 'ai-hazir-site' ), '' ),
 			Features::MCP                     => array( __( 'MCP sunucusu', 'ai-hazir-site' ), __( 'AI asistanları kataloğu doğrudan sorgular: /wp-json/aihs/mcp.', 'ai-hazir-site' ), '' ),
 			Features::A2A                     => array( __( 'A2A agent', 'ai-hazir-site' ), __( 'A2A kartviziti ve agent: müsaitlik sorusu, teklif isteği.', 'ai-hazir-site' ), home_url( '/.well-known/agent-card.json' ) ),
-			Features::DISCOVERY               => array( __( 'Sayfalardan keşif', 'ai-hazir-site' ), __( 'Sayfalarda llms.txt ve API\'ye standart bağlantılar.', 'ai-hazir-site' ), admin_url( 'admin.php?page=aihs-catalog-profile' ) ),
+			Features::DISCOVERY               => array( __( 'Sayfalardan keşif', 'ai-hazir-site' ), __( 'Sayfalarda llms.txt ve API\'ye standart bağlantılar.', 'ai-hazir-site' ), $admin( 'aihs-catalog-profile' ) ),
 			Features::INQUIRIES               => array( __( 'Teklif kutusu', 'ai-hazir-site' ), __( 'AI agentların ve ziyaretçilerin talep bırakması (kişisel veri: KVKK uyarısıyla açılır).', 'ai-hazir-site' ), InquiryAdmin::url() ),
 			Features::MATCHING                => array( __( 'Eşleştirme', 'ai-hazir-site' ), __( 'Aranan ilanlarınıza uyan satılan ve tedarik edilebilen ilanlar.', 'ai-hazir-site' ), $admin( 'aihs-matching' ) ),
 			Features::PORTAL_MODE             => array( __( 'Portal modu', 'ai-hazir-site' ), __( 'Birçok işletmenin ilanları tek sitede, işletme yetkilileriyle.', 'ai-hazir-site' ), $admin( 'aihs-portal' ) ),
@@ -105,8 +114,8 @@ final class SettingsPage {
 			Features::CATALOG_SITEMAP         => array( __( 'AI Katalog site haritasında', 'ai-hazir-site' ), __( '/ai-katalog/ sayfası sitenin site haritasına eklenir.', 'ai-hazir-site' ), $tools( 'aihs-integrations' ) ),
 			Features::LITESPEED_SERVER_BYPASS => array( __( 'LiteSpeed sunucu önbelleği', 'ai-hazir-site' ), __( 'LiteSpeed sunucusunun kendi önbelleği AI botlarına kayıtlı kopya sunmaz (.htaccess kuralı).', 'ai-hazir-site' ), $tools( 'aihs-integrations' ) ),
 			Features::INDEXNOW                => array( __( 'IndexNow bildirimi', 'ai-hazir-site' ), __( 'Katalog değişince Bing ve diğer IndexNow arama motorlarına haber verilir (yalnızca herkese açık adresler).', 'ai-hazir-site' ), $tools( 'aihs-integrations' ) ),
-			Features::REMOTE_UPDATES          => array( __( 'Merkezi güncelleme', 'ai-hazir-site' ), __( 'Güncellemeler kendi sunucumuzdan; sunucu adresi girilmedikçe hiçbir istek atılmaz.', 'ai-hazir-site' ), admin_url( 'options-general.php?page=' . UpdateModule::PAGE ) ),
-			Features::TELEMETRY               => array( __( 'Rapor paneline özet', 'ai-hazir-site' ), __( 'Haftalık toplam sayılar; gönderim için ayrıca açık onay gerekir.', 'ai-hazir-site' ), admin_url( 'options-general.php?page=' . UpdateModule::PAGE ) ),
+			Features::REMOTE_UPDATES          => array( __( 'Merkezi güncelleme', 'ai-hazir-site' ), __( 'Güncellemeler kendi sunucumuzdan; sunucu adresi girilmedikçe hiçbir istek atılmaz.', 'ai-hazir-site' ), $admin( UpdateModule::PAGE ) ),
+			Features::TELEMETRY               => array( __( 'Rapor paneline özet', 'ai-hazir-site' ), __( 'Haftalık toplam sayılar; gönderim için ayrıca açık onay gerekir.', 'ai-hazir-site' ), $admin( UpdateModule::PAGE ) ),
 		);
 	}
 
@@ -330,7 +339,7 @@ final class SettingsPage {
 		}
 		$html = '<h2>' . esc_html__( 'Önerilen kurulum', 'ai-hazir-site' ) . '</h2>'
 			. '<p class="description">' . esc_html__( 'Site türünüze uygun özellikleri tek seferde açar. Hiçbir özelliği kapatmaz. Önce neyin açılacağını gösterir.', 'ai-hazir-site' ) . '</p>'
-			. '<form method="get" action="' . esc_url( admin_url( 'options-general.php' ) ) . '"><input type="hidden" name="page" value="' . esc_attr( self::SLUG ) . '">'
+			. '<form method="get" action="' . esc_url( admin_url( 'admin.php' ) ) . '"><input type="hidden" name="page" value="' . esc_attr( self::SLUG ) . '">'
 			. '<select name="profil">' . $options . '</select> '
 			. get_submit_button( __( 'Önizle', 'ai-hazir-site' ), 'secondary', 'submit', false ) . '</form>';
 

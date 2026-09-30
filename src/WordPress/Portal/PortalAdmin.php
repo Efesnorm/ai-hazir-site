@@ -1,6 +1,6 @@
 <?php
 /**
- * AI Katalog → İşletmeler (portal administrator).
+ * AI Hazır Site → İşletmeler (portal administrator).
  *
  * @package AIHazirSite
  */
@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace AIHazirSite\WordPress\Portal;
 
+use AIHazirSite\WordPress\Admin\AdminMenu;
 use AIHazirSite\Core\Catalog\ListingType;
 use AIHazirSite\Core\Measurement\Hit;
 use AIHazirSite\Core\Portal\Business;
@@ -47,7 +48,7 @@ final class PortalAdmin {
 	 * Submenu under AI Katalog.
 	 */
 	public function add_menu(): void {
-		add_submenu_page( CatalogAdmin::SLUGS[ ListingType::OFFER ], __( 'İşletmeler', 'ai-hazir-site' ), __( 'İşletmeler', 'ai-hazir-site' ), CatalogAdmin::CAPABILITY, self::SLUG, array( $this, 'render' ) );
+		AdminMenu::add( __( 'İşletmeler', 'ai-hazir-site' ), CatalogAdmin::CAPABILITY, self::SLUG, array( $this, 'render' ) );
 	}
 
 	/**
@@ -56,7 +57,7 @@ final class PortalAdmin {
 	 * @param array<string, string|int> $args Extra query args.
 	 */
 	public static function url( array $args = array() ): string {
-		return add_query_arg( array_merge( array( 'page' => self::SLUG ), $args ), admin_url( 'admin.php' ) );
+		return AdminMenu::url( self::SLUG, $args );
 	}
 
 	/**

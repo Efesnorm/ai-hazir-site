@@ -9,7 +9,7 @@ bırakmaktır; talepler otomatik onaylanmaz ve talep sahibine otomatik yanıt gi
 
 ## 1. Özelliği açın
 
-1. **AI Katalog → Firma Profili**'ni doldurun ve en az bir ilan ekleyin.
+1. **AI Hazır Site → Firma Profili**'ni doldurun ve en az bir ilan ekleyin.
 2. Özellik anahtarlarını açın (ikisi de gerekir):
    - `abilities` – katalog yetenekleri (WordPress Abilities API),
    - `mcp` – MCP sunucusu.
@@ -35,7 +35,7 @@ Sunucudaki araçlar:
 
 ### Teklif kutusu (isteğe bağlı)
 
-**AI Katalog → Teklif Kutusu** (katalog kapalıysa **Araçlar → Teklif Kutusu**) ekranındaki uyarıyı okuyup
+**AI Hazır Site → Teklif Kutusu** ekranındaki uyarıyı okuyup
 kutuyu açtığınızda, AI asistanları firmanıza talep bırakabilir. İletişim bilgileri şifreli saklanır, varsayılan
 180 gün sonra silinir; yeni talepler yönetici e-posta adresinize bildirilir. Talepleri bu ekrandan onaylar,
 reddeder veya silersiniz.
@@ -90,5 +90,5 @@ Canlı bir sunucuda WP-CLI ile bağlanacaksanız `--user` için yalnızca okuma 
   (başka kökenlere izin vermek için `aihs_mcp_allowed_origins` filtresi).
 - Cevaplar ilandaki bilgiye dayanır. Stok veya teslim süresi girilmemişse cevap `unknown` olur;
   kesin teklif için firmayla iletişime geçilmelidir.
-- MCP çağrıları **Araçlar → AI Ölçüm** sayfasında "MCP çağrıları" tablosunda sayılır (istemci bilgisi saklanmaz).
+- MCP çağrıları **AI Hazır Site → AI Ölçüm** sayfasında "MCP çağrıları" tablosunda sayılır (istemci bilgisi saklanmaz).
 - Kapatmak için `mcp` anahtarını kapatın; `abilities` açık kalabilir.

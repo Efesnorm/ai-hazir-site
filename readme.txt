@@ -4,7 +4,7 @@ Tags: ai, llms-txt, schema, mcp, robots-txt
 Requires at least: 6.9
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.14.3
+Stable tag: 1.15.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,8 +46,8 @@ Eklenti ham IP adresi, tarayıcı bilgisi veya sorgu dizesi saklamaz. Teklif kut
 == Installation ==
 
 1. Eklentiler → Yeni Ekle → Eklenti Yükle ile `ai-hazir-site.zip` dosyasını yükleyin ve etkinleştirin.
-2. Araçlar → AI Ölçüm sayfasında AI bot ziyaretlerini izleyin.
-3. Araçlar → AI Uyum sayfasında taramayı açıp sitenizin puanını görün; AI Uyum Sihirbazı eksikleri tamamlatır.
+2. Sol menüdeki AI Hazır Site → AI Ölçüm sayfasında AI bot ziyaretlerini izleyin.
+3. AI Hazır Site → AI Uyum sayfasında taramayı açıp sitenizin puanını görün; AI Uyum Sihirbazı eksikleri tamamlatır.
 4. Diğer özellikleri ihtiyacınıza göre açın. Ayrıntılı kullanım belgeleri eklentinin kaynak deposundaki `docs/kullanim/` klasöründedir.
 
 Güncellemeden önce sitenizin ve veritabanınızın yedeğini alın.
@@ -67,6 +67,10 @@ Tarama sitenin kendi adreslerini çeker. Kendine HTTP isteği atamayan ortamlard
 Varsayılan olarak veriler korunur. Eklentiyi silerken tüm verisinin (tablolar, ayarlar, ilanlar, talepler) kaldırılmasını istiyorsanız silmeden önce `aihs_delete_data_on_uninstall` seçeneğini açın, ör. WP-CLI ile: `wp option update aihs_delete_data_on_uninstall 1`.
 
 == Changelog ==
+
+= 1.15.0 =
+* Bütün ekranlar sol menüde tek "AI Hazır Site" menüsünde; eski adresler yönlendirilir.
+* SEO eklentisi bildirimi yalnızca eklenti ekranlarında ve kapatılabilir.
 
 = 1.14.3 =
 * Güvenlik: MCP isteklerine 64 KB üst sınır.

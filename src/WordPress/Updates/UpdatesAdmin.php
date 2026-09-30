@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace AIHazirSite\WordPress\Updates;
 
+use AIHazirSite\WordPress\Admin\AdminMenu;
 use AIHazirSite\Core\Features;
 use AIHazirSite\Core\Telemetry\TelemetrySummary;
 use AIHazirSite\Core\Updates\CanaryPolicy;
@@ -34,7 +35,7 @@ final class UpdatesAdmin {
 	 * Submenu under Settings.
 	 */
 	public function add_menu(): void {
-		add_options_page( __( 'AI Hazır Güncelleme', 'ai-hazir-site' ), __( 'AI Hazır Güncelleme', 'ai-hazir-site' ), self::CAPABILITY, UpdateModule::PAGE, array( $this, 'render' ) );
+		AdminMenu::add( __( 'Güncelleme', 'ai-hazir-site' ), self::CAPABILITY, UpdateModule::PAGE, array( $this, 'render' ) );
 	}
 
 	/**
@@ -43,7 +44,7 @@ final class UpdatesAdmin {
 	 * @param array<string, string> $args Extra query args.
 	 */
 	public static function url( array $args = array() ): string {
-		return add_query_arg( array_merge( array( 'page' => UpdateModule::PAGE ), $args ), admin_url( 'options-general.php' ) );
+		return AdminMenu::url( UpdateModule::PAGE, $args );
 	}
 
 	/**

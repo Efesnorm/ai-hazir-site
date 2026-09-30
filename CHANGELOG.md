@@ -3,6 +3,32 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.15.0] - 2026-09-30
+
+Pilot sitelerden geri bildirim (plan onaylı: `docs/planlar/1.15.0-tek-menu-ve-bildirim.md`).
+
+### Değişti
+- **Tek üst menü "AI Hazır Site":** eklentinin bütün ekranları (önceden Ayarlar, Araçlar ve "AI Katalog" menülerine
+  dağılmıştı) sol menüde tek bir üst menünün altında, sabit sırayla: Ayarlar, satış ilanları / alım talepleri /
+  tedarik, Firma Profili, Teklif Kutusu, Eşleşmeler, İşletmeler, Çeviriler, AI Ölçüm, AI Uyum, Uyum Sihirbazı, AI Uyum
+  Raporu, AI Bot Erişimi, Entegrasyonlar, Güncelleme. Her ekran eskisi gibi yalnızca kendi özelliği açıkken görünür.
+  WordPress menü API'si (`add_menu_page` / `add_submenu_page`); ortak sınıf `AdminMenu`. Sayfa kimlikleri ve yetkiler
+  değişmedi; portal işletme kullanıcısının "İşletmem" menüsü aynı.
+  - Eski adresler (`tools.php?page=aihs-…`, `options-general.php?page=aihs-…`; yer imleri, gönderilmiş bildirim
+    e-postaları) sorgu parametreleriyle `admin.php?page=…`'ya yönlendirilir.
+- **SEO eklentisi bildirimi** ("Rank Math zaten Organization şeması üretiyor…"): artık yalnızca eklentinin kendi
+  ekranlarında, bilgi türünde ve **"Bir daha gösterme"** bağlantısıyla (nonce + `manage_options`; seçim kullanıcıya
+  özel `aihs_dismissed_notices` kullanıcı metasında, kaldırmada silinir). Bilgi Ayarlar'daki "Schema.org yapılandırılmış
+  veri" satırında kalıcı. Schema.org hata bildirimi değişmedi (her ekranda, kapatılamaz).
+- Anahtar yok (onaylı istisna): yeni özellik değil, mevcut ekranların yeniden düzenlenmesi; iki menü yolunu birlikte
+  yaşatmak bakımı ikiye katlardı. Veritabanı şeması değişmedi.
+- Testler: `AdminMenuTest`, `AdminNoticesTest`.
+
+### Test güncellemesi (onaylı)
+- `CatalogAdminTest`: katalog sayfaları yeni üst menü altında aranır (aynı dört sayfa, aynı sıra).
+- `SettingsPageTest`: eklenti listesindeki "Ayarlar" bağlantısı `admin.php?page=aihs-settings`.
+- `SchemaOutputTest::test_seo_plugin_conflict`: bildirim eklentinin Ayarlar ekranında okunur (aynı metin denetlenir).
+
 ## [1.14.3] - 2026-09-30
 
 ### Güvenlik

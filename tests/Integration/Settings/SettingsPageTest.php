@@ -141,7 +141,7 @@ final class SettingsPageTest extends WP_UnitTestCase {
 
 		$links = SettingsModule::action_links( array( 'deactivate' => 'x' ) );
 		$this->assertSame( array( 'aihs-settings', 'deactivate' ), array_keys( $links ) );
-		$this->assertStringContainsString( 'options-general.php?page=aihs-settings', $links['aihs-settings'] );
+		$this->assertStringContainsString( 'admin.php?page=aihs-settings', $links['aihs-settings'] );
 
 		try {
 			self::toggle( 'olmayan', true );

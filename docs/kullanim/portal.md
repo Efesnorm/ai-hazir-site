@@ -11,7 +11,7 @@ wp eval 'AIHazirSite\Core\Features::set( "portal_mode", true );'
 
 `catalog` anahtarı da açık olmalıdır; işletme sayfaları için AI katalog sayfası (`schema_output` ya da `llms_txt`) açık olmalıdır.
 
-## Portal yöneticisi: AI Katalog → İşletmeler
+## Portal yöneticisi: AI Hazır Site → İşletmeler
 
 - **İşletme ekle / düzenle:** ad, sektör, ülke, diller, kurumsal e-posta ve telefon, sertifikalar ve adres kısaltması
   (ör. `kapadokya-balon-turlari`; boş bırakılırsa addan üretilir).

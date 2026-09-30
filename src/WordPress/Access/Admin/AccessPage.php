@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace AIHazirSite\WordPress\Access\Admin;
 
+use AIHazirSite\WordPress\Admin\AdminMenu;
 use AIHazirSite\Core\Access\BotPolicy;
 use AIHazirSite\Core\Access\Presets;
 use AIHazirSite\Core\Compliance\Robots;
@@ -37,7 +38,7 @@ final class AccessPage {
 	 * Adds the page under Tools.
 	 */
 	public function add_page(): void {
-		add_management_page( __( 'AI Bot Erişimi', 'ai-hazir-site' ), __( 'AI Bot Erişimi', 'ai-hazir-site' ), self::CAPABILITY, self::SLUG, array( $this, 'render' ) );
+		AdminMenu::add( __( 'AI Bot Erişimi', 'ai-hazir-site' ), self::CAPABILITY, self::SLUG, array( $this, 'render' ) );
 	}
 
 	/**
@@ -181,6 +182,6 @@ final class AccessPage {
 		}
 
 		AccessModule::store()->save( $policy, $bots );
-		return add_query_arg( array( 'page' => self::SLUG, 'updated' => 1 ), admin_url( 'tools.php' ) ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
+		return AdminMenu::url( self::SLUG, array( 'updated' => 1 ) );
 	}
 }

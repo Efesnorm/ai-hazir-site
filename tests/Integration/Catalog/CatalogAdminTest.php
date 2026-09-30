@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace AIHazirSite\Tests\Integration\Catalog;
 
+use AIHazirSite\WordPress\Admin\AdminMenu;
 use AIHazirSite\Core\Catalog\Listing;
 use AIHazirSite\Core\Catalog\ProfileValidator;
 use AIHazirSite\Core\Features;
@@ -240,9 +241,11 @@ final class CatalogAdminTest extends WP_UnitTestCase {
 		Features::set( Features::CATALOG, true );
 		( new CatalogModule() )->register();
 		do_action( 'admin_menu' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core hook.
+		// 1.15.0: under the plugin's single top-level menu.
+		$catalog = array( 'aihs-catalog', 'aihs-catalog-demand', 'aihs-catalog-supply', 'aihs-catalog-profile' );
 		$this->assertSame(
-			array( 'aihs-catalog', 'aihs-catalog-demand', 'aihs-catalog-supply', 'aihs-catalog-profile' ),
-			array_column( $submenu['aihs-catalog'] ?? array(), 2 )
+			$catalog,
+			array_values( array_intersect( array_column( $submenu[ AdminMenu::PARENT ] ?? array(), 2 ), $catalog ) )
 		);
 	}
 }

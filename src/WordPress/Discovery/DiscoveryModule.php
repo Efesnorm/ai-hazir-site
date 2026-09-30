@@ -21,7 +21,7 @@ use AIHazirSite\WordPress\Schema\SchemaModule;
  * While `discovery` is on, every front-end page carries <link> elements (and the response a Link
  * header) to /llms.txt and the REST API, for whichever of them is on. The site owner may also show a
  * small visible line at the bottom of the pages (agents read visible text), off by default.
- * Settings: AI Katalog → Firma Profili.
+ * Settings: AI Hazır Site → Firma Profili.
  */
 final class DiscoveryModule implements Module {
 

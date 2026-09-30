@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace AIHazirSite\WordPress\Schema;
 
+use AIHazirSite\WordPress\Admin\AdminNotices;
 use AIHazirSite\Adapters\Schema\SchemaBuilder;
 use AIHazirSite\Adapters\Schema\SchemaCache;
 use AIHazirSite\Core\Catalog\CompanyProfile;
@@ -251,17 +252,21 @@ final class SchemaModule implements Module {
 			);
 		}
 
+		// 1.15.0: information only, so on the plugin's own screens and dismissible (the note also stays on
+		// the settings screen).
 		$conflict = SeoConflict::detect();
-		if ( null !== $conflict ) {
+		if ( null !== $conflict && AdminNotices::visible( AdminNotices::SEO_CONFLICT ) ) {
 			printf(
-				'<div class="notice notice-warning"><p>%s</p></div>',
+				'<div class="notice notice-info" id="aihs-seo-conflict"><p>%s <a href="%s">%s</a></p></div>',
 				esc_html(
 					sprintf(
 						/* translators: %s: SEO plugin name. */
 						__( 'AI Hazır Site: %s zaten Organization şeması üretiyor; çakışmayı önlemek için AI Hazır Site kendi Organization çıktısını eklemiyor. AI katalog ilanları yayınlanmaya devam ediyor.', 'ai-hazir-site' ),
 						$conflict
 					)
-				)
+				),
+				esc_url( AdminNotices::dismiss_url( AdminNotices::SEO_CONFLICT ) ),
+				esc_html__( 'Bir daha gösterme', 'ai-hazir-site' )
 			);
 		}
 	}

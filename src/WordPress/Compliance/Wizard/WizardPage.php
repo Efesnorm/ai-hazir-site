@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace AIHazirSite\WordPress\Compliance\Wizard;
 
+use AIHazirSite\WordPress\Admin\AdminMenu;
 use AIHazirSite\Core\Access\Presets;
 use AIHazirSite\Core\Catalog\ListingType;
 use AIHazirSite\Core\Compliance\ScoreReport;
@@ -48,7 +49,7 @@ final class WizardPage {
 	 * Adds the page under Tools.
 	 */
 	public function add_page(): void {
-		add_management_page( __( 'AI Uyum Sihirbazı', 'ai-hazir-site' ), __( 'AI Uyum Sihirbazı', 'ai-hazir-site' ), self::CAPABILITY, self::SLUG, array( $this, 'render' ) );
+		AdminMenu::add( __( 'AI Uyum Sihirbazı', 'ai-hazir-site' ), self::CAPABILITY, self::SLUG, array( $this, 'render' ) );
 	}
 
 	/**
@@ -57,7 +58,7 @@ final class WizardPage {
 	 * @param array<string, string|int> $args Extra query args.
 	 */
 	public static function url( array $args = array() ): string {
-		return add_query_arg( array_merge( array( 'page' => self::SLUG ), $args ), admin_url( 'tools.php' ) );
+		return AdminMenu::url( self::SLUG, $args );
 	}
 
 	/**

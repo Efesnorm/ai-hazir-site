@@ -5,7 +5,7 @@
 
 ## Açma
 
-**Ayarlar → AI Hazır Site** → Çoklu dil → Aç (1.9.0; önkoşul: AI Katalog). Sonra **AI Katalog → Çeviriler**:
+**AI Hazır Site → Ayarlar** → Çoklu dil → Aç (1.9.0; önkoşul: AI Katalog). Sonra **AI Hazır Site → Çeviriler**:
 
 1. **Diller:** varsayılan dil (ilanları girdiğiniz dil, ör. `tr`) ve diğer diller (ör. `en, de, ar`).
    Polylang, WPML ya da TranslatePress (1.12.0) kuruluysa diller oradan okunur; bu bölüm yalnızca gösterir.

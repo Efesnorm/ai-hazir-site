@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace AIHazirSite\WordPress\Integrations;
 
+use AIHazirSite\WordPress\Admin\AdminMenu;
 use AIHazirSite\Core\Features;
 use AIHazirSite\Core\IndexNow\IndexNowService;
 use AIHazirSite\WordPress\IndexNow\IndexNowModule;
@@ -43,7 +44,7 @@ final class IntegrationsPage {
 	 * Adds the page under Tools.
 	 */
 	public function add_page(): void {
-		add_management_page( __( 'AI Hazır Entegrasyonlar', 'ai-hazir-site' ), __( 'AI Hazır Entegrasyonlar', 'ai-hazir-site' ), self::CAPABILITY, self::SLUG, array( $this, 'render' ) );
+		AdminMenu::add( __( 'Entegrasyonlar', 'ai-hazir-site' ), self::CAPABILITY, self::SLUG, array( $this, 'render' ) );
 	}
 
 	/**
@@ -113,7 +114,7 @@ final class IntegrationsPage {
 
 		$missing = Features::missing_requirements( Features::INDEXNOW );
 		if ( ! $on && array() !== $missing['any'] ) {
-			return $html . '<p><em>' . esc_html__( 'Önce Schema.org yapılandırılmış veriyi ya da llms.txt\'yi açın (Ayarlar → AI Hazır Site).', 'ai-hazir-site' ) . '</em></p>';
+			return $html . '<p><em>' . esc_html__( 'Önce Schema.org yapılandırılmış veriyi ya da llms.txt\'yi açın (AI Hazır Site → Ayarlar).', 'ai-hazir-site' ) . '</em></p>';
 		}
 		if ( $on ) {
 			$key_url = IndexNowModule::key_url();
@@ -231,22 +232,10 @@ final class IntegrationsPage {
 			}
 		} elseif ( self::INDEXNOW_NOW === $id ) {
 			$result = IndexNowModule::submit();
-			return add_query_arg(
-				array(
-					'page'    => self::SLUG,
-					'message' => null === $result ? 'not_sent' : 'sent',
-				),
-				admin_url( 'tools.php' )
-			);
+			return AdminMenu::url( self::SLUG, array( 'message' => null === $result ? 'not_sent' : 'sent' ) );
 		} else {
 			wp_die( esc_html__( 'Bilinmeyen entegrasyon.', 'ai-hazir-site' ), 400 );
 		}
-		return add_query_arg(
-			array(
-				'page'    => self::SLUG,
-				'message' => $on ? 'on' : 'off',
-			),
-			admin_url( 'tools.php' )
-		);
+		return AdminMenu::url( self::SLUG, array( 'message' => $on ? 'on' : 'off' ) );
 	}
 }
