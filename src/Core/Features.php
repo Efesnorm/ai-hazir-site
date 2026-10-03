@@ -148,6 +148,11 @@ final class Features {
 	public const MEASUREMENT_TEST_FILTER = 'measurement_test_filter';
 
 	/**
+	 * Portal network: sites of one owner verify each other (mother/member) and say so to AI (1.20.0).
+	 */
+	public const PORTAL_NETWORK = 'portal_network';
+
+	/**
 	 * Sector templates (0.8.0).
 	 */
 	public const TEMPLATES = 'templates';
@@ -179,6 +184,7 @@ final class Features {
 		self::MATCHING          => array( self::CATALOG ),
 		self::A2A               => array( self::CATALOG ),
 		self::MCP               => array( self::ABILITIES ),
+		self::PORTAL_NETWORK    => array( self::REST_API ),
 		self::COMPLIANCE_REPORT => array( self::COMPLIANCE_SCAN ),
 	);
 
@@ -239,6 +245,7 @@ final class Features {
 			self::INDEXNOW                => false,
 			self::LITESPEED_SERVER_BYPASS => false,
 			self::MEASUREMENT_TEST_FILTER => true,
+			self::PORTAL_NETWORK          => false,
 		);
 	}
 

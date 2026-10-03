@@ -37,9 +37,10 @@ final class OpenApiBuilder {
 	 * @param bool                 $portal        Portal mode: /businesses and listing owners.
 	 * @param array<string, mixed> $inquiry_request POST /inquiries body schema; empty when the inquiry box is off.
 	 * @param array<string, mixed> $inquiry_receipt Its 201 answer schema.
+	 * @param bool                 $network         Portal network (1.20.0): GET /network.
 	 * @return array<string, mixed>
 	 */
-	public static function build( string $title, string $version, string $server, bool $multilingual, bool $portal, array $inquiry_request = array(), array $inquiry_receipt = array() ): array {
+	public static function build( string $title, string $version, string $server, bool $multilingual, bool $portal, array $inquiry_request = array(), array $inquiry_receipt = array(), bool $network = false ): array {
 		$schema = static function ( string $name ) use ( $multilingual, $portal ): array {
 			$schema = RestSchemas::get( $name, $multilingual );
 			return self::plain( $portal ? RestSchemas::with_portal( $name, $schema ) : $schema );
@@ -178,6 +179,11 @@ final class OpenApiBuilder {
 			),
 		);
 
+		if ( $network ) {
+			$schemas['Network'] = self::network_schema();
+			$paths['/network']  = $read( 'Portal ağı: ağ adı, anne site ve karşılıklı doğrulanmış siteler', 'getNetwork', 'Network' );
+		}
+
 		if ( $portal ) {
 			$schemas['Businesses']       = self::plain( RestSchemas::with_portal( 'businesses', array() ) );
 			$paths['/businesses']        = $read( 'İşletmeler', 'listBusinesses', 'Businesses' );
@@ -265,6 +271,45 @@ final class OpenApiBuilder {
 			'security'   => array(),
 			'paths'      => $paths,
 			'components' => $components,
+		);
+	}
+
+	/**
+	 * GET /network answer (1.20.0).
+	 *
+	 * @return array<string, mixed>
+	 */
+	public static function network_schema(): array {
+		$string = array( 'type' => 'string' );
+		return array(
+			'type'                 => 'object',
+			'properties'           => array(
+				'role'    => array(
+					'type' => 'string',
+					'enum' => array( 'none', 'mother', 'member' ),
+				),
+				'name'    => $string,
+				'mother'  => $string,
+				'members' => array(
+					'type'  => 'array',
+					'items' => array(
+						'type'                 => 'object',
+						'properties'           => array(
+							'url'      => $string,
+							'name'     => $string,
+							'country'  => array(
+								'type'    => 'string',
+								'pattern' => '^([A-Z]{2})?$',
+							),
+							'verified' => array( 'type' => 'boolean' ),
+						),
+						'required'             => array( 'url', 'name', 'country', 'verified' ),
+						'additionalProperties' => false,
+					),
+				),
+			),
+			'required'             => array( 'role', 'name', 'mother', 'members' ),
+			'additionalProperties' => false,
 		);
 	}
 

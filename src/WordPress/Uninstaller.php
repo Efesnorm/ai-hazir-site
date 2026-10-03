@@ -23,6 +23,7 @@ use AIHazirSite\WordPress\Discovery\DiscoveryModule;
 use AIHazirSite\WordPress\IndexNow\IndexNowModule;
 use AIHazirSite\WordPress\Inquiry\InquiryModule;
 use AIHazirSite\WordPress\Measurement\MeasurementModule;
+use AIHazirSite\WordPress\Network\NetworkModule;
 use AIHazirSite\WordPress\Integrations\LiteSpeedBypass;
 use AIHazirSite\WordPress\Integrations\LiteSpeedServerBypass;
 use AIHazirSite\Core\IndexNow\IndexNowService;
@@ -75,6 +76,8 @@ final class Uninstaller {
 			LiteSpeedBypass::ADDED_OPTION,
 			IndexNowService::OPTION,
 			LiteSpeedServerBypass::OPTION,
+			NetworkModule::OPTION,
+			NetworkModule::STATE,
 		);
 	}
 
@@ -148,6 +151,7 @@ final class Uninstaller {
 			InquiryModule::PURGE_HOOK,
 			UpdateModule::TELEMETRY_HOOK,
 			IndexNowModule::HOOK,
+			NetworkModule::HOOK,
 		);
 	}
 

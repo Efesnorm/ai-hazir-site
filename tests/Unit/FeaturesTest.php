@@ -130,6 +130,7 @@ final class FeaturesTest extends UnitTestCase {
 				'indexnow'                => false,
 				'litespeed_server_bypass' => false,
 				'measurement_test_filter' => true,
+				'portal_network'          => false,
 			),
 			Features::defaults()
 		);

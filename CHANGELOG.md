@@ -3,6 +3,29 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.20.0] - 2026-10-04
+
+### Eklendi
+- **Portal ağı, Faz 1a** (`portal_network`, varsayılan kapalı, önkoşul `rest_api`; plan onaylı:
+  `docs/planlar/1.20.0-portal-agi-faz1.md`). Aynı sahibin siteleri (ilk ağ: 11 ülke portalı) bir ağ olur:
+  - **AI Hazır Site → Portal Ağı:** rol anne / üye / yok. Anne ağ adını ve üyeleri (en çok 25, yalnızca https) yönetir;
+    üye yalnızca anne adresini girer. Anne seçilebilir ve değiştirilebilir; hiçbir ağ, site veya sektör koda gömülü değil.
+  - **Karşılıklı onay:** bir site ancak anne listelemiş ve site o anneyi göstermişse ağdadır (saatlik WP-Cron
+    `aihs_network_check`, "Şimdi kontrol et"). İstekler `X-AIHS-Network: <adresimiz>` başlığıyla, 10 sn, en çok 1 MB;
+    429'da `Retry-After`'a uyulur; erişilemeyen bir kardeşin doğrulaması 24 saat korunur. Kardeşten gelen metinler
+    temizlenir ve kısaltılır.
+  - **Yayın (yalnızca doğrulanmış siteler):** ana sayfa JSON-LD'sinde `parentOrganization` (ağ düğümü
+    `<anne>#network`), anne sitede ağ düğümü ve `subOrganization`; /ai-katalog/ yayıncısında `parentOrganization`;
+    llms.txt'de "Kardeş portallar – <ağ adı>"; `GET /wp-json/aihs/v1/network` (OpenAPI'de `Network` şeması).
+  - Bizi çağıran doğrulanmış kardeşin gözlenen sunucu IP'si kaydedilir (1.21.0 güvenlik sekmesi için).
+  - Kaldırmada `aihs_network`, `aihs_network_state` ve zamanlanmış görev silinir. Veritabanı şeması değişmedi.
+  - Plandan küçük sapma: ağ düğümünün kimliği `#ag` yerine `#network` (tanımlayıcılar İngilizce kuralı).
+  - Testler: `NetworkRulesTest` (11 üyeyle), `NetworkModuleTest` (sahte kardeş sitelerle: doğrulandı / anne başka /
+    429 / erişilemedi, üye tarafı, ekran yetkisi ve nonce, kapatma ve kaldırma).
+
+### Test güncellemesi (onaylı)
+- `FeaturesTest`: anahtar listesine `portal_network` (varsayılan kapalı).
+
 ## [1.19.1] - 2026-10-04
 
 ### Düzeltildi

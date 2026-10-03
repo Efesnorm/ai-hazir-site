@@ -22,6 +22,7 @@ use AIHazirSite\WordPress\I18n\Multilingual;
 use AIHazirSite\WordPress\Inquiry\InquiryChannels;
 use AIHazirSite\WordPress\Mcp\McpModule;
 use AIHazirSite\WordPress\Module;
+use AIHazirSite\WordPress\Network\NetworkModule;
 use AIHazirSite\WordPress\Platform\PageCache;
 use AIHazirSite\WordPress\Platform\WpClock;
 use AIHazirSite\WordPress\Platform\WpSettings;
@@ -212,6 +213,7 @@ final class LlmsModule implements Module {
 			'site'     => array( home_url( '/' ), SchemaModule::catalog_url(), get_bloginfo( 'name' ), $api_url ),
 			'labels'   => self::labels(),
 			'agents'   => self::agent_channels(),
+			'network'  => NetworkModule::llms(),
 		);
 
 		return self::cache()->text( $input, static fn(): string => $builder->build( $profile, $listings, $today, $modified, $now ) );
@@ -223,7 +225,7 @@ final class LlmsModule implements Module {
 	 * @param \AIHazirSite\Core\Templates\TemplateRegistry|null $registry Sector templates.
 	 */
 	private static function builder( ?\AIHazirSite\Core\Templates\TemplateRegistry $registry ): LlmsTxtBuilder {
-		return new LlmsTxtBuilder( home_url( '/' ), SchemaModule::catalog_url(), (string) get_bloginfo( 'name' ), self::labels(), $registry, Features::is_enabled( Features::REST_API ) ? RestModule::url() : '', self::agent_channels() );
+		return new LlmsTxtBuilder( home_url( '/' ), SchemaModule::catalog_url(), (string) get_bloginfo( 'name' ), self::labels(), $registry, Features::is_enabled( Features::REST_API ) ? RestModule::url() : '', self::agent_channels(), NetworkModule::llms() );
 	}
 
 	/**

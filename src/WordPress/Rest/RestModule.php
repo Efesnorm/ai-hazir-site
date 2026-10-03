@@ -23,6 +23,7 @@ use AIHazirSite\WordPress\Catalog\WpListingRepository;
 use AIHazirSite\WordPress\Catalog\WpProfileRepository;
 use AIHazirSite\WordPress\I18n\Multilingual;
 use AIHazirSite\WordPress\Inquiry\InquiryChannels;
+use AIHazirSite\WordPress\Network\NetworkModule;
 use AIHazirSite\WordPress\Module;
 use AIHazirSite\WordPress\Platform\WpCache;
 use AIHazirSite\WordPress\Platform\WpClock;
@@ -256,7 +257,8 @@ final class RestModule implements Module {
 			Multilingual::active(),
 			Portal::active(),
 			$request,
-			$receipt
+			$receipt,
+			NetworkModule::enabled()
 		);
 	}
 
