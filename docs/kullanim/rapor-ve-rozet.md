@@ -24,6 +24,14 @@ Rapordaki her sayı doğrudan kayıtlı tarama ve ölçüm verisinden gelir; ayr
 "İlk tarama", eklentinin kaydettiği ilk taramadır. 1.0.0'dan önce tarama yapılmışsa, saklanan
 geçmişteki en eski tarama kullanılır.
 
+### Semantik yapı (1.19.0, puana dahil değil)
+
+Tarama, örnek sayfalarda sayfa dilini (`<html lang>`), başlığını (`<title>`), tek ana içerik alanını (`<main>`), tek
+`<h1>`'i ve başlık seviyelerinin atlanmadığını denetler (WCAG 2.2 ve HTML standardı). Bulgular AI Uyum ekranında ve
+raporda "Semantik yapı (öneri, puana dahil değil)" başlığıyla gösterilir; puanı değiştirmez. Düzeltme tema ve sayfa
+oluşturucu tarafındadır: ana içerik alanını `<main>` olarak işaretleyen bir tema/ayar kullanın, her sayfada tek `<h1>`
+olsun, başlıkları görünüş için değil sıraya göre seçin (h2'den sonra h3).
+
 ## Rozet
 
 Son taramanın puanı eşiğe (varsayılan **70**) ulaşınca "AI Hazır" rozeti gösterilir. Eşiğin altında,

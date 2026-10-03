@@ -23,14 +23,17 @@ final class ScoreReport {
 	 * @param int     $score_version Scoring rules version.
 	 * @param array[] $results       One row per check, in check order.
 	 * @param int     $elapsed_ms    Time spent on requests.
+	 * @param array   $advice        Semantic structure findings (1.19.0); never part of the score.
 	 *
 	 * @phpstan-param list<Row> $results
+	 * @phpstan-param list<string> $advice
 	 */
 	public function __construct(
 		public readonly string $scanned_at,
 		public readonly int $score_version,
 		public readonly array $results,
-		public readonly int $elapsed_ms = 0
+		public readonly int $elapsed_ms = 0,
+		public readonly array $advice = array()
 	) {
 	}
 
@@ -111,15 +114,20 @@ final class ScoreReport {
 	/**
 	 * Plain array for storage.
 	 *
-	 * @return array{scanned_at: string, score_version: int, elapsed_ms: int, results: list<Row>}
+	 * @return array{scanned_at: string, score_version: int, elapsed_ms: int, results: list<Row>, advice?: list<string>}
 	 */
 	public function to_array(): array {
-		return array(
+		$data = array(
 			'scanned_at'    => $this->scanned_at,
 			'score_version' => $this->score_version,
 			'elapsed_ms'    => $this->elapsed_ms,
 			'results'       => $this->results,
 		);
+		// 1.19.0: only when there is advice, so reports without it are stored exactly as before.
+		if ( array() !== $this->advice ) {
+			$data['advice'] = $this->advice;
+		}
+		return $data;
 	}
 
 	/**
@@ -149,6 +157,8 @@ final class ScoreReport {
 			);
 		}
 
-		return new self( (string) $data['scanned_at'], (int) $data['score_version'], $rows, (int) ( $data['elapsed_ms'] ?? 0 ) );
+		$advice = array_values( array_map( 'strval', is_array( $data['advice'] ?? null ) ? $data['advice'] : array() ) );
+
+		return new self( (string) $data['scanned_at'], (int) $data['score_version'], $rows, (int) ( $data['elapsed_ms'] ?? 0 ), $advice );
 	}
 }

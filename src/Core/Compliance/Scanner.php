@@ -123,6 +123,13 @@ final class Scanner {
 			);
 		}
 
-		return new ScoreReport( gmdate( 'Y-m-d\TH:i:s\Z', $this->clock->now() ), self::SCORE_VERSION, $rows, $site->elapsed_ms() );
+		// 1.19.0: semantic structure advice from the pages already fetched; not part of the score.
+		try {
+			$advice = SemanticStructure::site( $site );
+		} catch ( Throwable $e ) {
+			$advice = array();
+		}
+
+		return new ScoreReport( gmdate( 'Y-m-d\TH:i:s\Z', $this->clock->now() ), self::SCORE_VERSION, $rows, $site->elapsed_ms(), $advice );
 	}
 }
