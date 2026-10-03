@@ -150,6 +150,7 @@ foreach ( $urls as $url ) {
 			),
 			$report->results
 		),
+		'semantik'   => $report->advice,
 		'on_kontrol' => aihs_tara_on_kontrol( $base, $fetcher ),
 	);
 }
@@ -169,6 +170,14 @@ foreach ( $results as $r ) {
 	$lines[] = '| --- | --- | --- |';
 	foreach ( $r['kontroller'] as $k ) {
 		$lines[] = sprintf( '| %s | %s | %s |', $k['ad'], null === $k['puan'] ? 'ölçülemedi' : $k['puan'] . '/' . $k['agirlik'], str_replace( '|', '/', implode( ' ', array_slice( $k['bulgular'], 0, 2 ) ) ) );
+	}
+	if ( array() !== $r['semantik'] ) {
+		$lines[] = '';
+		$lines[] = '## Semantik yapı (öneri, puana dahil değil)';
+		$lines[] = '';
+		foreach ( $r['semantik'] as $bulgu ) {
+			$lines[] = '- ' . $bulgu;
+		}
 	}
 	$o        = $r['on_kontrol'];
 	$eklenti  = static fn( array $list ): string => array() === $list ? '–' : implode( ', ', $list );

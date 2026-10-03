@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace AIHazirSite\WordPress\Report;
 
 use AIHazirSite\Adapters\Report\ComplianceReportData;
+use AIHazirSite\Core\Compliance\SemanticStructure;
 use AIHazirSite\Core\Features;
 use AIHazirSite\Core\Measurement\Report;
 use AIHazirSite\WordPress\Compliance\Admin\CompliancePage;
@@ -37,7 +38,7 @@ final class ComplianceReportView {
 			$features[ $key ] = Features::is_enabled( $key );
 		}
 		$store = ComplianceModule::store();
-		return ComplianceReportData::build(
+		$data  = ComplianceReportData::build(
 			$store->first(),
 			$store->latest(),
 			ReportPage::report( 28 )->rows(),
@@ -45,6 +46,9 @@ final class ComplianceReportView {
 			wp_specialchars_decode( (string) get_bloginfo( 'name' ), ENT_QUOTES ),
 			gmdate( 'Y-m-d\TH:i:s\Z' )
 		);
+		// 1.19.0: semantic structure advice of the latest scan (not part of the score).
+		$data['advice'] = $store->latest()->advice ?? array();
+		return $data;
 	}
 
 	/**
@@ -124,6 +128,15 @@ final class ComplianceReportView {
 			$html .= '<tr class="aihs-total" data-section-total="' . esc_attr( (string) $section ) . '"><th colspan="4">' . esc_html( ( $sections[ $section ] ?? (string) $section ) . ' – ' . ( Report::SECTION_PAGES === $section ? __( 'ilk 10 sayfa toplamı', 'ai-hazir-site' ) : __( 'toplam', 'ai-hazir-site' ) ) ) . '</th><td data-value="total">' . (int) ( $data['measurement_totals'][ $section ] ?? 0 ) . '</td></tr>';
 		}
 		$html .= '</tbody></table>';
+
+		$advice = is_array( $data['advice'] ?? null ) ? $data['advice'] : array();
+		if ( array() !== $advice ) {
+			$html .= '<h2>' . esc_html__( 'Semantik yapı (öneri, puana dahil değil)', 'ai-hazir-site' ) . '</h2><ul id="aihs-report-advice">';
+			foreach ( $advice as $finding ) {
+				$html .= '<li>' . esc_html( (string) $finding ) . '</li>';
+			}
+			$html .= '</ul><p><em>' . esc_html( SemanticStructure::FIX ) . '</em></p>';
+		}
 
 		$features = self::feature_labels();
 		$html    .= '<h2>' . esc_html__( 'Açık yetenekler', 'ai-hazir-site' ) . '</h2><ul id="aihs-report-features">';

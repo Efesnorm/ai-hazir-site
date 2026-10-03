@@ -92,6 +92,42 @@ final class Html {
 	}
 
 	/**
+	 * The `lang` attribute of the root element (1.19.0).
+	 */
+	public function html_lang(): string {
+		$root = $this->query( '/html' );
+		return null === ( $root[0] ?? null ) ? '' : trim( $root[0]->getAttribute( 'lang' ) );
+	}
+
+	/**
+	 * Text of the first <title> (1.19.0).
+	 */
+	public function title(): string {
+		$title = $this->query( '//head/title|//title' );
+		return null === ( $title[0] ?? null ) ? '' : trim( (string) preg_replace( '/\s+/u', ' ', $title[0]->textContent ) ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- DOM API.
+	}
+
+	/**
+	 * Main content landmarks that are not hidden: <main> and role="main" (1.19.0).
+	 */
+	public function main_count(): int {
+		return count( $this->query( '//main[not(@hidden)]|//*[not(self::main)][translate(@role, "MAIN", "main")="main"][not(@hidden)]' ) );
+	}
+
+	/**
+	 * Heading levels (1–6) in document order (1.19.0).
+	 *
+	 * @return list<int>
+	 */
+	public function heading_levels(): array {
+		$levels = array();
+		foreach ( $this->query( '//h1|//h2|//h3|//h4|//h5|//h6' ) as $heading ) {
+			$levels[] = (int) substr( strtolower( $heading->nodeName ), 1 ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- DOM API.
+		}
+		return $levels;
+	}
+
+	/**
 	 * Links inside <nav> elements (falls back to <header>).
 	 *
 	 * @return list<string>

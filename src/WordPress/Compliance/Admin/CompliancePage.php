@@ -13,6 +13,7 @@ use AIHazirSite\WordPress\Admin\AdminMenu;
 use AIHazirSite\Core\Compliance\Badge;
 use AIHazirSite\Core\Compliance\CheckResult;
 use AIHazirSite\Core\Compliance\ScoreReport;
+use AIHazirSite\Core\Compliance\SemanticStructure;
 use AIHazirSite\WordPress\Compliance\ComplianceModule;
 
 /**
@@ -157,7 +158,22 @@ final class CompliancePage {
 				. '</tr>';
 		}
 
-		return $html . '</tbody></table>';
+		return $html . '</tbody></table>' . self::render_advice( $report );
+	}
+
+	/**
+	 * Semantic structure advice (1.19.0), apart from the score; empty when there is none.
+	 *
+	 * @param ScoreReport $report Report.
+	 */
+	public static function render_advice( ScoreReport $report ): string {
+		if ( array() === $report->advice ) {
+			return '';
+		}
+		return '<h2 id="aihs-semantic">' . esc_html__( 'Semantik yapı (öneri, puana dahil değil)', 'ai-hazir-site' ) . '</h2>'
+			. '<p>' . esc_html__( 'Sayfanın dili, başlığı, ana içeriği ve başlıkları makinece ayırt edilebiliyor mu (WCAG 2.2 ve HTML standardı). Bu bulgular puanı değiştirmez.', 'ai-hazir-site' ) . '</p>'
+			. self::findings( $report->advice )
+			. '<p><em>' . esc_html( __( 'Nasıl düzeltilir:', 'ai-hazir-site' ) . ' ' . SemanticStructure::FIX ) . '</em></p>';
 	}
 
 	/**

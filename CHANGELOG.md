@@ -3,6 +3,21 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.19.0] - 2026-10-04
+
+### Eklendi
+- **Semantik yapı denetimi** (plan onaylı: `docs/planlar/1.19.0-semantik-yapi.md`). Uyum taraması, zaten çektiği örnek
+  sayfalarda (ek istek yok) sayfa dilini (`<html lang>`, WCAG 2.2 SC 3.1.1), başlığını (`<title>`, SC 2.4.2), tek ana içerik
+  alanını (`<main>` / `role="main"`, HTML Standardı ve SC 1.3.1/2.4.1), tek `<h1>`'i ve başlık seviyesi atlanmamasını (W3C WAI
+  başlıklar eğitimi) denetler. **Puana katılmaz**, puan sürümü 4'te kalır (21 Ekim önce-sonra karşılaştırması bozulmasın);
+  AI Uyum ekranında, AI Uyum Raporu'nda (PDF dahil) ve `bin/tara` çıktısında "Semantik yapı (öneri, puana dahil değil)"
+  bölümü. Eklenti temaya dokunmaz, ne yapılacağını söyler. JavaScript'siz okunabilirlik zaten `ReadabilityCheck`'te.
+  - Tarama kaydına isteğe bağlı `advice` alanı (yalnızca öneri varsa yazılır; eski kayıtlar aynen okunur). Şema değişmedi.
+  - Ayrı anahtar yok (onaylı): uyum taramasının parçası.
+  - Canlı deneme: üç pilot sitenin hiçbir sayfasında `<main>` yok (tema kaynaklı), başlık atlamaları yaygın; dil ve
+    başlık sorunsuz. Ayrıntı plan dosyasında.
+  - Testler: `SemanticStructureTest`, `SemanticAdviceTest`.
+
 ## [1.18.0] - 2026-10-01
 
 Plan onaylı: `docs/planlar/1.18.0-openapi-ve-llms-full.md`.

@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: AI Hazır Site 1.18.0\n"
+"Project-Id-Version: AI Hazır Site 1.19.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ai-hazir-site\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-30T23:07:22+00:00\n"
+"POT-Creation-Date: 2026-10-03T21:31:20+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: ai-hazir-site\n"
@@ -296,7 +296,7 @@ msgstr ""
 #: src/WordPress/Access/Admin/AccessPage.php:166
 #: src/WordPress/Admin/AdminNotices.php:107
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:450
-#: src/WordPress/Compliance/Admin/CompliancePage.php:199
+#: src/WordPress/Compliance/Admin/CompliancePage.php:215
 #: src/WordPress/Compliance/Wizard/WizardPage.php:383
 #: src/WordPress/Inquiry/Admin/InquiryAdmin.php:418
 #: src/WordPress/Integrations/IntegrationsPage.php:216
@@ -600,115 +600,128 @@ msgstr ""
 msgid "AI Katalog ilanı"
 msgstr ""
 
-#: src/WordPress/Compliance/Admin/CompliancePage.php:39
-#: src/WordPress/Compliance/Admin/CompliancePage.php:69
+#: src/WordPress/Compliance/Admin/CompliancePage.php:40
+#: src/WordPress/Compliance/Admin/CompliancePage.php:70
 msgid "AI Uyum"
 msgstr ""
 
-#: src/WordPress/Compliance/Admin/CompliancePage.php:49
+#: src/WordPress/Compliance/Admin/CompliancePage.php:50
 msgid "Yapılandırılmış veri"
 msgstr ""
 
-#: src/WordPress/Compliance/Admin/CompliancePage.php:50
+#: src/WordPress/Compliance/Admin/CompliancePage.php:51
 msgid "İçerik okunabilirliği"
 msgstr ""
 
-#: src/WordPress/Compliance/Admin/CompliancePage.php:51
+#: src/WordPress/Compliance/Admin/CompliancePage.php:52
 msgid "Makine arayüzü (REST / MCP)"
 msgstr ""
 
-#: src/WordPress/Compliance/Admin/CompliancePage.php:52
+#: src/WordPress/Compliance/Admin/CompliancePage.php:53
 #: src/WordPress/Settings/SettingsPage.php:100
 msgid "AI bot erişimi"
 msgstr ""
 
-#: src/WordPress/Compliance/Admin/CompliancePage.php:53
+#: src/WordPress/Compliance/Admin/CompliancePage.php:54
 #: src/WordPress/Settings/SettingsPage.php:104
 msgid "llms.txt"
 msgstr ""
 
-#: src/WordPress/Compliance/Admin/CompliancePage.php:54
+#: src/WordPress/Compliance/Admin/CompliancePage.php:55
 msgid "Tazelik"
 msgstr ""
 
-#: src/WordPress/Compliance/Admin/CompliancePage.php:55
+#: src/WordPress/Compliance/Admin/CompliancePage.php:56
 msgid "İleri standartlar (A2A kartviziti)"
 msgstr ""
 
-#: src/WordPress/Compliance/Admin/CompliancePage.php:72
+#: src/WordPress/Compliance/Admin/CompliancePage.php:73
 msgid "Tarama tamamlandı."
 msgstr ""
 
-#: src/WordPress/Compliance/Admin/CompliancePage.php:78
+#: src/WordPress/Compliance/Admin/CompliancePage.php:79
 msgid "Şimdi tara"
 msgstr ""
 
-#: src/WordPress/Compliance/Admin/CompliancePage.php:79
+#: src/WordPress/Compliance/Admin/CompliancePage.php:80
 msgid "Tarama sitenin kendi sayfalarını çeker; en fazla 60 saniye sürer."
 msgstr ""
 
-#: src/WordPress/Compliance/Admin/CompliancePage.php:83
+#: src/WordPress/Compliance/Admin/CompliancePage.php:84
 msgid "Henüz tarama yapılmadı."
 msgstr ""
 
-#: src/WordPress/Compliance/Admin/CompliancePage.php:102
+#: src/WordPress/Compliance/Admin/CompliancePage.php:103
 msgid "AI uyum puanı"
 msgstr ""
 
-#: src/WordPress/Compliance/Admin/CompliancePage.php:111
+#: src/WordPress/Compliance/Admin/CompliancePage.php:112
 msgid "Site kendi adresine erişemedi, hiçbir kontrol ölçülemedi. Barındırma firmanız WordPress'in kendine istek atmasını (loopback) engelliyor olabilir; Araçlar → Site Sağlığı ekranındaki \"loopback\" sonucuna bakın."
 msgstr ""
 
 #. translators: 1: measured weight, 2: total weight, 3: minimum coverage percent for the badge.
-#: src/WordPress/Compliance/Admin/CompliancePage.php:117
+#: src/WordPress/Compliance/Admin/CompliancePage.php:118
 #, php-format
 msgid "Puan yalnızca ölçülebilen kontrollerin üzerinden hesaplandı (%1$d/%2$d ağırlık). Ölçülemeyen kontroller aşağıda \"ölçülemedi\" diye görünür; çoğunlukla sitenin kendi adresine istek atamamasından ya da bot korumasından olur. AI Hazır rozeti için ağırlığın en az %%%3$d'i ölçülmüş olmalı."
 msgstr ""
 
 #. translators: 1: date, 2: measured weight, 3: seconds, 4: scoring version.
-#: src/WordPress/Compliance/Admin/CompliancePage.php:128
+#: src/WordPress/Compliance/Admin/CompliancePage.php:129
 #, php-format
 msgid "Tarih: %1$s · Ölçülen ağırlık: %2$d/100 · Süre: %3$s sn · Puanlama sürümü: %4$d"
 msgstr ""
 
-#: src/WordPress/Compliance/Admin/CompliancePage.php:137
+#: src/WordPress/Compliance/Admin/CompliancePage.php:138
 msgid "Kontrol"
 msgstr ""
 
-#: src/WordPress/Compliance/Admin/CompliancePage.php:138
-#: src/WordPress/Compliance/Admin/CompliancePage.php:170
+#: src/WordPress/Compliance/Admin/CompliancePage.php:139
+#: src/WordPress/Compliance/Admin/CompliancePage.php:186
 #: src/WordPress/Compliance/Wizard/WizardPage.php:239
 #: src/WordPress/Matching/MatchingAdmin.php:117
 msgid "Puan"
 msgstr ""
 
-#: src/WordPress/Compliance/Admin/CompliancePage.php:139
+#: src/WordPress/Compliance/Admin/CompliancePage.php:140
 msgid "Kazanılabilir"
 msgstr ""
 
-#: src/WordPress/Compliance/Admin/CompliancePage.php:140
+#: src/WordPress/Compliance/Admin/CompliancePage.php:141
 msgid "Önceki tarama"
 msgstr ""
 
-#: src/WordPress/Compliance/Admin/CompliancePage.php:141
+#: src/WordPress/Compliance/Admin/CompliancePage.php:142
 msgid "Bulgular"
 msgstr ""
 
-#: src/WordPress/Compliance/Admin/CompliancePage.php:142
+#: src/WordPress/Compliance/Admin/CompliancePage.php:143
 msgid "Nasıl düzeltilir"
 msgstr ""
 
-#: src/WordPress/Compliance/Admin/CompliancePage.php:147
+#: src/WordPress/Compliance/Admin/CompliancePage.php:148
 #: src/WordPress/Report/BadgeModule.php:173
-#: src/WordPress/Report/ComplianceReportView.php:110
+#: src/WordPress/Report/ComplianceReportView.php:114
 msgid "ölçülemedi"
 msgstr ""
 
-#: src/WordPress/Compliance/Admin/CompliancePage.php:169
+#: src/WordPress/Compliance/Admin/CompliancePage.php:173
+#: src/WordPress/Report/ComplianceReportView.php:134
+msgid "Semantik yapı (öneri, puana dahil değil)"
+msgstr ""
+
+#: src/WordPress/Compliance/Admin/CompliancePage.php:174
+msgid "Sayfanın dili, başlığı, ana içeriği ve başlıkları makinece ayırt edilebiliyor mu (WCAG 2.2 ve HTML standardı). Bu bulgular puanı değiştirmez."
+msgstr ""
+
+#: src/WordPress/Compliance/Admin/CompliancePage.php:176
+msgid "Nasıl düzeltilir:"
+msgstr ""
+
+#: src/WordPress/Compliance/Admin/CompliancePage.php:185
 msgid "Önceki taramalar"
 msgstr ""
 
-#: src/WordPress/Compliance/Admin/CompliancePage.php:170
+#: src/WordPress/Compliance/Admin/CompliancePage.php:186
 #: src/WordPress/Inquiry/Admin/InquiryAdmin.php:162
 msgid "Tarih"
 msgstr ""
@@ -809,7 +822,7 @@ msgid "Önce / sonra"
 msgstr ""
 
 #: src/WordPress/Compliance/Wizard/WizardPage.php:233
-#: src/WordPress/Report/ComplianceReportView.php:102
+#: src/WordPress/Report/ComplianceReportView.php:106
 msgid "Kriter"
 msgstr ""
 
@@ -1621,7 +1634,7 @@ msgstr ""
 #: src/WordPress/Measurement/Admin/ReportPage.php:140
 #: src/WordPress/Measurement/Admin/ReportPage.php:154
 #: src/WordPress/Measurement/Admin/ReportPage.php:227
-#: src/WordPress/Report/ComplianceReportView.php:118
+#: src/WordPress/Report/ComplianceReportView.php:122
 msgid "Doğrulanmış"
 msgstr ""
 
@@ -1629,7 +1642,7 @@ msgstr ""
 #: src/WordPress/Measurement/Admin/ReportPage.php:140
 #: src/WordPress/Measurement/Admin/ReportPage.php:154
 #: src/WordPress/Measurement/Admin/ReportPage.php:228
-#: src/WordPress/Report/ComplianceReportView.php:118
+#: src/WordPress/Report/ComplianceReportView.php:122
 msgid "Doğrulanmamış"
 msgstr ""
 
@@ -1638,7 +1651,7 @@ msgstr ""
 #: src/WordPress/Measurement/Admin/ReportPage.php:154
 #: src/WordPress/Measurement/Admin/ReportPage.php:229
 #: src/WordPress/Portal/PortalAdmin.php:147
-#: src/WordPress/Report/ComplianceReportView.php:118
+#: src/WordPress/Report/ComplianceReportView.php:122
 msgid "Toplam"
 msgstr ""
 
@@ -1691,7 +1704,7 @@ msgid "İstek"
 msgstr ""
 
 #: src/WordPress/Measurement/Admin/ReportPage.php:224
-#: src/WordPress/Report/ComplianceReportView.php:118
+#: src/WordPress/Report/ComplianceReportView.php:122
 msgid "Bölüm"
 msgstr ""
 
@@ -1898,125 +1911,125 @@ msgstr ""
 msgid "Bu sayfa sitenin kendi AI uyum taramasının son sonucunu gösterir (AI Hazır Site eklentisi)."
 msgstr ""
 
-#: src/WordPress/Report/ComplianceReportView.php:57
+#: src/WordPress/Report/ComplianceReportView.php:61
 msgid "AI bot ve yönlendirme ölçümü (A0)"
 msgstr ""
 
-#: src/WordPress/Report/ComplianceReportView.php:58
+#: src/WordPress/Report/ComplianceReportView.php:62
 msgid "AI uyum taraması (U1)"
 msgstr ""
 
-#: src/WordPress/Report/ComplianceReportView.php:59
+#: src/WordPress/Report/ComplianceReportView.php:63
 msgid "AI Katalog: ilanlar ve firma profili (A1)"
 msgstr ""
 
-#: src/WordPress/Report/ComplianceReportView.php:60
+#: src/WordPress/Report/ComplianceReportView.php:64
 msgid "AI bot erişim ayarları (U2)"
 msgstr ""
 
-#: src/WordPress/Report/ComplianceReportView.php:61
+#: src/WordPress/Report/ComplianceReportView.php:65
 msgid "Schema.org yapılandırılmış veri (A2)"
 msgstr ""
 
-#: src/WordPress/Report/ComplianceReportView.php:62
+#: src/WordPress/Report/ComplianceReportView.php:66
 msgid "llms.txt ve AI katalog sayfası (A3)"
 msgstr ""
 
-#: src/WordPress/Report/ComplianceReportView.php:63
+#: src/WordPress/Report/ComplianceReportView.php:67
 msgid "Sektör şablonları (A4)"
 msgstr ""
 
-#: src/WordPress/Report/ComplianceReportView.php:64
+#: src/WordPress/Report/ComplianceReportView.php:68
 msgid "AI uyum sihirbazı (U3)"
 msgstr ""
 
-#: src/WordPress/Report/ComplianceReportView.php:65
+#: src/WordPress/Report/ComplianceReportView.php:69
 msgid "REST API (A5)"
 msgstr ""
 
-#: src/WordPress/Report/ComplianceReportView.php:66
+#: src/WordPress/Report/ComplianceReportView.php:70
 msgid "Abilities API (A6)"
 msgstr ""
 
-#: src/WordPress/Report/ComplianceReportView.php:67
+#: src/WordPress/Report/ComplianceReportView.php:71
 msgid "MCP sunucusu (A6)"
 msgstr ""
 
-#: src/WordPress/Report/ComplianceReportView.php:68
+#: src/WordPress/Report/ComplianceReportView.php:72
 msgid "Teklif kutusu (A7)"
 msgstr ""
 
-#: src/WordPress/Report/ComplianceReportView.php:69
+#: src/WordPress/Report/ComplianceReportView.php:73
 msgid "Uyum raporu ve rozet (U4)"
 msgstr ""
 
-#: src/WordPress/Report/ComplianceReportView.php:86
+#: src/WordPress/Report/ComplianceReportView.php:90
 #: src/WordPress/Report/ReportModule.php:48
 msgid "AI Uyum Raporu"
 msgstr ""
 
-#: src/WordPress/Report/ComplianceReportView.php:87
+#: src/WordPress/Report/ComplianceReportView.php:91
 msgid "Oluşturulma"
 msgstr ""
 
-#: src/WordPress/Report/ComplianceReportView.php:90
+#: src/WordPress/Report/ComplianceReportView.php:94
 msgid "Henüz uyum taraması yapılmamış. AI Hazır Site → AI Uyum sayfasından tarama yapın."
 msgstr ""
 
-#: src/WordPress/Report/ComplianceReportView.php:95
+#: src/WordPress/Report/ComplianceReportView.php:99
 msgid "Son tarama puanı"
 msgstr ""
 
-#: src/WordPress/Report/ComplianceReportView.php:96
+#: src/WordPress/Report/ComplianceReportView.php:100
 msgid "İlk tarama puanı"
 msgstr ""
 
-#: src/WordPress/Report/ComplianceReportView.php:97
-#: src/WordPress/Report/ComplianceReportView.php:102
+#: src/WordPress/Report/ComplianceReportView.php:101
+#: src/WordPress/Report/ComplianceReportView.php:106
 msgid "Değişim"
 msgstr ""
 
-#: src/WordPress/Report/ComplianceReportView.php:98
+#: src/WordPress/Report/ComplianceReportView.php:102
 msgid "Puanlama kuralları farklı olduğu için karşılaştırılmadı."
 msgstr ""
 
-#: src/WordPress/Report/ComplianceReportView.php:101
+#: src/WordPress/Report/ComplianceReportView.php:105
 msgid "Kontrol bazında durum"
 msgstr ""
 
-#: src/WordPress/Report/ComplianceReportView.php:102
+#: src/WordPress/Report/ComplianceReportView.php:106
 msgid "Ağırlık"
 msgstr ""
 
-#: src/WordPress/Report/ComplianceReportView.php:102
+#: src/WordPress/Report/ComplianceReportView.php:106
 msgid "İlk"
 msgstr ""
 
-#: src/WordPress/Report/ComplianceReportView.php:102
+#: src/WordPress/Report/ComplianceReportView.php:106
 msgid "Son"
 msgstr ""
 
-#: src/WordPress/Report/ComplianceReportView.php:102
+#: src/WordPress/Report/ComplianceReportView.php:106
 msgid "Eksik puan"
 msgstr ""
 
-#: src/WordPress/Report/ComplianceReportView.php:117
+#: src/WordPress/Report/ComplianceReportView.php:121
 msgid "Son 28 gün: AI ölçümü"
 msgstr ""
 
-#: src/WordPress/Report/ComplianceReportView.php:118
+#: src/WordPress/Report/ComplianceReportView.php:122
 msgid "Kaynak / sayfa"
 msgstr ""
 
-#: src/WordPress/Report/ComplianceReportView.php:124
+#: src/WordPress/Report/ComplianceReportView.php:128
 msgid "ilk 10 sayfa toplamı"
 msgstr ""
 
-#: src/WordPress/Report/ComplianceReportView.php:124
+#: src/WordPress/Report/ComplianceReportView.php:128
 msgid "toplam"
 msgstr ""
 
-#: src/WordPress/Report/ComplianceReportView.php:129
+#: src/WordPress/Report/ComplianceReportView.php:142
 msgid "Açık yetenekler"
 msgstr ""
 
