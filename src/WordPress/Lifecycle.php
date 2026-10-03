@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace AIHazirSite\WordPress;
 
+use AIHazirSite\WordPress\Integrations\IntegrationsModule;
 use AIHazirSite\Core\Migrations\Migrator;
 use AIHazirSite\WordPress\Platform\WpSettings;
 
@@ -28,10 +29,11 @@ final class Lifecycle {
 	}
 
 	/**
-	 * Runs pending migrations.
+	 * Runs pending migrations; writes again the integrations that are on (1.19.1).
 	 */
 	public static function activate(): void {
 		( new Migrator( Plugin::migrations(), new WpSettings() ) )->migrate();
+		IntegrationsModule::activate();
 	}
 
 	/**
