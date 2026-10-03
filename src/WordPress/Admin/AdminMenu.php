@@ -41,6 +41,7 @@ final class AdminMenu {
 		'aihs-inquiries',
 		'aihs-matching',
 		'aihs-portal',
+		'aihs-network',
 		'aihs-catalog-translations',
 		'aihs-measurement',
 		'aihs-compliance',

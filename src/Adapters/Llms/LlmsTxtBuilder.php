@@ -70,6 +70,8 @@ final class LlmsTxtBuilder {
 		'businesses'        => 'İşletmeler',
 		'business'          => 'İşletme',
 		'agents'            => 'AI agentlar için',
+		'network'           => 'Kardeş portallar',
+		'network_api'       => 'AI Katalog API',
 	);
 
 	/**
@@ -96,14 +98,16 @@ final class LlmsTxtBuilder {
 	/**
 	 * Constructor.
 	 *
-	 * @param string                                                     $site_url    Site home URL.
-	 * @param string                                                     $catalog_url AI catalog page URL (listing anchors: #ilan-{id}).
-	 * @param string                                                     $site_name   Used when the profile has no name.
-	 * @param array<string, string>                                      $labels      Translated texts (keys of self::LABELS).
-	 * @param TemplateRegistry|null                                      $templates   Sector templates; null = every listing is "general".
-	 * @param string                                                     $api_url     REST API base URL with trailing slash ('' when the API is off).
-	 * @param array<int, array{name: string, url: string, note: string}> $agents Ways an agent can act on the site
-	 *                                      (1.16.0: inquiry, A2A, MCP), only the open ones; empty = no section.
+	 * @param string                                                                                $site_url    Site home URL.
+	 * @param string                                                                                $catalog_url AI catalog page URL (listing anchors: #ilan-{id}).
+	 * @param string                                                                                $site_name   Used when the profile has no name.
+	 * @param array<string, string>                                                                 $labels      Translated texts (keys of self::LABELS).
+	 * @param TemplateRegistry|null                                                                 $templates   Sector templates; null = every listing is "general".
+	 * @param string                                                                                $api_url     REST API base URL with trailing slash ('' when the API is off).
+	 * @param array<int, array{name: string, url: string, note: string}>                            $agents Ways an agent can act on the site
+	 *                                                                 (1.16.0: inquiry, A2A, MCP), only the open ones; empty = no section.
+	 * @param array{name?: string, sites?: list<array{url: string, name: string, country: string}>} $network Verified
+	 *                                      sibling sites of the portal network (1.20.0); empty = no section.
 	 */
 	public function __construct(
 		private readonly string $site_url,
@@ -112,7 +116,8 @@ final class LlmsTxtBuilder {
 		array $labels = array(),
 		private readonly ?TemplateRegistry $templates = null,
 		private readonly string $api_url = '',
-		private readonly array $agents = array()
+		private readonly array $agents = array(),
+		private readonly array $network = array()
 	) {
 		$this->labels = array_merge( self::LABELS, $labels );
 	}
@@ -185,6 +190,16 @@ final class LlmsTxtBuilder {
 		// 1.16.0: before "Optional", which the llms.txt proposal lets an agent skip.
 		if ( array() !== $this->agents ) {
 			$blocks[] = '## ' . $this->labels['agents'] . "\n\n" . implode( "\n", array_map( static fn( array $c ): string => self::link( $c['name'], $c['url'], self::inline( $c['note'] ) ), $this->agents ) );
+		}
+		// 1.20.0: the sibling sites of the portal network (only mutually verified ones reach here).
+		if ( array() !== ( $this->network['sites'] ?? array() ) ) {
+			$lines = array();
+			foreach ( $this->network['sites'] as $site ) {
+				$label   = ( '' !== $site['name'] ? $site['name'] : $site['url'] ) . ( '' !== $site['country'] ? ' (' . $site['country'] . ')' : '' );
+				$lines[] = self::link( $label, $site['url'] . 'llms.txt', $this->labels['network_api'] . ': ' . $site['url'] . 'wp-json/aihs/v1/' );
+			}
+			$title    = $this->labels['network'] . ( '' !== ( $this->network['name'] ?? '' ) ? ' – ' . self::inline( (string) $this->network['name'] ) : '' );
+			$blocks[] = '## ' . $title . "\n\n" . implode( "\n", $lines );
 		}
 		$optional = array( self::link( $this->labels['catalog'], $this->catalog_url, $this->labels['catalog_note'] ) );
 		if ( '' !== $this->api_url ) {

@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: AI Hazır Site 1.19.0\n"
+"Project-Id-Version: AI Hazır Site 1.20.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ai-hazir-site\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-03T21:31:20+00:00\n"
+"POT-Creation-Date: 2026-10-03T23:47:07+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: ai-hazir-site\n"
@@ -17,7 +17,7 @@ msgstr ""
 #. Plugin Name of the plugin
 #: ai-hazir-site.php
 #: src/WordPress/Settings/SettingsPage.php:52
-#: src/WordPress/Settings/SettingsPage.php:151
+#: src/WordPress/Settings/SettingsPage.php:152
 msgid "AI Hazır Site"
 msgstr ""
 
@@ -89,7 +89,7 @@ msgstr ""
 
 #: src/WordPress/Abilities/AbilitiesModule.php:68
 #: src/WordPress/Discovery/DiscoveryModule.php:96
-#: src/WordPress/Llms/LlmsModule.php:342
+#: src/WordPress/Llms/LlmsModule.php:344
 #: src/WordPress/Settings/SettingsPage.php:73
 #: src/WordPress/Settings/SettingsPage.php:101
 msgid "AI Katalog"
@@ -147,12 +147,12 @@ msgstr ""
 
 #: src/WordPress/Abilities/AbilitiesModule.php:232
 #: src/WordPress/Portal/PortalAdmin.php:341
-#: src/WordPress/Rest/RestModule.php:162
+#: src/WordPress/Rest/RestModule.php:163
 msgid "İşletme bulunamadı."
 msgstr ""
 
 #: src/WordPress/Abilities/AbilitiesModule.php:268
-#: src/WordPress/Rest/RestModule.php:197
+#: src/WordPress/Rest/RestModule.php:198
 msgid "İlan bulunamadı veya süresi doldu."
 msgstr ""
 
@@ -205,8 +205,9 @@ msgstr ""
 #: src/WordPress/Compliance/Wizard/WizardPage.php:69
 #: src/WordPress/Inquiry/Admin/InquiryAdmin.php:122
 #: src/WordPress/Integrations/IntegrationsPage.php:55
+#: src/WordPress/Network/NetworkPage.php:64
 #: src/WordPress/Report/ReportModule.php:56
-#: src/WordPress/Settings/SettingsPage.php:128
+#: src/WordPress/Settings/SettingsPage.php:129
 msgid "Bu sayfaya erişim yetkiniz yok."
 msgstr ""
 
@@ -249,7 +250,7 @@ msgstr ""
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:143
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:226
 #: src/WordPress/I18n/TranslationsAdmin.php:191
-#: src/WordPress/Llms/LlmsModule.php:328
+#: src/WordPress/Llms/LlmsModule.php:330
 #: src/WordPress/Portal/BusinessAdmin.php:141
 msgid "Kategori"
 msgstr ""
@@ -275,8 +276,9 @@ msgstr ""
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:323
 #: src/WordPress/Matching/MatchingAdmin.php:158
 #: src/WordPress/Measurement/Admin/ReportPage.php:113
+#: src/WordPress/Network/NetworkPage.php:100
 #: src/WordPress/Portal/BusinessAdmin.php:162
-#: src/WordPress/Settings/SettingsPage.php:251
+#: src/WordPress/Settings/SettingsPage.php:252
 #: src/WordPress/Updates/UpdatesAdmin.php:91
 msgid "Kaydet"
 msgstr ""
@@ -301,20 +303,21 @@ msgstr ""
 #: src/WordPress/Inquiry/Admin/InquiryAdmin.php:418
 #: src/WordPress/Integrations/IntegrationsPage.php:216
 #: src/WordPress/Measurement/Admin/ReportPage.php:256
+#: src/WordPress/Network/NetworkPage.php:189
 #: src/WordPress/Portal/BusinessAdmin.php:231
 #: src/WordPress/Report/ReportModule.php:83
-#: src/WordPress/Settings/SettingsPage.php:414
+#: src/WordPress/Settings/SettingsPage.php:415
 #: src/WordPress/Updates/UpdatesAdmin.php:198
 msgid "Bu işlem için yetkiniz yok."
 msgstr ""
 
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:65
-#: src/WordPress/Llms/LlmsModule.php:317
+#: src/WordPress/Llms/LlmsModule.php:319
 msgid "Satılanlar"
 msgstr ""
 
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:66
-#: src/WordPress/Llms/LlmsModule.php:318
+#: src/WordPress/Llms/LlmsModule.php:320
 msgid "Arananlar"
 msgstr ""
 
@@ -347,17 +350,17 @@ msgid "Tür"
 msgstr ""
 
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:144
-#: src/WordPress/Llms/LlmsModule.php:330
+#: src/WordPress/Llms/LlmsModule.php:332
 msgid "Fiyat"
 msgstr ""
 
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:145
-#: src/WordPress/Llms/LlmsModule.php:336
+#: src/WordPress/Llms/LlmsModule.php:338
 msgid "Geçerlilik"
 msgstr ""
 
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:146
-#: src/WordPress/Llms/LlmsModule.php:327
+#: src/WordPress/Llms/LlmsModule.php:329
 msgid "Son güncelleme"
 msgstr ""
 
@@ -417,7 +420,7 @@ msgid "Açıklama"
 msgstr ""
 
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:227
-#: src/WordPress/Llms/LlmsModule.php:329
+#: src/WordPress/Llms/LlmsModule.php:331
 #: src/WordPress/Portal/BusinessAdmin.php:142
 msgid "Miktar"
 msgstr ""
@@ -449,7 +452,7 @@ msgstr ""
 
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:232
 #: src/WordPress/I18n/TranslationsAdmin.php:192
-#: src/WordPress/Llms/LlmsModule.php:332
+#: src/WordPress/Llms/LlmsModule.php:334
 #: src/WordPress/Portal/BusinessAdmin.php:147
 msgid "Bölge"
 msgstr ""
@@ -464,7 +467,7 @@ msgid "Geçerlilik tarihi"
 msgstr ""
 
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:235
-#: src/WordPress/Llms/LlmsModule.php:337
+#: src/WordPress/Llms/LlmsModule.php:339
 msgid "Özellikler"
 msgstr ""
 
@@ -499,7 +502,7 @@ msgid "Sektör"
 msgstr ""
 
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:300
-#: src/WordPress/Llms/LlmsModule.php:322
+#: src/WordPress/Llms/LlmsModule.php:324
 msgid "Ülke"
 msgstr ""
 
@@ -509,7 +512,7 @@ msgstr ""
 
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:301
 #: src/WordPress/I18n/TranslationsAdmin.php:120
-#: src/WordPress/Llms/LlmsModule.php:323
+#: src/WordPress/Llms/LlmsModule.php:325
 msgid "Diller"
 msgstr ""
 
@@ -533,7 +536,7 @@ msgid "Kurumsal telefon"
 msgstr ""
 
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:304
-#: src/WordPress/Llms/LlmsModule.php:324
+#: src/WordPress/Llms/LlmsModule.php:326
 msgid "Sertifikalar"
 msgstr ""
 
@@ -793,7 +796,7 @@ msgid "Hazır ayar"
 msgstr ""
 
 #: src/WordPress/Compliance/Wizard/WizardPage.php:193
-#: src/WordPress/Settings/SettingsPage.php:362
+#: src/WordPress/Settings/SettingsPage.php:363
 msgid "Uygula"
 msgstr ""
 
@@ -867,7 +870,7 @@ msgid "Sihirbazı aç"
 msgstr ""
 
 #: src/WordPress/Compliance/Wizard/WizardPage.php:372
-#: src/WordPress/Schema/SchemaModule.php:269
+#: src/WordPress/Schema/SchemaModule.php:271
 msgid "Bir daha gösterme"
 msgstr ""
 
@@ -1053,7 +1056,7 @@ msgid "Talep"
 msgstr ""
 
 #: src/WordPress/Inquiry/Admin/InquiryAdmin.php:162
-#: src/WordPress/Llms/LlmsModule.php:338
+#: src/WordPress/Llms/LlmsModule.php:340
 msgid "İletişim"
 msgstr ""
 
@@ -1062,6 +1065,7 @@ msgid "Spam"
 msgstr ""
 
 #: src/WordPress/Inquiry/Admin/InquiryAdmin.php:162
+#: src/WordPress/Network/NetworkPage.php:107
 msgid "Durum"
 msgstr ""
 
@@ -1187,7 +1191,7 @@ msgstr ""
 
 #: src/WordPress/Inquiry/Admin/InquiryAdmin.php:305
 #: src/WordPress/Integrations/IntegrationsPage.php:196
-#: src/WordPress/Settings/SettingsPage.php:235
+#: src/WordPress/Settings/SettingsPage.php:236
 msgid "Kapat"
 msgstr ""
 
@@ -1267,7 +1271,7 @@ msgid "Sitenizdeki diğer eklentilerle yapılabilecek işler. Hiçbiri kendiliğ
 msgstr ""
 
 #: src/WordPress/Integrations/IntegrationsPage.php:89
-#: src/WordPress/Settings/SettingsPage.php:116
+#: src/WordPress/Settings/SettingsPage.php:117
 msgid "LiteSpeed sunucu önbelleği"
 msgstr ""
 
@@ -1334,7 +1338,7 @@ msgid "LiteSpeed Cache (7.2 veya üstü gerekir; elle ekleyin)"
 msgstr ""
 
 #: src/WordPress/Integrations/IntegrationsPage.php:158
-#: src/WordPress/Settings/SettingsPage.php:114
+#: src/WordPress/Settings/SettingsPage.php:115
 msgid "AI botlarına önbellekten sayfa sunma"
 msgstr ""
 
@@ -1383,17 +1387,17 @@ msgid "Durum:"
 msgstr ""
 
 #: src/WordPress/Integrations/IntegrationsPage.php:195
-#: src/WordPress/Settings/SettingsPage.php:210
+#: src/WordPress/Settings/SettingsPage.php:211
 msgid "Açık"
 msgstr ""
 
 #: src/WordPress/Integrations/IntegrationsPage.php:195
-#: src/WordPress/Settings/SettingsPage.php:210
+#: src/WordPress/Settings/SettingsPage.php:211
 msgid "Kapalı"
 msgstr ""
 
 #: src/WordPress/Integrations/IntegrationsPage.php:196
-#: src/WordPress/Settings/SettingsPage.php:235
+#: src/WordPress/Settings/SettingsPage.php:236
 msgid "Aç"
 msgstr ""
 
@@ -1401,124 +1405,124 @@ msgstr ""
 msgid "Bilinmeyen entegrasyon."
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:239
+#: src/WordPress/Llms/LlmsModule.php:241
 msgid "Yönlendirme talebi bırakma (REST)"
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:239
+#: src/WordPress/Llms/LlmsModule.php:241
 msgid "Teklif isteği veya talep bırakma (REST)"
 msgstr ""
 
 #. translators: %s: allowed inquiry kinds.
-#: src/WordPress/Llms/LlmsModule.php:243
+#: src/WordPress/Llms/LlmsModule.php:245
 #, php-format
 msgid "POST, JSON: kind (%s), subject, message, contact {name, email veya phone}; isteğe bağlı listing_id. Otomatik onay ve otomatik yanıt yok; firma inceleyip döner."
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:251
+#: src/WordPress/Llms/LlmsModule.php:253
 msgid "müsaitlik sorma"
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:252
+#: src/WordPress/Llms/LlmsModule.php:254
 msgid "teklif isteme"
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:255
+#: src/WordPress/Llms/LlmsModule.php:257
 msgid "A2A agent kartviziti"
 msgstr ""
 
 #. translators: %s: skills.
-#: src/WordPress/Llms/LlmsModule.php:259
+#: src/WordPress/Llms/LlmsModule.php:261
 #, php-format
 msgid "A2A 1.0 (JSON-RPC); beceriler: %s."
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:266
+#: src/WordPress/Llms/LlmsModule.php:268
 #: src/WordPress/Settings/SettingsPage.php:108
 msgid "MCP sunucusu"
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:269
+#: src/WordPress/Llms/LlmsModule.php:271
 msgid "Model Context Protocol (Streamable HTTP, oturumsuz); katalog araçları ve talep bırakma aracı."
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:270
+#: src/WordPress/Llms/LlmsModule.php:272
 msgid "Model Context Protocol (Streamable HTTP, oturumsuz); salt okunur katalog araçları."
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:304
+#: src/WordPress/Llms/LlmsModule.php:306
 msgid "AI Hazır Site: Sitenin kök dizininde bir llms.txt dosyası var; sunucu onu gösterdiği için AI Hazır Site kendi llms.txt çıktısını yayınlamıyor ve dosyaya dokunmuyor. Kendi içeriğimizi kullanmak için dosyayı kaldırın ya da aşağıdaki metni dosyaya ekleyin."
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:305
+#: src/WordPress/Llms/LlmsModule.php:307
 msgid "Eklenecek metin"
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:319
+#: src/WordPress/Llms/LlmsModule.php:321
 msgid "Tedarik edilebilenler"
 msgstr ""
 
 #. translators: %s: company name (and sector).
-#: src/WordPress/Llms/LlmsModule.php:321
+#: src/WordPress/Llms/LlmsModule.php:323
 #, php-format
 msgid "%s: sattığı, aradığı ve tedarik edebildiği ürünlerin güncel özeti."
 msgstr ""
 
 #. translators: 1: value, 2: time of the last confirmation.
-#: src/WordPress/Llms/LlmsModule.php:326
+#: src/WordPress/Llms/LlmsModule.php:328
 #, php-format
 msgid "%1$s (doğrulanmadı, son güncelleme %2$s)"
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:331
+#: src/WordPress/Llms/LlmsModule.php:333
 msgid "Bütçe"
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:333
+#: src/WordPress/Llms/LlmsModule.php:335
 msgid "Teslim süresi"
 msgstr ""
 
 #. translators: %d: number of days.
-#: src/WordPress/Llms/LlmsModule.php:335
+#: src/WordPress/Llms/LlmsModule.php:337
 #, php-format
 msgid "%d gün"
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:339
+#: src/WordPress/Llms/LlmsModule.php:341
 msgid "Web sitesi"
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:340
+#: src/WordPress/Llms/LlmsModule.php:342
 msgid "E-posta"
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:341
+#: src/WordPress/Llms/LlmsModule.php:343
 msgid "Telefon"
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:343
+#: src/WordPress/Llms/LlmsModule.php:345
 msgid "Tüm geçerli ilanların sade HTML listesi"
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:344
+#: src/WordPress/Llms/LlmsModule.php:346
 msgid "AI Katalog API (JSON)"
 msgstr ""
 
 #. translators: %s: JSON schema URL.
-#: src/WordPress/Llms/LlmsModule.php:346
+#: src/WordPress/Llms/LlmsModule.php:348
 #, php-format
 msgid "Geçerli ilanlar, sayfalı; şema: %s"
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:347
+#: src/WordPress/Llms/LlmsModule.php:349
 msgid "Şablon alan tanımları (JSON)"
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:348
+#: src/WordPress/Llms/LlmsModule.php:350
 msgid "AI Katalog API tanımı (OpenAPI 3.1)"
 msgstr ""
 
-#: src/WordPress/Llms/LlmsModule.php:349
+#: src/WordPress/Llms/LlmsModule.php:351
 msgid "AI agentlar için"
 msgstr ""
 
@@ -1726,6 +1730,94 @@ msgstr ""
 
 #: src/WordPress/Measurement/Admin/ReportPage.php:281
 msgid "Bu dönemde kayıt yok."
+msgstr ""
+
+#: src/WordPress/Network/NetworkPage.php:40
+#: src/WordPress/Network/NetworkPage.php:80
+msgid "Portal Ağı"
+msgstr ""
+
+#: src/WordPress/Network/NetworkPage.php:50
+msgid "doğrulandı"
+msgstr ""
+
+#: src/WordPress/Network/NetworkPage.php:51
+msgid "bu siteyi anne olarak göstermiyor"
+msgstr ""
+
+#: src/WordPress/Network/NetworkPage.php:52
+msgid "anne başka"
+msgstr ""
+
+#: src/WordPress/Network/NetworkPage.php:53
+msgid "annede kayıtlı değil (henüz)"
+msgstr ""
+
+#: src/WordPress/Network/NetworkPage.php:54
+msgid "girilen adres anne site değil"
+msgstr ""
+
+#: src/WordPress/Network/NetworkPage.php:55
+msgid "erişilemedi / henüz kontrol edilmedi"
+msgstr ""
+
+#: src/WordPress/Network/NetworkPage.php:81
+msgid "Aynı sahibin siteleri bir ağ olur: anne site ağın adını ve üyelerini yönetir, üyeler yalnızca annelerinin adresini girer. Bir site ancak iki taraf da onaylamışsa (anne listeler, üye o anneyi gösterir) ağda görünür. Doğrulanan siteler AI'lara ağ olarak duyurulur (Schema.org, llms.txt)."
+msgstr ""
+
+#: src/WordPress/Network/NetworkPage.php:90
+msgid "Bu sitenin rolü"
+msgstr ""
+
+#: src/WordPress/Network/NetworkPage.php:91
+msgid "Ağda değil"
+msgstr ""
+
+#: src/WordPress/Network/NetworkPage.php:92
+msgid "Anne site (ağı buradan yönetirim, veriyi buradan izlerim)"
+msgstr ""
+
+#: src/WordPress/Network/NetworkPage.php:93
+msgid "Üye (bir anne siteye bağlıyım)"
+msgstr ""
+
+#: src/WordPress/Network/NetworkPage.php:95
+msgid "Ağ adı (anne)"
+msgstr ""
+
+#: src/WordPress/Network/NetworkPage.php:96
+msgid "Üye siteler (anne)"
+msgstr ""
+
+#. translators: %d: maximum members.
+#: src/WordPress/Network/NetworkPage.php:97
+#, php-format
+msgid "Her satıra bir site adresi (https). En çok %d üye."
+msgstr ""
+
+#. translators: %d: maximum members.
+#: src/WordPress/Network/NetworkPage.php:98
+msgid "Anne site adresi (üye)"
+msgstr ""
+
+#: src/WordPress/Network/NetworkPage.php:107
+msgid "Site"
+msgstr ""
+
+#: src/WordPress/Network/NetworkPage.php:107
+msgid "Son kontrol"
+msgstr ""
+
+#: src/WordPress/Network/NetworkPage.php:116
+msgid "Bu site, annede:"
+msgstr ""
+
+#: src/WordPress/Network/NetworkPage.php:126
+msgid "Şimdi kontrol et"
+msgstr ""
+
+#: src/WordPress/Network/NetworkPage.php:127
+msgid "Kontrol saatte bir kendiliğinden yapılır. Bir site eklendikten sonra iki tarafta da kaydedip \"Şimdi kontrol et\"e basın (önce üyede, sonra annede, sonra yeniden üyede)."
 msgstr ""
 
 #: src/WordPress/Portal/BusinessAdmin.php:44
@@ -2053,15 +2145,15 @@ msgstr ""
 msgid "AI Hazır Site çalışmıyor."
 msgstr ""
 
-#: src/WordPress/Rest/RestModule.php:247
+#: src/WordPress/Rest/RestModule.php:248
 msgid "Talebi kim yazıyor: bir AI agent mı, bir insan mı (isteğe bağlı)."
 msgstr ""
 
-#: src/WordPress/Rest/RestModule.php:356
+#: src/WordPress/Rest/RestModule.php:358
 msgid "AI Katalog API"
 msgstr ""
 
-#: src/WordPress/Rest/RestModule.php:378
+#: src/WordPress/Rest/RestModule.php:380
 msgid "Çok fazla istek. Lütfen biraz sonra tekrar deneyin."
 msgstr ""
 
@@ -2076,13 +2168,13 @@ msgid "Şu anda yayında ilan yok."
 msgstr ""
 
 #. translators: 1: page key, 2: time.
-#: src/WordPress/Schema/SchemaModule.php:246
+#: src/WordPress/Schema/SchemaModule.php:248
 #, php-format
 msgid "AI Hazır Site: \"%1$s\" sayfasının Schema.org çıktısında hata bulundu (%2$s). Hatalı çıktı yayınlanmadı; son geçerli çıktı sunuluyor."
 msgstr ""
 
 #. translators: %s: SEO plugin name.
-#: src/WordPress/Schema/SchemaModule.php:264
+#: src/WordPress/Schema/SchemaModule.php:266
 #, php-format
 msgid "AI Hazır Site: %s zaten Organization şeması üretiyor; çakışmayı önlemek için AI Hazır Site kendi Organization çıktısını eklemiyor. AI katalog ilanları yayınlanmaya devam ediyor."
 msgstr ""
@@ -2238,168 +2330,176 @@ msgid "Aranan ilanlarınıza uyan satılan ve tedarik edilebilen ilanlar."
 msgstr ""
 
 #: src/WordPress/Settings/SettingsPage.php:113
-msgid "Portal modu"
+msgid "Portal ağı"
 msgstr ""
 
 #: src/WordPress/Settings/SettingsPage.php:113
-msgid "Birçok işletmenin ilanları tek sitede, işletme yetkilileriyle."
+msgid "Aynı sahibin siteleri anne/üye olarak birbirini doğrular; AI'lara ağ olarak görünür (Schema.org, llms.txt)."
 msgstr ""
 
 #: src/WordPress/Settings/SettingsPage.php:114
+msgid "Portal modu"
+msgstr ""
+
+#: src/WordPress/Settings/SettingsPage.php:114
+msgid "Birçok işletmenin ilanları tek sitede, işletme yetkilileriyle."
+msgstr ""
+
+#: src/WordPress/Settings/SettingsPage.php:115
 msgid "WP Rocket ve LiteSpeed Cache AI botlarına kayıtlı kopya sunmaz; botlar ölçülür ve güncel içerik görür."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:115
+#: src/WordPress/Settings/SettingsPage.php:116
 msgid "AI Katalog site haritasında"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:115
+#: src/WordPress/Settings/SettingsPage.php:116
 msgid "/ai-katalog/ sayfası sitenin site haritasına eklenir."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:116
+#: src/WordPress/Settings/SettingsPage.php:117
 msgid "LiteSpeed sunucusunun kendi önbelleği AI botlarına kayıtlı kopya sunmaz (.htaccess kuralı)."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:117
+#: src/WordPress/Settings/SettingsPage.php:118
 msgid "IndexNow bildirimi"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:117
+#: src/WordPress/Settings/SettingsPage.php:118
 msgid "Katalog değişince Bing ve diğer IndexNow arama motorlarına haber verilir (yalnızca herkese açık adresler)."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:118
+#: src/WordPress/Settings/SettingsPage.php:119
 msgid "Merkezi güncelleme"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:118
+#: src/WordPress/Settings/SettingsPage.php:119
 msgid "Güncellemeler kendi sunucumuzdan; sunucu adresi girilmedikçe hiçbir istek atılmaz."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:119
+#: src/WordPress/Settings/SettingsPage.php:120
 msgid "Rapor paneline özet"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:119
+#: src/WordPress/Settings/SettingsPage.php:120
 msgid "Haftalık toplam sayılar; gönderim için ayrıca açık onay gerekir."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:145
+#: src/WordPress/Settings/SettingsPage.php:146
 msgid "Önerilen kurulum uygulandı. Aşağıda her özelliğin durumu görünür."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:146
+#: src/WordPress/Settings/SettingsPage.php:147
 msgid "Özellik açıldı."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:147
+#: src/WordPress/Settings/SettingsPage.php:148
 msgid "Özellik kapatıldı."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:148
+#: src/WordPress/Settings/SettingsPage.php:149
 msgid "İşlem yapılmadı: önce satırda yazan özellikleri açın ya da kapatın."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:149
+#: src/WordPress/Settings/SettingsPage.php:150
 msgid "Ayar kaydedildi."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:155
+#: src/WordPress/Settings/SettingsPage.php:156
 msgid "Her özellik ayrı açılır ve kapanır; varsayılan olarak yalnızca AI ölçümü açıktır. Bir özelliğin önkoşulu kapalıysa ya da açık başka bir özellik ona bağlıysa satırında yazar."
 msgstr ""
 
 #. translators: %s: feature names.
-#: src/WordPress/Settings/SettingsPage.php:183
+#: src/WordPress/Settings/SettingsPage.php:184
 #, php-format
 msgid "Önce şunu kapatın: %s"
 msgstr ""
 
 #. translators: %s: feature names.
-#: src/WordPress/Settings/SettingsPage.php:193
+#: src/WordPress/Settings/SettingsPage.php:194
 #, php-format
 msgid "şunlardan biri: %s"
 msgstr ""
 
 #. translators: %s: feature names.
-#: src/WordPress/Settings/SettingsPage.php:197
+#: src/WordPress/Settings/SettingsPage.php:198
 #, php-format
 msgid "Önce şunu açın: %s"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:204
+#: src/WordPress/Settings/SettingsPage.php:205
 msgid "Teklif Kutusu ekranında açın"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:211
+#: src/WordPress/Settings/SettingsPage.php:212
 msgid "Ekrana git"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:244
+#: src/WordPress/Settings/SettingsPage.php:245
 msgid "Eklentiyi silme"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:249
+#: src/WordPress/Settings/SettingsPage.php:250
 msgid "Eklentiyi silerken tüm verilerini de sil (tablolar, ayarlar, ilanlar, talepler). Geri alınamaz."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:250
+#: src/WordPress/Settings/SettingsPage.php:251
 msgid "İşaretli değilse eklenti silinse bile verileriniz korunur."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:282
+#: src/WordPress/Settings/SettingsPage.php:283
 msgid "Bilinmeyen özellik."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:322
+#: src/WordPress/Settings/SettingsPage.php:323
 msgid "Ürün satıcısı, üretici ya da dağıtıcı"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:323
+#: src/WordPress/Settings/SettingsPage.php:324
 msgid "İhracatçı (çoklu dil ile)"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:324
+#: src/WordPress/Settings/SettingsPage.php:325
 msgid "Tur operatörü"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:325
+#: src/WordPress/Settings/SettingsPage.php:326
 msgid "Portal (birçok işletme)"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:326
+#: src/WordPress/Settings/SettingsPage.php:327
 msgid "Hizmet, yalnızca okuma (ör. hukuk bürosu: A2A ve teklif kutusu yok)"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:337
+#: src/WordPress/Settings/SettingsPage.php:338
 msgid "— Site türü seçin —"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:341
+#: src/WordPress/Settings/SettingsPage.php:342
 msgid "Önerilen kurulum"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:342
+#: src/WordPress/Settings/SettingsPage.php:343
 msgid "Site türünüze uygun özellikleri tek seferde açar. Hiçbir özelliği kapatmaz. Önce neyin açılacağını gösterir."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:345
+#: src/WordPress/Settings/SettingsPage.php:346
 msgid "Önizle"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:354
+#: src/WordPress/Settings/SettingsPage.php:355
 msgid "Açılacaklar:"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:355
+#: src/WordPress/Settings/SettingsPage.php:356
 msgid "Zaten açık:"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:356
+#: src/WordPress/Settings/SettingsPage.php:357
 msgid "Ayrıca elle: teklif kutusu (KVKK uyarısıyla kendi ekranından), aranan ilanınız varsa eşleştirme, firma profilinde sektör şablonu."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:385
+#: src/WordPress/Settings/SettingsPage.php:386
 msgid "Bilinmeyen site türü."
 msgstr ""
 

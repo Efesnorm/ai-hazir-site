@@ -41,3 +41,28 @@ açılmaz, değiştirilemez ve silinemez.
 | MCP | `aihs/search-listings` girdisinde `business`; `aihs/list-businesses` aracı |
 
 `business` verilmezse arama tüm işletmeleri kapsar: tek sorgu, tüm işletmelerden sonuç.
+
+## Portal ağı (1.20.0)
+
+Aynı sahibin birden çok sitesi (ör. ülke portalları) bir **ağ** olur ve AI'lara ağ olarak duyurulur. Portal modundan
+bağımsızdır; anahtar: `portal_network` (önkoşul: REST API).
+
+**AI Hazır Site → Portal Ağı** ekranında her site bir rol seçer:
+- **Anne site:** ağın adını ve üye sitelerin adreslerini (her satıra bir https adresi, en çok 25) girer. Ağ buradan
+  yönetilir ve ileride ağ raporu buradan izlenir. Anne sabit değildir; başka bir site anne yapılabilir.
+- **Üye:** yalnızca anne sitenin adresini girer. Kardeş listesi anneden gelir.
+
+**Karşılıklı onay:** bir site ancak anne onu listelemişse **ve** site o anneyi göstermişse ağda görünür. Kontrol saatte
+bir kendiliğinden yapılır; kurulumdan sonra önce üyede, sonra annede, sonra yeniden üyede "Şimdi kontrol et"e basın.
+Ekran her sitenin durumunu gösterir: doğrulandı / bu siteyi anne olarak göstermiyor / anne başka / annede kayıtlı değil /
+erişilemedi.
+
+**AI'lar ne görür (yalnızca doğrulanmış siteler):**
+- Ana sayfa yapılandırılmış verisinde sitenin kuruluşu ağın çatı kuruluşuna bağlanır (schema.org `parentOrganization`);
+  anne sitede ağın kendisi ve üyeleri (`subOrganization`). SEO eklentisi kuruluşu üretiyorsa bilgi /ai-katalog/
+  sayfasının yayıncısında verilir.
+- llms.txt'de "Kardeş portallar – <ağ adı>" bölümü (her kardeşin llms.txt ve API adresi).
+- `GET /wp-json/aihs/v1/network`: ağ adı, anne ve doğrulanmış siteler (OpenAPI belgesinde de).
+
+Kardeş sitelerden gelen bilgiler (ad, ülke) temizlenir ve yalnızca veri olarak kullanılır. Bir kardeş geçici olarak
+erişilemezse doğrulaması 24 saat korunur. Kapatınca bütün çıktılar kalkar, ayarlar korunur.

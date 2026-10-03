@@ -24,6 +24,7 @@ use AIHazirSite\WordPress\I18n\Multilingual;
 use AIHazirSite\WordPress\Module;
 use AIHazirSite\WordPress\Platform\RewriteRules;
 use AIHazirSite\WordPress\Platform\WpClock;
+use AIHazirSite\WordPress\Network\NetworkModule;
 use AIHazirSite\WordPress\Portal\Portal;
 use AIHazirSite\WordPress\Platform\WpSettings;
 use AIHazirSite\WordPress\Templates\TemplatesModule;
@@ -147,7 +148,8 @@ final class SchemaModule implements Module {
 		}
 		$modified = self::last_modified( self::listings() ) ?? gmdate( 'Y-m-d\TH:i:s\Z' );
 
-		return self::cache()->publish( 'home', self::builder()->home( ( new WpProfileRepository() )->get(), $modified ), gmdate( 'Y-m-d\TH:i:s\Z' ) );
+		// 1.20.0: the portal network (parentOrganization; the network node on the mother), when verified.
+		return self::cache()->publish( 'home', NetworkModule::decorate_home( self::builder()->home( ( new WpProfileRepository() )->get(), $modified ) ), gmdate( 'Y-m-d\TH:i:s\Z' ) );
 	}
 
 	/**
@@ -175,7 +177,7 @@ final class SchemaModule implements Module {
 		$portal = Portal::active();
 		if ( null === $language && ! $portal ) {
 			$document = self::builder()->catalog( ( new WpProfileRepository() )->get(), self::listings(), ( new WpClock() )->today(), self::catalog_url(), TemplatesModule::now() );
-			return self::cache()->publish( 'catalog', $document, gmdate( 'Y-m-d\TH:i:s\Z' ) );
+			return self::cache()->publish( 'catalog', NetworkModule::decorate_catalog( $document ), gmdate( 'Y-m-d\TH:i:s\Z' ) );
 		}
 
 		$profile  = ( new WpProfileRepository() )->get();
@@ -204,7 +206,7 @@ final class SchemaModule implements Module {
 			$document['inLanguage'] = $language;
 			$key                   .= '-' . $language;
 		}
-		return self::cache()->publish( $key, $document, gmdate( 'Y-m-d\TH:i:s\Z' ) );
+		return self::cache()->publish( $key, NetworkModule::decorate_catalog( $document ), gmdate( 'Y-m-d\TH:i:s\Z' ) );
 	}
 
 	/**
