@@ -1,6 +1,6 @@
 # Balkan turizm portalları – kurulum kılavuzu (Faz 0)
 
-Portallar: kosova.org.tr, yunanistan.org.tr, makedonya.org.tr (anne site), arnavutluk.org.tr, sirbistan.org.tr.
+Portallar: kosova.org.tr, yunanistan.org.tr, makedonya.org.tr (anne site adayı; anne seçilebilir), arnavutluk.org.tr, sirbistan.org.tr.
 Her sektöre açık ülke rehberleri (2026-10-04 kararı).
 Durum (2026-10-04): beşinde de eklenti kurulu değil; hepsi LiteSpeed sunucu önbelleğinin arkasında (intekarglobal.com
 ile aynı yapı); makedonya.org.tr ve arnavutluk.org.tr'de Rank Math var.

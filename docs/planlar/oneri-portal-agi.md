@@ -62,7 +62,8 @@ Her portala kurulum + "tur" önerilen kurulumu + portal modu:
 ## Kullanıcı kararları (2026-10-04)
 - Beş portal aynı sahibe ait.
 - Portallar **her sektöre açık** ülke rehberi (nakliye, hizmet, turizm…); yalnızca turizm değil.
-- Ağ raporu **anne site**de: makedonya.org.tr.
+- Ağ raporu **anne site**de. Anne site **seçilebilir**, sabit değil; sistem başka sektör projelerinin ağları için de
+  kullanılabilir (Balkan ağı için ilk seçim makedonya.org.tr olabilir).
 - Uygulama planı: [1.20.0-portal-agi-faz1.md](1.20.0-portal-agi-faz1.md) ve sonraki sürümler.
 
 ## İlk sorular (yanıtlandı)
