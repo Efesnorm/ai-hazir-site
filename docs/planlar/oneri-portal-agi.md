@@ -1,4 +1,4 @@
-# Öneri – Balkan portal ağı (5 turizm portalı ortak çalışsın) – onay bekliyor
+# Öneri – Balkan portal ağı (5 ülke portalı ortak çalışsın) – kararlar alındı
 
 Kaynak: 2026-10-04 kullanıcı isteği. Portallar (hepsi WordPress, Türkçe/İngilizce): kosova.org.tr, yunanistan.org.tr,
 makedonya.org.tr, arnavutluk.org.tr, sirbistan.org.tr. Aynı sektör (turizm), farklı ülkeler. Hedef: AI ile işbirliği,
@@ -59,7 +59,13 @@ Her portala kurulum + "tur" önerilen kurulumu + portal modu:
 2. Faz 1 → canlı deneme (iki portal arasında) → beşine yayma.
 3. Faz 2, Faz 3.
 
-## Kullanıcıdan gereken kararlar
+## Kullanıcı kararları (2026-10-04)
+- Beş portal aynı sahibe ait.
+- Portallar **her sektöre açık** ülke rehberi (nakliye, hizmet, turizm…); yalnızca turizm değil.
+- Ağ raporu **anne site**de: makedonya.org.tr.
+- Uygulama planı: [1.20.0-portal-agi-faz1.md](1.20.0-portal-agi-faz1.md) ve sonraki sürümler.
+
+## İlk sorular (yanıtlandı)
 - Ağ adı ve çatı kuruluş (aynı sahip mi? marka adı?).
 - İçerik modeli: portallarda işletmeler (otel, tur firması) mı listelenecek, yoksa portalın kendi turları mı?
 - Ağ raporu için merkez portal hangisi?
