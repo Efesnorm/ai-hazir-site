@@ -40,17 +40,30 @@ final class IntegrationsModule implements Module {
 	}
 
 	/**
-	 * Reverts our entries in other plugins and in .htaccess (they must not stay without us).
+	 * Reverts our entries in other plugins and in .htaccess (they must not stay without us). The feature keys stay on
+	 * (1.19.1): activate() writes the entries again, so a deactivate/activate cycle does not silently turn them off.
 	 */
 	public function deactivate(): void {
 		if ( Features::is_enabled( Features::BOT_CACHE_BYPASS ) ) {
-			self::set_bypass( false );
+			self::apply_bypass( false );
 		}
 		if ( Features::is_enabled( Features::LITESPEED_SERVER_BYPASS ) ) {
-			self::set_server_bypass( false );
+			LiteSpeedServerBypass::apply( false );
 		}
 		if ( Features::is_enabled( Features::CATALOG_SITEMAP ) ) {
 			CatalogSitemap::flush_caches();
+		}
+	}
+
+	/**
+	 * Plugin activation (1.19.1): writes again the entries of the integrations that are on (deactivation removed them).
+	 */
+	public static function activate(): void {
+		if ( Features::is_enabled( Features::BOT_CACHE_BYPASS ) ) {
+			self::apply_bypass( true );
+		}
+		if ( Features::is_enabled( Features::LITESPEED_SERVER_BYPASS ) ) {
+			LiteSpeedServerBypass::apply( true );
 		}
 	}
 
@@ -61,6 +74,15 @@ final class IntegrationsModule implements Module {
 	 */
 	public static function set_bypass( bool $on ): void {
 		Features::set( Features::BOT_CACHE_BYPASS, $on );
+		self::apply_bypass( $on );
+	}
+
+	/**
+	 * Writes or removes our entries in the page-cache plugins (the feature key is not touched).
+	 *
+	 * @param bool $on New state.
+	 */
+	private static function apply_bypass( bool $on ): void {
 		if ( WpRocketBypass::detected() ) {
 			WpRocketBypass::apply( $on );
 		}

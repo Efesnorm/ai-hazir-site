@@ -2,7 +2,8 @@
 
 **AI Hazır Site → Entegrasyonlar**: sitenizdeki diğer eklentilerle yapılabilecek işler. Hiçbiri kendiliğinden
 yapılmaz; her biri bu ekrandan **Aç / Kapat** ile yönetilir ve kapatınca eklediklerimiz geri alınır. Eklenti devre
-dışı bırakılınca önbellek entegrasyonu kapanır ve önbellek eklentinizdeki satırlarımız silinir.
+dışı bırakılınca önbellek eklentinizdeki satırlarımız ve `.htaccess` kuralımız silinir; ayarlar açık kalır ve eklenti yeniden
+etkinleştirilince kendiliğinden yeniden yazılır (1.19.1).
 
 ## AI botlarına önbellekten sayfa sunma (`bot_cache_bypass`)
 

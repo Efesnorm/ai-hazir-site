@@ -76,13 +76,16 @@ final class LiteSpeedServerTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Deactivation removes the rule and turns the integration off.
+	 * Deactivation removes the rule but keeps the setting; activation writes the rule again (1.19.1).
 	 */
 	public function test_deactivation(): void {
 		IntegrationsModule::set_server_bypass( true );
 		( new IntegrationsModule() )->deactivate();
-		$this->assertFalse( Features::is_enabled( Features::LITESPEED_SERVER_BYPASS ) );
+		$this->assertTrue( Features::is_enabled( Features::LITESPEED_SERVER_BYPASS ) );
 		$this->assertStringNotContainsString( UserAgentRewriteRule::FIRST_LINE, self::block() );
+
+		IntegrationsModule::activate();
+		$this->assertStringContainsString( UserAgentRewriteRule::FIRST_LINE, self::block() );
 	}
 
 	/**

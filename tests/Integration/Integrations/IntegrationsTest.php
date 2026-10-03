@@ -184,8 +184,12 @@ final class IntegrationsTest extends WP_UnitTestCase {
 		$this->assertContains( 'GPTBot', self::$litespeed );
 
 		( new IntegrationsModule() )->deactivate();
-		$this->assertFalse( Features::is_enabled( Features::BOT_CACHE_BYPASS ), 'Deactivation turns it off...' );
+		// 1.19.1: the key stays on; only our entries are reverted, and activation writes them again.
+		$this->assertTrue( Features::is_enabled( Features::BOT_CACHE_BYPASS ), 'Deactivation keeps the setting...' );
 		$this->assertSame( array( 'OwnerBot' ), self::$litespeed, '...and reverts LiteSpeed Cache.' );
+		IntegrationsModule::activate();
+		$this->assertContains( 'GPTBot', self::$litespeed, 'Activation writes the entries again.' );
+		$this->assertContains( 'OwnerBot', self::$litespeed );
 
 		IntegrationsPage::handle(
 			array(

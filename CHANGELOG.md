@@ -3,6 +3,20 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.19.1] - 2026-10-04
+
+### Düzeltildi
+- **Devre dışı bırakınca entegrasyon ayarları korunur** (plan onaylı: `docs/planlar/1.19.1-entegrasyon-ayari-korunur.md`).
+  Canlıda bulundu: intekarglobal.com'da çalışan "LiteSpeed sunucu önbelleği" bir güncelleme sonrası kapalıydı ve GPTBot
+  yeniden sunucu önbelleğinden sayfa alıyordu. Devre dışı bırakma, dışarıya yazdıklarımızı (WP Rocket ve LiteSpeed Cache
+  bot listesi, `.htaccess` kuralı) geri alırken anahtarları da kapatıyordu. Artık anahtarlar açık kalır; etkinleştirmede
+  açık olan entegrasyonlar yeniden yazılır (`IntegrationsModule::activate()`, `Lifecycle::activate()`). Ayardan kapatma ve
+  kaldırma değişmedi. Test: `IntegrationsLifecycleTest` (eski kodda kalıyor).
+
+### Test güncellemesi (onaylı)
+- `IntegrationsTest`, `LiteSpeedServerTest`: devre dışı bırakınca anahtar açık kalır (satırların/kuralın silindiği
+  denetimi aynen); etkinleştirince yeniden yazıldığı eklendi.
+
 ## [1.19.0] - 2026-10-04
 
 ### Eklendi
