@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace AIHazirSite\Adapters\Rest;
 
 use AIHazirSite\Core\Catalog\ListingType;
+use AIHazirSite\Core\Catalog\Nace;
 
 /**
  * Platform-neutral producer of one OpenAPI 3.1.0 document (https://spec.openapis.org/oas/v3.1.0) for the
@@ -38,9 +39,10 @@ final class OpenApiBuilder {
 	 * @param array<string, mixed> $inquiry_request POST /inquiries body schema; empty when the inquiry box is off.
 	 * @param array<string, mixed> $inquiry_receipt Its 201 answer schema.
 	 * @param bool                 $network         Portal network (1.20.0): GET /network.
+	 * @param bool                 $suggestions     Sibling suggestions (1.22.0): ?network= and `network_suggestions`.
 	 * @return array<string, mixed>
 	 */
-	public static function build( string $title, string $version, string $server, bool $multilingual, bool $portal, array $inquiry_request = array(), array $inquiry_receipt = array(), bool $network = false ): array {
+	public static function build( string $title, string $version, string $server, bool $multilingual, bool $portal, array $inquiry_request = array(), array $inquiry_receipt = array(), bool $network = false, bool $suggestions = false ): array {
 		$schema = static function ( string $name ) use ( $multilingual, $portal ): array {
 			$schema = RestSchemas::get( $name, $multilingual );
 			return self::plain( $portal ? RestSchemas::with_portal( $name, $schema ) : $schema );
@@ -48,7 +50,7 @@ final class OpenApiBuilder {
 
 		$schemas = array(
 			'Profile'   => $schema( 'profile' ),
-			'Listings'  => $schema( 'listings' ),
+			'Listings'  => $suggestions ? self::plain( RestSchemas::with_suggestions( $schema( 'listings' ) ) ) : $schema( 'listings' ),
 			'Listing'   => $schema( 'listing' ),
 			'Templates' => $schema( 'templates' ),
 			'Error'     => array(
@@ -97,6 +99,14 @@ final class OpenApiBuilder {
 			$query( 'category', array( 'type' => 'string' ), 'Kategori (büyük/küçük harf ve Türkçe karakter duyarsız).' ),
 			$query( 'region', array( 'type' => 'string' ), 'Bölge.' ),
 			$query(
+				'sector',
+				array(
+					'type' => 'string',
+					'enum' => array_keys( Nace::SECTIONS ),
+				),
+				'Faaliyet alanı: NACE Rev. 2.1 bölüm harfi (ör. H = ulaştırma ve depolama).'
+			),
+			$query(
 				'page',
 				array(
 					'type'    => 'integer',
@@ -116,6 +126,9 @@ final class OpenApiBuilder {
 				'Sayfa başına ilan.'
 			),
 		);
+		if ( $suggestions ) {
+			$listing_params[] = $query( 'network', array( 'type' => 'boolean' ), 'true: yerel sonuç olsa da kardeş portal önerilerini (network_suggestions) iste.' );
+		}
 		if ( $portal ) {
 			$listing_params[] = $query( 'business', array( 'type' => 'string' ), 'Yalnızca bu işletmenin ilanları (işletme kısa adı).' );
 		}

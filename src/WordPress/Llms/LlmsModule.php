@@ -324,6 +324,7 @@ final class LlmsModule implements Module {
 			'country'           => __( 'Ülke', 'ai-hazir-site' ),
 			'languages'         => __( 'Diller', 'ai-hazir-site' ),
 			'certifications'    => __( 'Sertifikalar', 'ai-hazir-site' ),
+			'nace'              => __( 'Faaliyet alanı (NACE Rev. 2.1)', 'ai-hazir-site' ),
 			/* translators: 1: value, 2: time of the last confirmation. */
 			'unverified'        => __( '%1$s (doğrulanmadı, son güncelleme %2$s)', 'ai-hazir-site' ),
 			'updated'           => __( 'Son güncelleme', 'ai-hazir-site' ),

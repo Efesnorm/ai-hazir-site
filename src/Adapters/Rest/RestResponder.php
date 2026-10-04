@@ -49,20 +49,37 @@ final class RestResponder {
 	 * @return array<string, mixed>
 	 */
 	public function profile( CompanyProfile $profile, ?string $updated_at ): array {
-		return array(
-			'name'           => $profile->name,
-			'sector'         => $profile->sector,
-			'country'        => $profile->country,
-			'languages'      => $profile->languages,
-			'contact_email'  => $profile->contact_email,
-			'contact_phone'  => $profile->contact_phone,
-			'certifications' => $profile->certifications,
-			'template'       => $profile->template,
-			'url'            => $this->site_url,
-			'catalog_url'    => $this->catalog_url,
-			'updated_at'     => $updated_at,
-			'valid_until'    => null,
+		return self::with_nace(
+			array(
+				'name'           => $profile->name,
+				'sector'         => $profile->sector,
+				'country'        => $profile->country,
+				'languages'      => $profile->languages,
+				'contact_email'  => $profile->contact_email,
+				'contact_phone'  => $profile->contact_phone,
+				'certifications' => $profile->certifications,
+				'template'       => $profile->template,
+				'url'            => $this->site_url,
+				'catalog_url'    => $this->catalog_url,
+				'updated_at'     => $updated_at,
+				'valid_until'    => null,
+			),
+			$profile
 		);
+	}
+
+	/**
+	 * Adds the NACE Rev. 2.1 section (1.22.0) when the profile has one; otherwise the body is unchanged.
+	 *
+	 * @param array<string, mixed> $body    Body.
+	 * @param CompanyProfile       $profile Profile.
+	 * @return array<string, mixed>
+	 */
+	private static function with_nace( array $body, CompanyProfile $profile ): array {
+		if ( '' !== $profile->nace ) {
+			$body['nace'] = $profile->nace;
+		}
+		return $body;
 	}
 
 	/**
@@ -126,17 +143,20 @@ final class RestResponder {
 		rsort( $dates );
 		return array(
 			'items'       => array_map(
-				static fn( Business $b ): array => array(
-					'id'             => (int) $b->id,
-					'slug'           => $b->slug,
-					'name'           => $b->profile->name,
-					'sector'         => $b->profile->sector,
-					'country'        => $b->profile->country,
-					'languages'      => $b->profile->languages,
-					'certifications' => $b->profile->certifications,
-					'contact_email'  => $b->profile->contact_email,
-					'contact_phone'  => $b->profile->contact_phone,
-					'catalog_url'    => $url_of( $b ),
+				static fn( Business $b ): array => self::with_nace(
+					array(
+						'id'             => (int) $b->id,
+						'slug'           => $b->slug,
+						'name'           => $b->profile->name,
+						'sector'         => $b->profile->sector,
+						'country'        => $b->profile->country,
+						'languages'      => $b->profile->languages,
+						'certifications' => $b->profile->certifications,
+						'contact_email'  => $b->profile->contact_email,
+						'contact_phone'  => $b->profile->contact_phone,
+						'catalog_url'    => $url_of( $b ),
+					),
+					$b->profile
 				),
 				$businesses
 			),

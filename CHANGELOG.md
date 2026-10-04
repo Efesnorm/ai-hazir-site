@@ -3,6 +3,38 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.22.0] - 2026-10-04
+
+### Eklendi
+- **Ortak faaliyet alanı: NACE Rev. 2.1** (plan onaylı: `docs/planlar/1.22.0-sektor-ve-kardes-onerisi.md`). AB'nin
+  ekonomik faaliyet sınıflandırması (Komisyon Yetki Tüzüğü (AB) 2023/137; 1 Ocak 2025'ten beri Avrupa
+  istatistiklerinde); 22 bölüm, A–V. Türkçe adlar TÜİK'in NACE Rev. 2 adlarından; Rev. 2.1'de yeni olan J ve K bizim
+  çevirimiz.
+  - Firma Profili ve İşletmeler formlarında isteğe bağlı "Faaliyet alanı (NACE Rev. 2.1)" seçimi.
+  - Doluysa REST `/profile` ve `/businesses`'ta `nace` (ör. `"H"`), llms.txt'de "Faaliyet alanı: H – Ulaştırma ve
+    depolama"; şemalarda isteğe bağlı alan. Boşken hiçbir çıktı ve saklanan veri değişmez.
+  - Yeni isteğe bağlı arama parametresi **`sector`** (REST `GET /listings`, MCP `aihs-search-listings`, OpenAPI):
+    ilanı işletmenin (portal modu) veya sitenin bölümüne göre süzer; bilinmeyen harf 400.
+  - Anahtar yok: AI Katalog'un bir profil alanı ve süzgeci (boşken davranış aynı).
+  - Schema.org'a eklenmedi: `isicV4` ISIC Rev.4 içindir, NACE 2.1 harfleri J'den sonra örtüşmez.
+- **Kardeş portal önerisi** (`network_suggestions`, varsayılan kapalı, önkoşul `portal_network`):
+  - Saatlik ağ kontrolünden sonra her doğrulanmış kardeşin herkese açık `/profile`, `/listings` (sayfalı, en çok 500
+    ilan) ve `/businesses` yanıtları okunur; yalnızca öneri alanları (başlık, tür, kategori, bölge, işletme adı, NACE,
+    ilan adresi, güncellenme) kardeş başına geçici önbellekte (en çok 1 MB) tutulur. 429'da `Retry-After`'a uyulur;
+    erişilemeyen kardeşin eski kopyası silinir; 2 saatten eski kopya kullanılmaz.
+  - REST `GET /listings` ve MCP `aihs-search-listings`: yerelde sonuç yoksa (veya `network=true`) yanıtta
+    `network_suggestions` (en çok 3, en yeni önce): site, ülke, işletme, başlık, tür, kategori, bölge, ilan adresi,
+    NACE, `retrieved_at`. Aynı arama kuralları (Türkçe karakter/büyük-küçük harf duyarsız) ve `sector`; şablon alanı
+    araması kardeşlerde eşleşmez (alanlar kopyalanmaz).
+  - Güvenlik: kardeş metinleri biçimlendirme ve kontrol karakterlerinden arındırılıp kısaltılır; ilan adresi kardeşin
+    kendi alan adında olmalı; yalnızca doğrulanmış kardeşler.
+  - A2A'ya eklenmedi (A2A becerileri tek ilan üzerinden; arama becerisi yok).
+  - Testler: `NaceTest`, `SiblingCatalogTest`, `NetworkCatalogTest`.
+
+### Test güncellemesi (onaylı)
+- `FeaturesTest`: anahtar listesine `network_suggestions` (varsayılan kapalı).
+- `AbilitySchemasTest`: arama girdisi alan listesine `sector`; anahtar açıkken eklenen `network` ayrı denetlenir.
+
 ## [1.21.0] - 2026-10-04
 
 ### Eklendi

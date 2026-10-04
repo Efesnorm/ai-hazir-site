@@ -158,6 +158,12 @@ final class Features {
 	public const SECURITY_INTEGRATIONS = 'security_integrations';
 
 	/**
+	 * Sibling portal suggestions in empty search answers (REST /listings, MCP search) and the sector filter
+	 * across the network (1.22.0).
+	 */
+	public const NETWORK_SUGGESTIONS = 'network_suggestions';
+
+	/**
 	 * Sector templates (0.8.0).
 	 */
 	public const TEMPLATES = 'templates';
@@ -178,19 +184,20 @@ final class Features {
 	 * does not depend on this table.
 	 */
 	public const REQUIRES = array(
-		self::TEMPLATES         => array( self::CATALOG ),
-		self::SCHEMA_OUTPUT     => array( self::CATALOG ),
-		self::LLMS_TXT          => array( self::CATALOG ),
-		self::REST_API          => array( self::CATALOG ),
-		self::ABILITIES         => array( self::CATALOG ),
-		self::INQUIRIES         => array( self::CATALOG ),
-		self::MULTILINGUAL      => array( self::CATALOG ),
-		self::PORTAL_MODE       => array( self::CATALOG ),
-		self::MATCHING          => array( self::CATALOG ),
-		self::A2A               => array( self::CATALOG ),
-		self::MCP               => array( self::ABILITIES ),
-		self::PORTAL_NETWORK    => array( self::REST_API ),
-		self::COMPLIANCE_REPORT => array( self::COMPLIANCE_SCAN ),
+		self::TEMPLATES           => array( self::CATALOG ),
+		self::SCHEMA_OUTPUT       => array( self::CATALOG ),
+		self::LLMS_TXT            => array( self::CATALOG ),
+		self::REST_API            => array( self::CATALOG ),
+		self::ABILITIES           => array( self::CATALOG ),
+		self::INQUIRIES           => array( self::CATALOG ),
+		self::MULTILINGUAL        => array( self::CATALOG ),
+		self::PORTAL_MODE         => array( self::CATALOG ),
+		self::MATCHING            => array( self::CATALOG ),
+		self::A2A                 => array( self::CATALOG ),
+		self::MCP                 => array( self::ABILITIES ),
+		self::PORTAL_NETWORK      => array( self::REST_API ),
+		self::NETWORK_SUGGESTIONS => array( self::PORTAL_NETWORK ),
+		self::COMPLIANCE_REPORT   => array( self::COMPLIANCE_SCAN ),
 	);
 
 	/**
@@ -252,6 +259,7 @@ final class Features {
 			self::MEASUREMENT_TEST_FILTER => true,
 			self::PORTAL_NETWORK          => false,
 			self::SECURITY_INTEGRATIONS   => false,
+			self::NETWORK_SUGGESTIONS     => false,
 		);
 	}
 

@@ -27,7 +27,7 @@ Sunucudaki araçlar:
 | Araç | Ne yapar |
 | --- | --- |
 | `aihs-get-profile` | Firma adı, sektör, ülke, diller, sertifikalar, kurumsal iletişim |
-| `aihs-search-listings` | Geçerli ilanları arar (tür, kategori, bölge, anahtar kelime, şablon alanları) |
+| `aihs-search-listings` | Geçerli ilanları arar (tür, kategori, bölge, anahtar kelime, şablon alanları, faaliyet alanı `sector`; kardeş portal önerisi açıksa `network`) |
 | `aihs-get-listing` | Tek ilanın ayrıntıları |
 | `aihs-check-availability` | "Bu miktar var mı, istenen günde gelir mi?" → yes / no / unknown ve gerekçe |
 | `aihs-submit-inquiry` | *(teklif kutusu açıksa)* Teklif isteği, teklif veya iletişim talebi bırakır |

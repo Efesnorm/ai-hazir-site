@@ -13,6 +13,7 @@ use AIHazirSite\Core\Catalog\CompanyProfile;
 use AIHazirSite\Core\Catalog\Listing;
 use AIHazirSite\Core\Catalog\ListingType;
 use AIHazirSite\Core\Catalog\ListingValidity;
+use AIHazirSite\Core\Catalog\Nace;
 use AIHazirSite\Core\Templates\Freshness;
 use AIHazirSite\Core\Templates\Template;
 use AIHazirSite\Core\Templates\TemplateRegistry;
@@ -71,6 +72,7 @@ final class LlmsTxtBuilder {
 		'business'          => 'İşletme',
 		'agents'            => 'AI agentlar için',
 		'network'           => 'Kardeş portallar',
+		'nace'              => 'Faaliyet alanı (NACE Rev. 2.1)',
 		'network_api'       => 'AI Katalog API',
 	);
 
@@ -153,6 +155,7 @@ final class LlmsTxtBuilder {
 			array(
 				'language'       => null === $i18n ? '' : $i18n['language'] . $this->untranslated( 'profile' ),
 				'country'        => $profile->country,
+				'nace'           => Nace::label( $profile->nace ),
 				'languages'      => implode( ', ', $profile->languages ),
 				'certifications' => implode( ', ', $profile->certifications ),
 				'updated'        => substr( $date_modified, 0, 10 ),

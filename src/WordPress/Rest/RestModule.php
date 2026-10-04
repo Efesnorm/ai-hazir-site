@@ -16,6 +16,7 @@ use AIHazirSite\Adapters\Rest\RestResponder;
 use AIHazirSite\Adapters\Rest\RestSchemas;
 use AIHazirSite\Core\Catalog\CompanyProfile;
 use AIHazirSite\Core\Catalog\ListingType;
+use AIHazirSite\Core\Catalog\Nace;
 use AIHazirSite\Core\Features;
 use AIHazirSite\Core\RateLimit\FixedWindowLimiter;
 use AIHazirSite\WordPress\Catalog\CatalogReader;
@@ -23,6 +24,7 @@ use AIHazirSite\WordPress\Catalog\WpListingRepository;
 use AIHazirSite\WordPress\Catalog\WpProfileRepository;
 use AIHazirSite\WordPress\I18n\Multilingual;
 use AIHazirSite\WordPress\Inquiry\InquiryChannels;
+use AIHazirSite\WordPress\Network\NetworkCatalog;
 use AIHazirSite\WordPress\Network\NetworkModule;
 use AIHazirSite\WordPress\Module;
 use AIHazirSite\WordPress\Platform\WpCache;
@@ -88,6 +90,11 @@ final class RestModule implements Module {
 					),
 					'category' => array( 'type' => 'string' ),
 					'region'   => array( 'type' => 'string' ),
+					'sector'   => array(
+						'type' => 'string',
+						'enum' => array_keys( Nace::SECTIONS ),
+					),
+					'network'  => array( 'type' => 'boolean' ),
 					'page'     => array(
 						'type'    => 'integer',
 						'minimum' => 1,
@@ -163,13 +170,15 @@ final class RestModule implements Module {
 				return self::error( 'aihs_business_not_found', __( 'İşletme bulunamadı.', 'ai-hazir-site' ), 404 );
 			}
 		}
-		$body = self::responder()->listings( $listings, $query, ( new WpClock() )->today(), TemplatesModule::now() );
+		$listings = CatalogReader::by_sector( $listings, $query->sector );
+		$body     = self::responder()->listings( $listings, $query, ( new WpClock() )->today(), TemplatesModule::now() );
 		if ( null !== $language ) {
 			$body = RestResponder::translated( $body, $language, $markers );
 		}
 		if ( Portal::active() ) {
 			$body = RestResponder::with_business( $body, Portal::references( $all ) );
 		}
+		$body     = NetworkCatalog::decorate( $body, $query->search(), $query->sector, true === $request->get_param( 'network' ) );
 		$response = self::respond( $request, $body, $body['updated_at'] );
 		$response->header( 'X-WP-Total', (string) $body['total'] );
 		$response->header( 'X-WP-TotalPages', (string) $body['total_pages'] );
@@ -258,7 +267,8 @@ final class RestModule implements Module {
 			Portal::active(),
 			$request,
 			$receipt,
-			NetworkModule::enabled()
+			NetworkModule::enabled(),
+			NetworkCatalog::enabled()
 		);
 	}
 
@@ -270,6 +280,9 @@ final class RestModule implements Module {
 	public static function get_schema( WP_REST_Request $request ): WP_REST_Response {
 		$name   = (string) $request->get_param( 'name' );
 		$schema = RestSchemas::get( $name, Multilingual::active() );
+		if ( 'listings' === $name && NetworkCatalog::enabled() ) {
+			$schema = RestSchemas::with_suggestions( $schema );
+		}
 		return self::respond( $request, Portal::active() ? RestSchemas::with_portal( $name, $schema ) : $schema, null );
 	}
 

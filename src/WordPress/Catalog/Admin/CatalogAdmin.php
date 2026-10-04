@@ -13,6 +13,7 @@ use AIHazirSite\WordPress\Admin\AdminMenu;
 use AIHazirSite\Core\Catalog\CompanyProfile;
 use AIHazirSite\Core\Catalog\Listing;
 use AIHazirSite\Core\Catalog\ListingType;
+use AIHazirSite\Core\Catalog\Nace;
 use AIHazirSite\Core\Catalog\ProfileValidator;
 use AIHazirSite\Core\Templates\Template;
 use AIHazirSite\Core\Templates\TemplateField;
@@ -306,6 +307,7 @@ final class CatalogAdmin {
 		foreach ( $fields as $name => [ $label, $kind, $help ] ) {
 			$html .= self::field_row( $name, $label, $kind, $values[ $name ] ?? '', $help, $state['errors'][ $name ] ?? '' );
 		}
+		$html .= self::nace_row( (string) ( $values['nace'] ?? '' ), $state['errors']['nace'] ?? '' );
 
 		$registry = TemplatesModule::registry();
 		if ( null !== $registry ) {
@@ -426,6 +428,7 @@ final class CatalogAdmin {
 		}
 		$input['contact_email']  = sanitize_email( self::text( $post, 'contact_email' ) );
 		$input['certifications'] = sanitize_textarea_field( self::text( $post, 'certifications' ) );
+		$input['nace']           = strtoupper( sanitize_key( self::text( $post, 'nace' ) ) );
 		if ( null !== TemplatesModule::registry() ) {
 			$input['template'] = sanitize_key( self::text( $post, 'template' ) );
 		}
@@ -489,6 +492,23 @@ final class CatalogAdmin {
 	 */
 	private static function text( array $data, string $key ): string {
 		return isset( $data[ $key ] ) && is_scalar( $data[ $key ] ) ? (string) $data[ $key ] : '';
+	}
+
+	/**
+	 * NACE Rev. 2.1 section select (1.22.0; also used by the portal business form).
+	 *
+	 * @param string $value Current section letter.
+	 * @param string $error Error message.
+	 */
+	public static function nace_row( string $value, string $error ): string {
+		$options = '<option value="">' . esc_html__( '— seçilmedi —', 'ai-hazir-site' ) . '</option>';
+		foreach ( Nace::SECTIONS as $letter => $titles ) {
+			$options .= '<option value="' . esc_attr( $letter ) . '"' . selected( $value, $letter, false ) . '>' . esc_html( Nace::label( $letter ) ) . '</option>';
+		}
+		return '<tr><th scope="row"><label for="aihs-nace">' . esc_html__( 'Faaliyet alanı (NACE Rev. 2.1)', 'ai-hazir-site' ) . '</label></th><td>'
+			. '<select id="aihs-nace" name="nace">' . $options . '</select>'
+			. ( '' !== $error ? '<p class="aihs-field-error" style="color:#b32d2e">' . esc_html( $error ) . '</p>' : '' )
+			. '<p class="description">' . esc_html__( 'AB\'nin ortak faaliyet sınıflandırması: farklı dillerde ve ülkelerde aynı sektörü aynı harfle anlatır (ör. nakliye = H). İsteğe bağlı.', 'ai-hazir-site' ) . '</p></td></tr>';
 	}
 
 	/**

@@ -11,6 +11,7 @@ namespace AIHazirSite\Adapters\Rest;
 
 use AIHazirSite\Core\Catalog\ListingType;
 use AIHazirSite\Core\I18n\Localizer;
+use AIHazirSite\Core\Network\SiblingCatalog;
 use AIHazirSite\Core\Templates\Template;
 use AIHazirSite\Core\Templates\TemplateField;
 
@@ -47,6 +48,50 @@ final class RestSchemas {
 			default     => array(),
 		};
 		return $multilingual ? self::with_languages( $name, $schema ) : $schema;
+	}
+
+	/**
+	 * Sibling suggestions (1.22.0): an optional `network_suggestions` list on a listings document (search answers
+	 * while `network_suggestions` is on).
+	 *
+	 * @param array<string, mixed> $schema Listings schema.
+	 * @return array<string, mixed>
+	 */
+	public static function with_suggestions( array $schema ): array {
+		$nullable                                    = array( 'type' => array( 'string', 'null' ) );
+		$schema['properties']['network_suggestions'] = array(
+			'type'        => 'array',
+			'maxItems'    => SiblingCatalog::LIMIT,
+			'description' => 'Bu sitede uygun ilan yoksa (veya network=true istendiyse) doğrulanmış kardeş portallardaki uygun ilanlar. Kardeş sitenin herkese açık kataloğundan, retrieved_at anında alınmıştır.',
+			'items'       => self::object(
+				array(
+					'site'         => self::string(),
+					'site_name'    => self::string(),
+					'country'      => array(
+						'type'    => 'string',
+						'pattern' => '^([A-Z]{2})?$',
+					),
+					'business'     => $nullable,
+					'title'        => self::string(),
+					'type'         => array(
+						'type' => 'string',
+						'enum' => ListingType::ALL,
+					),
+					'category'     => self::string(),
+					'region'       => self::string(),
+					'url'          => self::string(),
+					'nace'         => array(
+						'type'    => array( 'string', 'null' ),
+						'pattern' => '^[A-V]$',
+					),
+					'retrieved_at' => array(
+						'type'   => 'string',
+						'format' => 'date-time',
+					),
+				)
+			),
+		);
+		return $schema;
 	}
 
 	/**
@@ -94,7 +139,9 @@ final class RestSchemas {
 										'contact_email'  => self::string(),
 										'contact_phone'  => self::string(),
 										'catalog_url'    => self::string(),
-									)
+										'nace'           => self::nace(),
+									),
+									array( 'nace' )
 								),
 							),
 							'updated_at'  => self::nullable_datetime(),
@@ -175,8 +222,22 @@ final class RestSchemas {
 					'catalog_url'    => self::string(),
 					'updated_at'     => self::nullable_datetime(),
 					'valid_until'    => array( 'type' => 'null' ),
-				)
+					'nace'           => self::nace(),
+				),
+				array( 'nace' )
 			)
+		);
+	}
+
+	/**
+	 * NACE Rev. 2.1 section letter (1.22.0, optional).
+	 *
+	 * @return array<string, mixed>
+	 */
+	private static function nace(): array {
+		return array(
+			'type'    => 'string',
+			'pattern' => '^[A-V]$',
 		);
 	}
 
