@@ -3,6 +3,25 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.24.1] - 2026-10-04
+
+### Güvenlik
+- **Ağ raporu yanıtı sunucu önbelleğinden anahtarsız sunuluyordu** (plan onaylı:
+  `docs/planlar/1.24.1-rapor-onbellek.md`). Canlı testte üç üyede LiteSpeed sunucu önbelleği, annenin doğru anahtarla
+  aldığı `/aihs/v1/network/stats` yanıtını `Cache-Control: private, no-store`'a uymadan saklayıp `Authorization`
+  başlığı taşıyan (yanlış parolalı) her isteğe sundu. Açığa çıkan yalnızca toplamlar ve açık özellik listesiydi
+  (tasarım gereği kişisel veri, talep metni, sayfa yolu yok).
+  - Uç noktanın her yanıtında (200, 401, 403): LiteSpeed'in belgelenmiş `X-LiteSpeed-Cache-Control: no-cache` başlığı,
+    LiteSpeed Cache eklentisinin belgelenmiş `litespeed_control_set_nocache` eylemi ve `DONOTCACHEPAGE`.
+  - Anne her okumada tek kullanımlık, tahmin edilemez bir adres kullanır (`&_aihs=<32 onaltılık>`): kurala uymayan bir
+    önbellek bile kopyayı kimseye sunamaz ve anne bayat veri almaz.
+  - Yapılması gereken: önbelleği daha önce kopya tutmuş sitelerde LiteSpeed Cache → Purge All.
+  - Testler: `NetworkReportFlowTest::test_never_cached`.
+
+### Test güncellemesi (onaylı)
+- `NetworkReportFlowTest`: annenin istekleri artık tek kullanımlık parametre taşıdığı için adres eşleşmesi site ve döneme
+  göre yapılıyor; denetimler aynı.
+
 ## [1.24.0] - 2026-10-04
 
 ### Eklendi
