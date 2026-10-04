@@ -174,6 +174,11 @@ final class Features {
 	public const NETWORK_REFERRALS = 'network_referrals';
 
 	/**
+	 * Network report: members publish totals to their mother (Application Passwords), the mother shows them (1.24.0).
+	 */
+	public const NETWORK_REPORT = 'network_report';
+
+	/**
 	 * Sector templates (0.8.0).
 	 */
 	public const TEMPLATES = 'templates';
@@ -209,6 +214,7 @@ final class Features {
 		self::NETWORK_SUGGESTIONS => array( self::PORTAL_NETWORK ),
 		self::NETWORK_BLOCK       => array( self::PORTAL_NETWORK ),
 		self::NETWORK_REFERRALS   => array( self::MEASUREMENT, self::PORTAL_NETWORK ),
+		self::NETWORK_REPORT      => array( self::PORTAL_NETWORK ),
 		self::COMPLIANCE_REPORT   => array( self::COMPLIANCE_SCAN ),
 	);
 
@@ -274,6 +280,7 @@ final class Features {
 			self::NETWORK_SUGGESTIONS     => false,
 			self::NETWORK_BLOCK           => false,
 			self::NETWORK_REFERRALS       => false,
+			self::NETWORK_REPORT          => false,
 		);
 	}
 

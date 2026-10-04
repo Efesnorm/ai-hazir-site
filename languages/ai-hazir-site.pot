@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: AI Hazır Site 1.23.1\n"
+"Project-Id-Version: AI Hazır Site 1.24.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ai-hazir-site\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-04T18:06:14+00:00\n"
+"POT-Creation-Date: 2026-10-04T19:05:32+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: ai-hazir-site\n"
@@ -17,7 +17,7 @@ msgstr ""
 #. Plugin Name of the plugin
 #: ai-hazir-site.php
 #: src/WordPress/Settings/SettingsPage.php:53
-#: src/WordPress/Settings/SettingsPage.php:157
+#: src/WordPress/Settings/SettingsPage.php:158
 msgid "AI Hazır Site"
 msgstr ""
 
@@ -206,8 +206,9 @@ msgstr ""
 #: src/WordPress/Inquiry/Admin/InquiryAdmin.php:122
 #: src/WordPress/Integrations/IntegrationsPage.php:57
 #: src/WordPress/Network/NetworkPage.php:64
+#: src/WordPress/Network/NetworkReportPage.php:95
 #: src/WordPress/Report/ReportModule.php:56
-#: src/WordPress/Settings/SettingsPage.php:134
+#: src/WordPress/Settings/SettingsPage.php:135
 msgid "Bu sayfaya erişim yetkiniz yok."
 msgstr ""
 
@@ -278,7 +279,7 @@ msgstr ""
 #: src/WordPress/Measurement/Admin/ReportPage.php:113
 #: src/WordPress/Network/NetworkPage.php:104
 #: src/WordPress/Portal/BusinessAdmin.php:162
-#: src/WordPress/Settings/SettingsPage.php:257
+#: src/WordPress/Settings/SettingsPage.php:258
 #: src/WordPress/Updates/UpdatesAdmin.php:91
 msgid "Kaydet"
 msgstr ""
@@ -301,12 +302,13 @@ msgstr ""
 #: src/WordPress/Compliance/Admin/CompliancePage.php:215
 #: src/WordPress/Compliance/Wizard/WizardPage.php:383
 #: src/WordPress/Inquiry/Admin/InquiryAdmin.php:418
-#: src/WordPress/Integrations/IntegrationsPage.php:284
+#: src/WordPress/Integrations/IntegrationsPage.php:288
 #: src/WordPress/Measurement/Admin/ReportPage.php:276
 #: src/WordPress/Network/NetworkPage.php:195
+#: src/WordPress/Network/NetworkReportPage.php:352
 #: src/WordPress/Portal/BusinessAdmin.php:231
 #: src/WordPress/Report/ReportModule.php:83
-#: src/WordPress/Settings/SettingsPage.php:422
+#: src/WordPress/Settings/SettingsPage.php:423
 #: src/WordPress/Updates/UpdatesAdmin.php:198
 msgid "Bu işlem için yetkiniz yok."
 msgstr ""
@@ -809,7 +811,7 @@ msgid "Hazır ayar"
 msgstr ""
 
 #: src/WordPress/Compliance/Wizard/WizardPage.php:193
-#: src/WordPress/Settings/SettingsPage.php:370
+#: src/WordPress/Settings/SettingsPage.php:371
 msgid "Uygula"
 msgstr ""
 
@@ -1064,6 +1066,7 @@ msgid "Tür / kaynak"
 msgstr ""
 
 #: src/WordPress/Inquiry/Admin/InquiryAdmin.php:162
+#: src/WordPress/Network/NetworkReportPage.php:83
 #: src/WordPress/Portal/PortalAdmin.php:141
 msgid "Talep"
 msgstr ""
@@ -1079,6 +1082,7 @@ msgstr ""
 
 #: src/WordPress/Inquiry/Admin/InquiryAdmin.php:162
 #: src/WordPress/Network/NetworkPage.php:111
+#: src/WordPress/Network/NetworkReportPage.php:85
 msgid "Durum"
 msgstr ""
 
@@ -1203,8 +1207,8 @@ msgid "Yeni talep alınmaz; kayıtlı talepler saklama süresi dolunca silinmeye
 msgstr ""
 
 #: src/WordPress/Inquiry/Admin/InquiryAdmin.php:305
-#: src/WordPress/Integrations/IntegrationsPage.php:264
-#: src/WordPress/Settings/SettingsPage.php:241
+#: src/WordPress/Integrations/IntegrationsPage.php:268
+#: src/WordPress/Settings/SettingsPage.php:242
 msgid "Kapat"
 msgstr ""
 
@@ -1296,7 +1300,7 @@ msgid "Sitenizdeki diğer eklentilerle yapılabilecek işler. Hiçbiri kendiliğ
 msgstr ""
 
 #: src/WordPress/Integrations/IntegrationsPage.php:95
-#: src/WordPress/Settings/SettingsPage.php:121
+#: src/WordPress/Settings/SettingsPage.php:122
 msgid "Güvenlik yazılımları"
 msgstr ""
 
@@ -1350,158 +1354,162 @@ msgstr ""
 msgid "Ağ üyelerinin sunucularını Wordfence izin listesine ekle"
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:133
+#: src/WordPress/Integrations/IntegrationsPage.php:134
+msgid "WordPress uygulama parolaları kapalı; ağ raporu bu siteyi okuyamaz. Wordfence → Login Security → Settings → \"Disable WordPress application passwords\" seçeneğini kaldırın."
+msgstr ""
+
+#: src/WordPress/Integrations/IntegrationsPage.php:137
 msgid "Bizim eklediğimiz adresler (Wordfence'in silme için herkese açık bir işlevi olmadığından gerekirse Wordfence → Firewall → Allowlisted IP addresses ekranından elle silin):"
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:138
+#: src/WordPress/Integrations/IntegrationsPage.php:142
 msgid "Site Cloudflare arkasında. Cloudflare panelinde \"AI botlarını engelle\" ve AI Crawl Control ayarlarının istediğiniz AI tarayıcılarını engellemediğini kontrol edin; \"Bot Fight Mode\" sunucudan sunucuya isteklerimizi de engelleyebilir."
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:142
+#: src/WordPress/Integrations/IntegrationsPage.php:146
 msgid "Kötü bot / tarayıcı engelleme listelerinde GPTBot, ChatGPT-User, OAI-SearchBot, ClaudeBot, PerplexityBot gibi AI tarayıcılarının bulunmadığını; hız sınırlarının doğrulanmış tarayıcıları kısmadığını kontrol edin."
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:145
+#: src/WordPress/Integrations/IntegrationsPage.php:149
 msgid "Barındırma firmasına iletilecek metin"
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:145
+#: src/WordPress/Integrations/IntegrationsPage.php:149
 msgid "Sunucu düzeyindeki güvenlik (Imunify360, WAF, IP listeleri) yalnızca barındırma firmasında değiştirilebilir."
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:157
-#: src/WordPress/Settings/SettingsPage.php:122
+#: src/WordPress/Integrations/IntegrationsPage.php:161
+#: src/WordPress/Settings/SettingsPage.php:123
 msgid "LiteSpeed sunucu önbelleği"
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:158
+#: src/WordPress/Integrations/IntegrationsPage.php:162
 msgid "Sunucunuz LiteSpeed. Bazı barındırmalar LiteSpeed Cache eklentisi olmadan da sayfaları sunucuda önbelleğe alır; AI botlarının istekleri o zaman WordPress'e hiç ulaşmaz (AI Ölçüm sayamaz, botlar eski kopyayı görür). Açınca .htaccess dosyasının WordPress bölümünün başına, AI botlarına sunucu önbelleğinden sayfa sunulmamasını söyleyen tek bir kural eklenir ve bot yanıtlarına \"saklama\" başlıkları konur. İnsan ziyaretçiler için önbellek aynen çalışır."
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:160
+#: src/WordPress/Integrations/IntegrationsPage.php:164
 msgid "LiteSpeed Cache eklentisi kurulu: yukarıdaki \"AI botlarına önbellekten sayfa sunma\" yeterli; bu satıra gerek yok."
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:163
+#: src/WordPress/Integrations/IntegrationsPage.php:167
 msgid "Açmadan önce .htaccess dosyasının yedeğini alın. Kapatınca kural kaldırılır."
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:167
+#: src/WordPress/Integrations/IntegrationsPage.php:171
 msgid ".htaccess yazılamadı (dosya yazılamıyor ya da kalıcı bağlantılar \"Düz\" ayarında). Aşağıdaki satırları .htaccess dosyasında \"# BEGIN WordPress\" satırının hemen altına elle ekleyin:"
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:170
+#: src/WordPress/Integrations/IntegrationsPage.php:174
 msgid ".htaccess: kural yerinde."
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:170
+#: src/WordPress/Integrations/IntegrationsPage.php:174
 msgid ".htaccess: kural bulunamadı (başka bir araç dosyayı değiştirmiş olabilir). Kapatıp yeniden açın."
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:180
+#: src/WordPress/Integrations/IntegrationsPage.php:184
 msgid "Değişiklikleri IndexNow ile bildir"
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:181
+#: src/WordPress/Integrations/IntegrationsPage.php:185
 msgid "İlan ya da profil değişince /ai-katalog/ adresi Bing, Yandex ve diğer IndexNow arama motorlarına bildirilir (ChatGPT arama Bing dizinini kullanır; Google IndexNow kullanmaz). Yalnızca herkese açık adresler, site adı ve anahtar gönderilir. Değişiklikten 10 dakika sonra tek bildirim gider; iki bildirim arası en az 1 saattir."
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:185
+#: src/WordPress/Integrations/IntegrationsPage.php:189
 msgid "Önce Schema.org yapılandırılmış veriyi ya da llms.txt'yi açın (AI Hazır Site → Ayarlar)."
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:190
+#: src/WordPress/Integrations/IntegrationsPage.php:194
 msgid "Anahtar dosyası:"
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:191
+#: src/WordPress/Integrations/IntegrationsPage.php:195
 msgid "Son bildirim:"
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:193
+#: src/WordPress/Integrations/IntegrationsPage.php:197
 msgid "henüz yok"
 msgstr ""
 
 #. translators: 1: date, 2: number of addresses, 3: HTTP status, 4: meaning.
-#: src/WordPress/Integrations/IntegrationsPage.php:195
+#: src/WordPress/Integrations/IntegrationsPage.php:199
 #, php-format
 msgid "%1$s, %2$d adres, yanıt %3$d: %4$s"
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:201
+#: src/WordPress/Integrations/IntegrationsPage.php:205
 msgid "Şimdi bildir"
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:216
+#: src/WordPress/Integrations/IntegrationsPage.php:220
 msgid "LiteSpeed Cache (7.2 veya üstü gerekir; elle ekleyin)"
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:226
+#: src/WordPress/Integrations/IntegrationsPage.php:230
 #: src/WordPress/Settings/SettingsPage.php:116
 msgid "AI botlarına önbellekten sayfa sunma"
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:227
+#: src/WordPress/Integrations/IntegrationsPage.php:231
 msgid "Sayfa önbelleği AI botlarına kayıtlı kopyayı sunar: botlar eski içeriği görür ve AI Ölçüm bu ziyaretleri sayamaz. Açınca önbellek eklentinizin \"bu tarayıcılara önbellek sunma\" listesine AI botları eklenir. İnsan ziyaretçiler için hiçbir şey değişmez."
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:228
+#: src/WordPress/Integrations/IntegrationsPage.php:232
 msgid "Bedeli: botlar önbelleksiz sayfa alır, sunucu yükü biraz artar. Barındırma firmanızın hız sınırı varsa botlar ona daha sık takılabilir."
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:229
+#: src/WordPress/Integrations/IntegrationsPage.php:233
 msgid "Bulunan önbellek eklentileri:"
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:229
+#: src/WordPress/Integrations/IntegrationsPage.php:233
 msgid "yok"
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:231
+#: src/WordPress/Integrations/IntegrationsPage.php:235
 msgid "Bu eklentilerde elle ekleyin (AI bot adları, her satıra bir tane):"
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:242
+#: src/WordPress/Integrations/IntegrationsPage.php:246
 msgid "AI Katalog'u site haritasına ekle"
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:243
+#: src/WordPress/Integrations/IntegrationsPage.php:247
 msgid "Arama motorlarından okuyan AI agentlar ilanlarınızı ancak /ai-katalog/ sayfası dizine girince görür. Açınca sayfa, sitenizin kullandığı site haritasına son değişiklik tarihiyle eklenir."
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:244
+#: src/WordPress/Integrations/IntegrationsPage.php:248
 msgid "Kullanılan site haritası:"
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:244
+#: src/WordPress/Integrations/IntegrationsPage.php:248
 msgid "bulunamadı"
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:246
+#: src/WordPress/Integrations/IntegrationsPage.php:250
 msgid "Site haritamız:"
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:263
+#: src/WordPress/Integrations/IntegrationsPage.php:267
 msgid "Durum:"
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:263
-#: src/WordPress/Settings/SettingsPage.php:216
+#: src/WordPress/Integrations/IntegrationsPage.php:267
+#: src/WordPress/Settings/SettingsPage.php:217
 msgid "Açık"
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:263
-#: src/WordPress/Settings/SettingsPage.php:216
+#: src/WordPress/Integrations/IntegrationsPage.php:267
+#: src/WordPress/Settings/SettingsPage.php:217
 msgid "Kapalı"
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:264
-#: src/WordPress/Settings/SettingsPage.php:241
+#: src/WordPress/Integrations/IntegrationsPage.php:268
+#: src/WordPress/Settings/SettingsPage.php:242
 msgid "Aç"
 msgstr ""
 
-#: src/WordPress/Integrations/IntegrationsPage.php:311
+#: src/WordPress/Integrations/IntegrationsPage.php:315
 msgid "Bilinmeyen entegrasyon."
 msgstr ""
 
@@ -1758,6 +1766,7 @@ msgstr ""
 
 #. translators: %d: number of days.
 #: src/WordPress/Measurement/Admin/ReportPage.php:94
+#: src/WordPress/Network/NetworkReportPage.php:181
 #, php-format
 msgid "Son %d gün"
 msgstr ""
@@ -1778,6 +1787,7 @@ msgstr ""
 #: src/WordPress/Measurement/Admin/ReportPage.php:140
 #: src/WordPress/Measurement/Admin/ReportPage.php:154
 #: src/WordPress/Measurement/Admin/ReportPage.php:245
+#: src/WordPress/Network/NetworkReportPage.php:79
 #: src/WordPress/Report/ComplianceReportView.php:122
 msgid "Doğrulanmış"
 msgstr ""
@@ -1903,6 +1913,7 @@ msgstr ""
 
 #: src/WordPress/Network/NetworkPage.php:40
 #: src/WordPress/Network/NetworkPage.php:80
+#: src/WordPress/Network/NetworkReportPage.php:118
 msgid "Portal Ağı"
 msgstr ""
 
@@ -1979,6 +1990,7 @@ msgid "Anne site adresi (üye)"
 msgstr ""
 
 #: src/WordPress/Network/NetworkPage.php:111
+#: src/WordPress/Network/NetworkReportPage.php:75
 msgid "Site"
 msgstr ""
 
@@ -2000,6 +2012,209 @@ msgstr ""
 
 #: src/WordPress/Network/NetworkPage.php:133
 msgid "Kontrol saatte bir kendiliğinden yapılır. Bir site eklendikten sonra iki tarafta da kaydedip \"Şimdi kontrol et\"e basın (önce üyede, sonra annede, sonra yeniden üyede)."
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportModule.php:177
+msgid "Bu sitede WordPress uygulama parolaları kapalı (ör. Wordfence ayarı veya bir güvenlik eklentisi). Açılmadan rapor anahtarı oluşturulamaz."
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportModule.php:180
+#: src/WordPress/Network/NetworkReportModule.php:188
+msgid "AI Hazır Site ağ raporu"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportModule.php:198
+msgid "Rapor kullanıcısı oluşturulamadı."
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:49
+#: src/WordPress/Network/NetworkReportPage.php:109
+msgid "Ağ Raporu"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:59
+msgid "güncel"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:60
+msgid "bu site"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:61
+msgid "anahtar girilmedi"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:62
+msgid "anahtar geçersiz veya iptal edilmiş"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:63
+msgid "hız sınırı; sonra yeniden denenecek"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:64
+msgid "erişilemedi"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:76
+msgid "Sürüm"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:77
+msgid "Uyum puanı"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:78
+msgid "AI bot ziyareti"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:80
+msgid "AI yönlendirmesi"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:81
+msgid "Ağ yönlendirmesi (gelen)"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:82
+msgid "MCP çağrısı"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:84
+msgid "Geçerli ilan"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:86
+msgid "Son okuma"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:110
+msgid "Anne site, ağdaki her sitenin toplam sayılarını tek ekranda gösterir: AI bot ziyaretleri, AI ve ağ yönlendirmeleri, MCP çağrıları, talep ve ilan sayısı, uyum puanı. Kişisel veri, talep metni veya ham ölçüm satırı paylaşılmaz. Erişim, üyenin oluşturduğu WordPress uygulama parolasıyladır."
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:118
+msgid "Bu site bir portal ağında değil. Önce Portal Ağı ekranında rolünü seçin."
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:126
+msgid "Anne site için rapor anahtarı"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:128
+msgid "Bu sitede WordPress uygulama parolaları kapalı. Wordfence kullanıyorsanız: Wordfence → Login Security → Settings → \"Disable WordPress application passwords\" seçeneğini kaldırın; başka bir güvenlik eklentisi de kapatmış olabilir."
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:141
+msgid "Deneme başarılı: anahtar bu sitede çalışıyor."
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:142
+msgid "Deneme başarısız (401/403): sunucu \"Authorization\" başlığını WordPress'e iletmiyor olabilir. Barındırma firmanıza şunu iletin: \"Apache/FastCGI, HTTP Authorization başlığını PHP'ye geçirsin (ör. .htaccess: SetEnvIf Authorization (.*) HTTP_AUTHORIZATION=$1).\""
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:143
+msgid "Site kendini çağıramadığı için deneme yapılamadı; anne sitede \"Şimdi yenile\" ile görülecek."
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:145
+msgid "Anahtar oluşturuldu. Parola yalnızca şimdi gösterilir; anne sitenin Ağ Raporu ekranına girin:"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:146
+#: src/WordPress/Network/NetworkReportPage.php:233
+msgid "Kullanıcı adı"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:147
+#: src/WordPress/Network/NetworkReportPage.php:233
+msgid "Uygulama parolası"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:148
+msgid "Anne site"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:154
+msgid "Henüz anahtar yok. Anahtar, yalnızca bu raporu okuyabilen ve yönetim paneline giremeyen ayrı bir kullanıcıya bağlı bir uygulama parolasıdır."
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:155
+msgid "Anne site için rapor anahtarı oluştur"
+msgstr ""
+
+#. translators: %s: date.
+#: src/WordPress/Network/NetworkReportPage.php:160
+#, php-format
+msgid "Anahtar oluşturuldu: %s. Anne site bu anahtarla günde bir toplamları okur."
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:164
+msgid "Yeni anahtar oluştur (eskisi iptal edilir)"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:165
+msgid "Anahtarı iptal et"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:178
+msgid "Dönem"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:183
+msgid "Göster"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:186
+msgid "Özet"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:197
+#: src/WordPress/Network/NetworkReportPage.php:328
+msgid "Ağ toplamı"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:198
+msgid "(eski veri)"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:211
+msgid "Ağ yönlendirmeleri: kim kime ziyaretçi gönderdi"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:211
+msgid "Satır: ziyaretçiyi alan site. Sütun: gönderen site. Üyelerde \"Ağ yönlendirmeleri\" anahtarı açık olmalıdır."
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:212
+msgid "Alan ↓ / Gönderen →"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:226
+msgid "Şimdi yenile"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:227
+msgid "CSV indir"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:231
+msgid "Üyelerin rapor anahtarları"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:231
+msgid "Her üyenin Ağ Raporu ekranında \"Anne site için rapor anahtarı oluştur\"a basın; çıkan kullanıcı adını ve parolayı buraya girin. Parolalar şifreli saklanır; boş bırakılan parola değişmez, kullanıcı adı silinirse anahtar kaldırılır."
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:233
+msgid "Üye"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:238
+msgid "kayıtlı (değiştirmek için yazın)"
+msgstr ""
+
+#: src/WordPress/Network/NetworkReportPage.php:240
+msgid "Anahtarları kaydet"
 msgstr ""
 
 #: src/WordPress/Portal/BusinessAdmin.php:44
@@ -2564,152 +2779,160 @@ msgid "Doğrulanmış kardeş portallardan gelen insan ziyaretlerini AI Ölçüm
 msgstr ""
 
 #: src/WordPress/Settings/SettingsPage.php:121
-msgid "Imunify, Wordfence, Cloudflare gibi katmanların AI botlarını ve portal ağını engellememesi için tespit, öneri ve isteğe bağlı tek tıkla işlem."
+msgid "Ağ raporu"
+msgstr ""
+
+#: src/WordPress/Settings/SettingsPage.php:121
+msgid "Üyeler toplam sayılarını (kişisel veri yok) anne siteye verir; anne tüm ağı tek ekranda izler. Erişim WordPress uygulama parolasıyla."
 msgstr ""
 
 #: src/WordPress/Settings/SettingsPage.php:122
+msgid "Imunify, Wordfence, Cloudflare gibi katmanların AI botlarını ve portal ağını engellememesi için tespit, öneri ve isteğe bağlı tek tıkla işlem."
+msgstr ""
+
+#: src/WordPress/Settings/SettingsPage.php:123
 msgid "LiteSpeed sunucusunun kendi önbelleği AI botlarına kayıtlı kopya sunmaz (.htaccess kuralı)."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:123
+#: src/WordPress/Settings/SettingsPage.php:124
 msgid "IndexNow bildirimi"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:123
+#: src/WordPress/Settings/SettingsPage.php:124
 msgid "Katalog değişince Bing ve diğer IndexNow arama motorlarına haber verilir (yalnızca herkese açık adresler)."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:124
+#: src/WordPress/Settings/SettingsPage.php:125
 msgid "Merkezi güncelleme"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:124
+#: src/WordPress/Settings/SettingsPage.php:125
 msgid "Güncellemeler kendi sunucumuzdan; sunucu adresi girilmedikçe hiçbir istek atılmaz."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:125
+#: src/WordPress/Settings/SettingsPage.php:126
 msgid "Rapor paneline özet"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:125
+#: src/WordPress/Settings/SettingsPage.php:126
 msgid "Haftalık toplam sayılar; gönderim için ayrıca açık onay gerekir."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:151
+#: src/WordPress/Settings/SettingsPage.php:152
 msgid "Önerilen kurulum uygulandı. Aşağıda her özelliğin durumu görünür."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:152
+#: src/WordPress/Settings/SettingsPage.php:153
 msgid "Özellik açıldı."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:153
+#: src/WordPress/Settings/SettingsPage.php:154
 msgid "Özellik kapatıldı."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:154
+#: src/WordPress/Settings/SettingsPage.php:155
 msgid "İşlem yapılmadı: önce satırda yazan özellikleri açın ya da kapatın."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:155
+#: src/WordPress/Settings/SettingsPage.php:156
 msgid "Ayar kaydedildi."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:161
+#: src/WordPress/Settings/SettingsPage.php:162
 msgid "Her özellik ayrı açılır ve kapanır; varsayılan olarak yalnızca AI ölçümü açıktır. Bir özelliğin önkoşulu kapalıysa ya da açık başka bir özellik ona bağlıysa satırında yazar."
 msgstr ""
 
 #. translators: %s: feature names.
-#: src/WordPress/Settings/SettingsPage.php:189
+#: src/WordPress/Settings/SettingsPage.php:190
 #, php-format
 msgid "Önce şunu kapatın: %s"
 msgstr ""
 
 #. translators: %s: feature names.
-#: src/WordPress/Settings/SettingsPage.php:199
+#: src/WordPress/Settings/SettingsPage.php:200
 #, php-format
 msgid "şunlardan biri: %s"
 msgstr ""
 
 #. translators: %s: feature names.
-#: src/WordPress/Settings/SettingsPage.php:203
+#: src/WordPress/Settings/SettingsPage.php:204
 #, php-format
 msgid "Önce şunu açın: %s"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:210
+#: src/WordPress/Settings/SettingsPage.php:211
 msgid "Teklif Kutusu ekranında açın"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:217
+#: src/WordPress/Settings/SettingsPage.php:218
 msgid "Ekrana git"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:250
+#: src/WordPress/Settings/SettingsPage.php:251
 msgid "Eklentiyi silme"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:255
+#: src/WordPress/Settings/SettingsPage.php:256
 msgid "Eklentiyi silerken tüm verilerini de sil (tablolar, ayarlar, ilanlar, talepler). Geri alınamaz."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:256
+#: src/WordPress/Settings/SettingsPage.php:257
 msgid "İşaretli değilse eklenti silinse bile verileriniz korunur."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:288
+#: src/WordPress/Settings/SettingsPage.php:289
 msgid "Bilinmeyen özellik."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:330
+#: src/WordPress/Settings/SettingsPage.php:331
 msgid "Ürün satıcısı, üretici ya da dağıtıcı"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:331
+#: src/WordPress/Settings/SettingsPage.php:332
 msgid "İhracatçı (çoklu dil ile)"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:332
+#: src/WordPress/Settings/SettingsPage.php:333
 msgid "Tur operatörü"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:333
+#: src/WordPress/Settings/SettingsPage.php:334
 msgid "Portal (birçok işletme)"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:334
+#: src/WordPress/Settings/SettingsPage.php:335
 msgid "Hizmet, yalnızca okuma (ör. hukuk bürosu: A2A ve teklif kutusu yok)"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:345
+#: src/WordPress/Settings/SettingsPage.php:346
 msgid "— Site türü seçin —"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:349
+#: src/WordPress/Settings/SettingsPage.php:350
 msgid "Önerilen kurulum"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:350
+#: src/WordPress/Settings/SettingsPage.php:351
 msgid "Site türünüze uygun özellikleri tek seferde açar. Hiçbir özelliği kapatmaz. Önce neyin açılacağını gösterir."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:353
+#: src/WordPress/Settings/SettingsPage.php:354
 msgid "Önizle"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:362
+#: src/WordPress/Settings/SettingsPage.php:363
 msgid "Açılacaklar:"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:363
+#: src/WordPress/Settings/SettingsPage.php:364
 msgid "Zaten açık:"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:364
+#: src/WordPress/Settings/SettingsPage.php:365
 msgid "Ayrıca elle: teklif kutusu (KVKK uyarısıyla kendi ekranından), aranan ilanınız varsa eşleştirme, firma profilinde sektör şablonu."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:393
+#: src/WordPress/Settings/SettingsPage.php:394
 msgid "Bilinmeyen site türü."
 msgstr ""
 

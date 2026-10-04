@@ -129,6 +129,10 @@ final class IntegrationsPage {
 					. '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="' . esc_attr( self::ACTION ) . '"><input type="hidden" name="integration" value="' . esc_attr( self::WORDFENCE ) . '"><input type="hidden" name="state" value="on">'
 					. wp_nonce_field( self::ACTION, '_wpnonce', true, false ) . get_submit_button( __( 'Ağ üyelerinin sunucularını Wordfence izin listesine ekle', 'ai-hazir-site' ), 'secondary', 'submit', false ) . '</form>';
 			}
+			// 1.24.0: the network report authenticates with WordPress application passwords, which Wordfence can switch off.
+			if ( Features::is_enabled( Features::NETWORK_REPORT ) && ! wp_is_application_passwords_available() ) {
+				$html .= '<div class="notice notice-warning inline" id="aihs-security-app-passwords"><p>' . esc_html__( 'WordPress uygulama parolaları kapalı; ağ raporu bu siteyi okuyamaz. Wordfence → Login Security → Settings → "Disable WordPress application passwords" seçeneğini kaldırın.', 'ai-hazir-site' ) . '</p></div>';
+			}
 			if ( array() !== $state['wordfence'] ) {
 				$html .= '<p>' . esc_html__( 'Bizim eklediğimiz adresler (Wordfence\'in silme için herkese açık bir işlevi olmadığından gerekirse Wordfence → Firewall → Allowlisted IP addresses ekranından elle silin):', 'ai-hazir-site' ) . ' ' . esc_html( implode( ', ', $state['wordfence'] ) ) . '</p>';
 			}

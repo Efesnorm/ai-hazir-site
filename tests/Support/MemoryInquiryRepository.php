@@ -113,4 +113,21 @@ final class MemoryInquiryRepository implements InquiryRepository {
 	public function count_recent( string $client_hash, string $since ): int {
 		return count( array_filter( $this->items, static fn( Inquiry $i ): bool => $client_hash === $i->client_hash && $i->created_at >= $since ) );
 	}
+
+	/**
+	 * Count by kind since a time.
+	 *
+	 * @param string $since ISO 8601.
+	 * @return array<string, int>
+	 */
+	public function count_by_kind( string $since ): array {
+		$counts = array();
+		foreach ( $this->items as $inquiry ) {
+			if ( $inquiry->created_at >= $since ) {
+				$counts[ $inquiry->kind ] = ( $counts[ $inquiry->kind ] ?? 0 ) + 1;
+			}
+		}
+		ksort( $counts );
+		return $counts;
+	}
 }

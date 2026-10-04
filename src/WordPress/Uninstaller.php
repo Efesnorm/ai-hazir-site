@@ -24,6 +24,7 @@ use AIHazirSite\WordPress\IndexNow\IndexNowModule;
 use AIHazirSite\WordPress\Inquiry\InquiryModule;
 use AIHazirSite\WordPress\Measurement\MeasurementModule;
 use AIHazirSite\WordPress\Network\NetworkModule;
+use AIHazirSite\WordPress\Network\NetworkReportModule;
 use AIHazirSite\WordPress\Integrations\LiteSpeedBypass;
 use AIHazirSite\WordPress\Integrations\LiteSpeedServerBypass;
 use AIHazirSite\WordPress\Integrations\SecuritySoftware;
@@ -80,6 +81,9 @@ final class Uninstaller {
 			NetworkModule::OPTION,
 			NetworkModule::STATE,
 			SecuritySoftware::OPTION,
+			NetworkReportModule::KEY_OPTION,
+			NetworkReportModule::CREDS,
+			NetworkReportModule::DATA,
 		);
 	}
 
@@ -133,6 +137,20 @@ final class Uninstaller {
 		foreach ( $users as $user_id ) {
 			delete_user_meta( (int) $user_id, AdminNotices::META );
 		}
+		// 1.24.0: the network report's reader user (with its application passwords) and its role.
+		$readers = get_users(
+			array(
+				'role'   => NetworkReportModule::ROLE,
+				'fields' => 'ID',
+			)
+		);
+		if ( array() !== $readers ) {
+			require_once ABSPATH . 'wp-admin/includes/user.php';
+			foreach ( $readers as $user_id ) {
+				wp_delete_user( (int) $user_id );
+			}
+		}
+		remove_role( NetworkReportModule::ROLE );
 		self::delete_transients();
 
 		// Last: removing the data above can fire hooks that schedule work (1.14.0: deleting listings made
@@ -157,6 +175,7 @@ final class Uninstaller {
 			UpdateModule::TELEMETRY_HOOK,
 			IndexNowModule::HOOK,
 			NetworkModule::HOOK,
+			NetworkReportModule::HOOK,
 		);
 	}
 

@@ -108,3 +108,22 @@ Anahtar: `network_referrals` (önkoşul: AI ölçümü ve Portal ağı). Doğrul
 ziyaretleri **AI Ölçüm** raporunda "Ağ yönlendirmeleri" tablosunda, kardeş başına ve açılan sayfaya göre sayılır.
 Kardeş, tarayıcının bildirdiği önceki sayfadan (Referer) ya da bloktaki UTM etiketinden tanınır. Kişisel veri
 saklanmaz. Sayfa önbelleğinden (ör. LiteSpeed) dönen ziyaretler sayılmayabilir.
+
+## Ağ raporu (1.24.0)
+
+Anahtar: `network_report` (önkoşul: Portal ağı); **anne sitede ve her üyede** açılır. Anne site, üyelerin toplam
+sayılarını (AI bot ziyaretleri, AI ve ağ yönlendirmeleri, MCP çağrıları, talep ve ilan sayısı, uyum puanı) tek ekranda
+gösterir; kişisel veri paylaşılmaz.
+
+Kurulum:
+1. **Her üyede** AI Hazır Site → **Ağ Raporu** → "Anne site için rapor anahtarı oluştur". Ekranda bir kullanıcı adı
+   (`aihs-ag-raporu`) ve bir uygulama parolası çıkar; parola **yalnızca bir kez** gösterilir. Bu kullanıcı yalnızca rapor
+   toplamlarını okuyabilir, yönetim paneline giremez.
+2. **Anne sitede** AI Hazır Site → **Ağ Raporu** → "Üyelerin rapor anahtarları" tablosuna her üyenin kullanıcı adını ve
+   parolasını girip kaydedin. Parolalar şifreli saklanır.
+3. Rapor günde bir kendiliğinden yenilenir; "Şimdi yenile" ile hemen okunur. Dönem: son 7, 28 veya 90 gün; CSV indirilebilir.
+
+Sorun çıkarsa: "anahtar geçersiz" görünüyorsa üyede yeni anahtar oluşturup annede güncelleyin. Wordfence uygulama
+parolalarını kapatmışsa Wordfence → Login Security → Settings → "Disable WordPress application passwords" seçeneğini
+kaldırın. Üyede anahtar denemesi 401/403 veriyorsa sunucu "Authorization" başlığını iletmiyordur; ekrandaki metni
+barındırma firmasına gönderin. Bir üyede "Anahtarı iptal et" erişimi hemen keser.
