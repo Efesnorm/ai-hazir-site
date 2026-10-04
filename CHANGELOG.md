@@ -3,6 +3,24 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.23.1] - 2026-10-04
+
+### Düzeltildi (portal ağı canlı denemesi; plan onaylı: `docs/planlar/1.23.1-ag-duzeltmeleri.md`)
+- **SEO eklentili anne sitede üye listesi yayınlanmıyordu.** Ana sayfanın kuruluş bilgisini Rank Math / Yoast gibi bir
+  eklenti üretiyorsa ağın kendisi ve üyeleri (`subOrganization`) hiçbir sayfada yoktu. Artık annenin /ai-katalog/
+  JSON-LD'sinde yayıncının `parentOrganization`'ı ağın tamamıdır; ana sayfadakiyle aynı `@id` (`<anne>#network`).
+  Portal modundaki işletme katalog sayfaları ve üyelerin çıktısı değişmedi.
+- **Profili boş üyeler adsızdı.** Üyenin profilinde ad yoksa anne, adı WordPress'in herkese açık REST dizininden
+  (`/wp-json/` yanıtındaki `name`, site başlığı) alır; ek istek yalnızca bu durumda. Ülke için yedek yok; durum
+  ekranında "profilde ülke yok" notu.
+- **Portal Ağı ekranı:** yalnızca seçili rolün alanları görünür (CSS `:has()`; desteklemeyen tarayıcıda hepsi görünür).
+  Üye sitede ağın adı salt okunur ("anne siteden"). Hata metni: "Ağ adı gerekli (yalnızca anne site için). Bu site bir
+  anneye bağlanacaksa rolü "Üye" seçin."
+- Testler: `NetworkFixesTest`.
+
+### Test güncellemesi (onaylı)
+- `NetworkRulesTest` ve `NetworkModuleTest`: beklenen hata metni yeni metne güncellendi (tam metin denetimi sürüyor).
+
 ## [1.23.0] - 2026-10-04
 
 ### Eklendi

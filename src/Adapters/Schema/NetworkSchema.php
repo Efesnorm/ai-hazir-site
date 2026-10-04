@@ -63,26 +63,40 @@ final class NetworkSchema {
 			}
 		}
 		if ( null !== $members ) {
-			$subs = array();
-			foreach ( array_merge(
-				array(
-					array(
-						'url'  => $own_url,
-						'name' => $self_name,
-					),
-				),
-				$members
-			) as $site ) {
-				$subs[] = array(
-					'@type' => 'Organization',
-					'@id'   => $site['url'] . '#organization',
-					'name'  => '' !== $site['name'] ? $site['name'] : self::host( $site['url'] ),
-					'url'   => $site['url'],
-				);
-			}
-			$document['@graph'][] = self::parent( $name, $mother ) + array( 'subOrganization' => $subs );
+			$document['@graph'][] = self::node( $name, $mother, $own_url, $self_name, $members );
 		}
 		return $document;
+	}
+
+	/**
+	 * The network node with its sub-organizations: the mother first, then the verified sites.
+	 *
+	 * @param string                                                  $name      Network name.
+	 * @param string                                                  $mother    Mother site URL.
+	 * @param string                                                  $own_url   This (mother) site's URL.
+	 * @param string                                                  $self_name This site's name.
+	 * @param list<array{url: string, name: string, country: string}> $members   Verified sites.
+	 * @return array<string, mixed>
+	 */
+	public static function node( string $name, string $mother, string $own_url, string $self_name, array $members ): array {
+		$subs = array();
+		foreach ( array_merge(
+			array(
+				array(
+					'url'  => $own_url,
+					'name' => $self_name,
+				),
+			),
+			$members
+		) as $site ) {
+			$subs[] = array(
+				'@type' => 'Organization',
+				'@id'   => $site['url'] . '#organization',
+				'name'  => '' !== $site['name'] ? $site['name'] : self::host( $site['url'] ),
+				'url'   => $site['url'],
+			);
+		}
+		return self::parent( $name, $mother ) + array( 'subOrganization' => $subs );
 	}
 
 	/**
@@ -96,15 +110,19 @@ final class NetworkSchema {
 
 	/**
 	 * AI catalog feed with the network on its publisher (also when an SEO plugin owns the home Organization).
+	 * On the mother's own catalog (1.23.1) the parent is the whole network node with its sub-organizations, under the
+	 * same @id as on the home page, so the member list is published even when an SEO plugin owns the home page.
 	 *
-	 * @param array<string, mixed> $document Catalog document.
-	 * @param string               $name     Network name.
-	 * @param string               $mother   Mother site URL.
+	 * @param array<string, mixed>                                         $document Catalog document.
+	 * @param string                                                       $name     Network name.
+	 * @param string                                                       $mother   Mother site URL.
+	 * @param list<array{url: string, name: string, country: string}>|null $members  Verified sites on the mother's own catalog, else null.
+	 * @param string                                                       $self_name The mother's name (with $members).
 	 * @return array<string, mixed>
 	 */
-	public static function catalog( array $document, string $name, string $mother ): array {
+	public static function catalog( array $document, string $name, string $mother, ?array $members = null, string $self_name = '' ): array {
 		if ( is_array( $document['publisher'] ?? null ) ) {
-			$document['publisher']['parentOrganization'] = self::parent( $name, $mother );
+			$document['publisher']['parentOrganization'] = null === $members ? self::parent( $name, $mother ) : self::node( $name, $mother, $mother, $self_name, $members );
 		}
 		return $document;
 	}

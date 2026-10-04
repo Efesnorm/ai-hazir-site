@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: AI Hazır Site 1.23.0\n"
+"Project-Id-Version: AI Hazır Site 1.23.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ai-hazir-site\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-04T11:05:19+00:00\n"
+"POT-Creation-Date: 2026-10-04T18:06:14+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: ai-hazir-site\n"
@@ -276,7 +276,7 @@ msgstr ""
 #: src/WordPress/Catalog/Admin/CatalogAdmin.php:325
 #: src/WordPress/Matching/MatchingAdmin.php:158
 #: src/WordPress/Measurement/Admin/ReportPage.php:113
-#: src/WordPress/Network/NetworkPage.php:100
+#: src/WordPress/Network/NetworkPage.php:104
 #: src/WordPress/Portal/BusinessAdmin.php:162
 #: src/WordPress/Settings/SettingsPage.php:257
 #: src/WordPress/Updates/UpdatesAdmin.php:91
@@ -303,7 +303,7 @@ msgstr ""
 #: src/WordPress/Inquiry/Admin/InquiryAdmin.php:418
 #: src/WordPress/Integrations/IntegrationsPage.php:284
 #: src/WordPress/Measurement/Admin/ReportPage.php:276
-#: src/WordPress/Network/NetworkPage.php:189
+#: src/WordPress/Network/NetworkPage.php:195
 #: src/WordPress/Portal/BusinessAdmin.php:231
 #: src/WordPress/Report/ReportModule.php:83
 #: src/WordPress/Settings/SettingsPage.php:422
@@ -883,7 +883,7 @@ msgid "Sihirbazı aç"
 msgstr ""
 
 #: src/WordPress/Compliance/Wizard/WizardPage.php:372
-#: src/WordPress/Schema/SchemaModule.php:271
+#: src/WordPress/Schema/SchemaModule.php:272
 msgid "Bir daha gösterme"
 msgstr ""
 
@@ -1078,7 +1078,7 @@ msgid "Spam"
 msgstr ""
 
 #: src/WordPress/Inquiry/Admin/InquiryAdmin.php:162
-#: src/WordPress/Network/NetworkPage.php:107
+#: src/WordPress/Network/NetworkPage.php:111
 msgid "Durum"
 msgstr ""
 
@@ -1934,58 +1934,71 @@ msgstr ""
 msgid "Aynı sahibin siteleri bir ağ olur: anne site ağın adını ve üyelerini yönetir, üyeler yalnızca annelerinin adresini girer. Bir site ancak iki taraf da onaylamışsa (anne listeler, üye o anneyi gösterir) ağda görünür. Doğrulanan siteler AI'lara ağ olarak duyurulur (Schema.org, llms.txt)."
 msgstr ""
 
-#: src/WordPress/Network/NetworkPage.php:90
+#: src/WordPress/Network/NetworkPage.php:93
 msgid "Bu sitenin rolü"
 msgstr ""
 
-#: src/WordPress/Network/NetworkPage.php:91
+#: src/WordPress/Network/NetworkPage.php:94
 msgid "Ağda değil"
 msgstr ""
 
-#: src/WordPress/Network/NetworkPage.php:92
+#: src/WordPress/Network/NetworkPage.php:95
 msgid "Anne site (ağı buradan yönetirim, veriyi buradan izlerim)"
 msgstr ""
 
-#: src/WordPress/Network/NetworkPage.php:93
+#: src/WordPress/Network/NetworkPage.php:96
 msgid "Üye (bir anne siteye bağlıyım)"
 msgstr ""
 
-#: src/WordPress/Network/NetworkPage.php:95
+#: src/WordPress/Network/NetworkPage.php:98
 msgid "Ağ adı (anne)"
 msgstr ""
 
-#: src/WordPress/Network/NetworkPage.php:96
+#: src/WordPress/Network/NetworkPage.php:99
 msgid "Üye siteler (anne)"
 msgstr ""
 
 #. translators: %d: maximum members.
-#: src/WordPress/Network/NetworkPage.php:97
+#: src/WordPress/Network/NetworkPage.php:100
 #, php-format
 msgid "Her satıra bir site adresi (https). En çok %d üye."
 msgstr ""
 
 #. translators: %d: maximum members.
-#: src/WordPress/Network/NetworkPage.php:98
+#: src/WordPress/Network/NetworkPage.php:101
+msgid "Ağ adı"
+msgstr ""
+
+#. translators: %d: maximum members.
+#: src/WordPress/Network/NetworkPage.php:101
+msgid "(anne siteden)"
+msgstr ""
+
+#: src/WordPress/Network/NetworkPage.php:102
 msgid "Anne site adresi (üye)"
 msgstr ""
 
-#: src/WordPress/Network/NetworkPage.php:107
+#: src/WordPress/Network/NetworkPage.php:111
 msgid "Site"
 msgstr ""
 
-#: src/WordPress/Network/NetworkPage.php:107
+#: src/WordPress/Network/NetworkPage.php:111
 msgid "Son kontrol"
 msgstr ""
 
-#: src/WordPress/Network/NetworkPage.php:116
+#: src/WordPress/Network/NetworkPage.php:117
+msgid "profilde ülke yok"
+msgstr ""
+
+#: src/WordPress/Network/NetworkPage.php:122
 msgid "Bu site, annede:"
 msgstr ""
 
-#: src/WordPress/Network/NetworkPage.php:126
+#: src/WordPress/Network/NetworkPage.php:132
 msgid "Şimdi kontrol et"
 msgstr ""
 
-#: src/WordPress/Network/NetworkPage.php:127
+#: src/WordPress/Network/NetworkPage.php:133
 msgid "Kontrol saatte bir kendiliğinden yapılır. Bir site eklendikten sonra iki tarafta da kaydedip \"Şimdi kontrol et\"e basın (önce üyede, sonra annede, sonra yeniden üyede)."
 msgstr ""
 
@@ -2337,13 +2350,13 @@ msgid "Şu anda yayında ilan yok."
 msgstr ""
 
 #. translators: 1: page key, 2: time.
-#: src/WordPress/Schema/SchemaModule.php:248
+#: src/WordPress/Schema/SchemaModule.php:249
 #, php-format
 msgid "AI Hazır Site: \"%1$s\" sayfasının Schema.org çıktısında hata bulundu (%2$s). Hatalı çıktı yayınlanmadı; son geçerli çıktı sunuluyor."
 msgstr ""
 
 #. translators: %s: SEO plugin name.
-#: src/WordPress/Schema/SchemaModule.php:266
+#: src/WordPress/Schema/SchemaModule.php:267
 #, php-format
 msgid "AI Hazır Site: %s zaten Organization şeması üretiyor; çakışmayı önlemek için AI Hazır Site kendi Organization çıktısını eklemiyor. AI katalog ilanları yayınlanmaya devam ediyor."
 msgstr ""

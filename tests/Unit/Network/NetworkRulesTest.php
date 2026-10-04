@@ -76,7 +76,7 @@ final class NetworkRulesTest extends TestCase {
 		$this->assertCount( 1, $errors );
 
 		[ $none, $errors ] = NetworkSettings::from_input( array( 'role' => 'mother' ), self::MOTHER );
-		$this->assertContains( 'Ağ adı gerekli.', $errors );
+		$this->assertContains( 'Ağ adı gerekli (yalnızca anne site için). Bu site bir anneye bağlanacaksa rolü "Üye" seçin.', $errors );
 
 		$many = array();
 		for ( $i = 0; $i < 30; $i++ ) {

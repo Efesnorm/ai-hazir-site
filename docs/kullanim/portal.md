@@ -52,6 +52,9 @@ bağımsızdır; anahtar: `portal_network` (önkoşul: REST API).
   yönetilir ve ileride ağ raporu buradan izlenir. Anne sabit değildir; başka bir site anne yapılabilir.
 - **Üye:** yalnızca anne sitenin adresini girer. Kardeş listesi anneden gelir.
 
+Ekran yalnızca seçili rolün alanlarını gösterir. Üye sitede ağın adı girilmez; doğrulandıktan sonra anneden gelir
+ve salt okunur görünür (1.23.1).
+
 **Karşılıklı onay:** bir site ancak anne onu listelemişse **ve** site o anneyi göstermişse ağda görünür. Kontrol saatte
 bir kendiliğinden yapılır; kurulumdan sonra önce üyede, sonra annede, sonra yeniden üyede "Şimdi kontrol et"e basın.
 Ekran her sitenin durumunu gösterir: doğrulandı / bu siteyi anne olarak göstermiyor / anne başka / annede kayıtlı değil /
@@ -59,6 +62,8 @@ erişilemedi.
 
 **AI'lar ne görür (yalnızca doğrulanmış siteler):**
 - Ana sayfa yapılandırılmış verisinde sitenin kuruluşu ağın çatı kuruluşuna bağlanır (schema.org `parentOrganization`);
+  annenin /ai-katalog/ sayfasında ağ ve üyeleri her zaman yer alır (SEO eklentisi olsa da, 1.23.1). Profil adı boş bir
+  üye, annede site başlığıyla görünür; ülke yalnızca profilden gelir, bu yüzden her üyede Firma Profili'ni doldurun.
   anne sitede ağın kendisi ve üyeleri (`subOrganization`). SEO eklentisi kuruluşu üretiyorsa bilgi /ai-katalog/
   sayfasının yayıncısında verilir.
 - llms.txt'de "Kardeş portallar – <ağ adı>" bölümü (her kardeşin llms.txt ve API adresi).

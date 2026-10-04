@@ -206,7 +206,8 @@ final class SchemaModule implements Module {
 			$document['inLanguage'] = $language;
 			$key                   .= '-' . $language;
 		}
-		return self::cache()->publish( $key, NetworkModule::decorate_catalog( $document ), gmdate( 'Y-m-d\TH:i:s\Z' ) );
+		// A business's page is not the site's own catalog: it names the network, not its members (1.23.1).
+		return self::cache()->publish( $key, NetworkModule::decorate_catalog( $document, null === $business ), gmdate( 'Y-m-d\TH:i:s\Z' ) );
 	}
 
 	/**

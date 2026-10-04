@@ -184,9 +184,15 @@ final class NetworkModule implements Module {
 				[ $document, $retry ] = self::fetch( $url . 'wp-json/aihs/v1/network' );
 				$status               = NetworkCheck::member_status( $own_url, $document );
 				$profile              = NetworkCheck::VERIFIED === $status ? self::fetch( $url . 'wp-json/aihs/v1/profile', false )[0] : null;
-				$rows[ $url ]         = array(
+				$name                 = is_array( $profile ) ? NetworkCheck::text( $profile['name'] ?? '', 100 ) : (string) ( $row['name'] ?? '' );
+				if ( is_array( $profile ) && '' === $name ) {
+					// 1.23.1: an empty profile name falls back to the site title (WordPress REST index, public "name").
+					$index = self::fetch( $url . 'wp-json/', false )[0];
+					$name  = is_array( $index ) && is_string( $index['name'] ?? null ) ? NetworkCheck::text( wp_specialchars_decode( $index['name'], ENT_QUOTES ), 100 ) : '';
+				}
+				$rows[ $url ] = array(
 					'status'      => $status,
-					'name'        => is_array( $profile ) ? NetworkCheck::text( $profile['name'] ?? '', 100 ) : (string) ( $row['name'] ?? '' ),
+					'name'        => $name,
 					'country'     => is_array( $profile ) ? NetworkCheck::country( $profile['country'] ?? '' ) : (string) ( $row['country'] ?? '' ),
 					'checked_at'  => $now,
 					'verified_at' => NetworkCheck::VERIFIED === $status ? $now : ( $row['verified_at'] ?? null ),
@@ -281,14 +287,13 @@ final class NetworkModule implements Module {
 		if ( ! $view->active() ) {
 			return $document;
 		}
-		$profile = ( new WpProfileRepository() )->get();
-		$mother  = NetworkSettings::ROLE_MOTHER === self::settings()->role;
+		$mother = NetworkSettings::ROLE_MOTHER === self::settings()->role;
 		return NetworkSchema::home(
 			$document,
 			$view->network_name(),
 			$view->mother(),
 			self::self_url(),
-			'' !== $profile->name ? $profile->name : wp_specialchars_decode( (string) get_bloginfo( 'name' ), ENT_QUOTES ),
+			self::own_name(),
 			$mother ? $view->siblings() : null
 		);
 	}
@@ -297,14 +302,28 @@ final class NetworkModule implements Module {
 	 * Catalog JSON-LD with the network on its publisher.
 	 *
 	 * @param array<string, mixed> $document Catalog document.
+	 * @param bool                 $own      Whether this is the site's own catalog (not a business page, 1.23.1).
 	 * @return array<string, mixed>
 	 */
-	public static function decorate_catalog( array $document ): array {
+	public static function decorate_catalog( array $document, bool $own = true ): array {
 		if ( ! self::enabled() ) {
 			return $document;
 		}
 		$view = self::view();
-		return $view->active() ? NetworkSchema::catalog( $document, $view->network_name(), $view->mother() ) : $document;
+		if ( ! $view->active() ) {
+			return $document;
+		}
+		// 1.23.1: the mother's own catalog also lists the members (published even when an SEO plugin owns the home page).
+		$mother = $own && NetworkSettings::ROLE_MOTHER === self::settings()->role;
+		return NetworkSchema::catalog( $document, $view->network_name(), $view->mother(), $mother ? $view->siblings() : null, $mother ? self::own_name() : '' );
+	}
+
+	/**
+	 * This site's name: the profile's, else the site title.
+	 */
+	private static function own_name(): string {
+		$profile = ( new WpProfileRepository() )->get();
+		return '' !== $profile->name ? $profile->name : wp_specialchars_decode( (string) get_bloginfo( 'name' ), ENT_QUOTES );
 	}
 
 	/**
