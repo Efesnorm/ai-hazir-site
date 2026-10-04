@@ -153,6 +153,11 @@ final class Features {
 	public const PORTAL_NETWORK = 'portal_network';
 
 	/**
+	 * Security software screen: Imunify preset lock, Wordfence allow-list for network sites, guidance (1.21.0).
+	 */
+	public const SECURITY_INTEGRATIONS = 'security_integrations';
+
+	/**
 	 * Sector templates (0.8.0).
 	 */
 	public const TEMPLATES = 'templates';
@@ -246,6 +251,7 @@ final class Features {
 			self::LITESPEED_SERVER_BYPASS => false,
 			self::MEASUREMENT_TEST_FILTER => true,
 			self::PORTAL_NETWORK          => false,
+			self::SECURITY_INTEGRATIONS   => false,
 		);
 	}
 

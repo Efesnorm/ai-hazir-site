@@ -26,6 +26,7 @@ use AIHazirSite\WordPress\Measurement\MeasurementModule;
 use AIHazirSite\WordPress\Network\NetworkModule;
 use AIHazirSite\WordPress\Integrations\LiteSpeedBypass;
 use AIHazirSite\WordPress\Integrations\LiteSpeedServerBypass;
+use AIHazirSite\WordPress\Integrations\SecuritySoftware;
 use AIHazirSite\Core\IndexNow\IndexNowService;
 use AIHazirSite\WordPress\Catalog\WpProfileRepository;
 use AIHazirSite\WordPress\I18n\LanguageSource;
@@ -78,6 +79,7 @@ final class Uninstaller {
 			LiteSpeedServerBypass::OPTION,
 			NetworkModule::OPTION,
 			NetworkModule::STATE,
+			SecuritySoftware::OPTION,
 		);
 	}
 
@@ -94,6 +96,9 @@ final class Uninstaller {
 	 * @return bool True when data was removed.
 	 */
 	public static function run(): bool {
+		// 1.21.0: our wp-config.php block is configuration outside the plugin; it never outlives it.
+		SecuritySoftware::revert();
+
 		if ( ! self::should_delete_data() ) {
 			return false;
 		}

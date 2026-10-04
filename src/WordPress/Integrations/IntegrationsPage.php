@@ -31,6 +31,8 @@ final class IntegrationsPage {
 	public const SERVER       = 'litespeed_server_bypass';
 	public const INDEXNOW     = 'indexnow';
 	public const INDEXNOW_NOW = 'indexnow_now';
+	public const IMUNIFY      = 'security_imunify';
+	public const WORDFENCE    = 'security_wordfence';
 
 	/**
 	 * Registers admin hooks.
@@ -66,16 +68,82 @@ final class IntegrationsPage {
 	 */
 	public static function render_html( string $message = '' ): string {
 		$notices = array(
-			'on'       => __( 'Entegrasyon açıldı.', 'ai-hazir-site' ),
-			'off'      => __( 'Entegrasyon kapatıldı.', 'ai-hazir-site' ),
-			'sent'     => __( 'IndexNow bildirimi gönderildi; sonuç aşağıda.', 'ai-hazir-site' ),
-			'not_sent' => __( 'Bildirim gönderilmedi: bildirilecek adres yok ya da son bildirimden bu yana 1 saat geçmedi.', 'ai-hazir-site' ),
+			'on'              => __( 'Entegrasyon açıldı.', 'ai-hazir-site' ),
+			'off'             => __( 'Entegrasyon kapatıldı.', 'ai-hazir-site' ),
+			'sent'            => __( 'IndexNow bildirimi gönderildi; sonuç aşağıda.', 'ai-hazir-site' ),
+			'not_sent'        => __( 'Bildirim gönderilmedi: bildirilecek adres yok ya da son bildirimden bu yana 1 saat geçmedi.', 'ai-hazir-site' ),
+			'security_manual' => __( 'wp-config.php değiştirilmedi; aşağıdaki satırı elle ekleyebilirsiniz.', 'ai-hazir-site' ),
+			'wordfence_added' => __( 'Ağ üyelerinin sunucuları Wordfence izin listesine eklendi.', 'ai-hazir-site' ),
+			'wordfence_none'  => __( 'Eklenecek yeni adres yok (hepsi zaten listede ya da IPv4 değil).', 'ai-hazir-site' ),
 		);
 		$html    = '<h1>' . esc_html__( 'AI Hazır Entegrasyonlar', 'ai-hazir-site' ) . '</h1>'
 			. ( isset( $notices[ $message ] ) ? '<div class="notice notice-success"><p>' . esc_html( $notices[ $message ] ) . '</p></div>' : '' )
 			. '<p class="description">' . esc_html__( 'Sitenizdeki diğer eklentilerle yapılabilecek işler. Hiçbiri kendiliğinden yapılmaz; her birini buradan açıp kapatabilirsiniz. Kapatınca eklediğimiz her şey geri alınır.', 'ai-hazir-site' ) . '</p>';
 
-		return $html . self::bypass_section() . self::server_section() . self::sitemap_section() . self::indexnow_section();
+		return $html . self::bypass_section() . self::server_section() . self::security_section() . self::sitemap_section() . self::indexnow_section();
+	}
+
+	/**
+	 * Security software (1.21.0): what is present, what it does to AI bots and the network, documented actions.
+	 */
+	private static function security_section(): string {
+		if ( ! Features::is_enabled( Features::SECURITY_INTEGRATIONS ) ) {
+			return '';
+		}
+		$found = SecuritySoftware::detect();
+		$state = SecuritySoftware::state();
+		$html  = '<h2 id="aihs-security">' . esc_html__( 'Güvenlik yazılımları', 'ai-hazir-site' ) . '</h2>'
+			. '<p>' . esc_html__( 'Güvenlik katmanları AI botlarını ve portal ağımızın sunucudan sunucuya isteklerini yavaşlatabilir ya da engelleyebilir. Burada yalnızca yazılımların belgelediği yollar kullanılır; hiçbiri kendiliğinden yapılmaz.', 'ai-hazir-site' ) . '</p>';
+
+		if ( ! $found['imunify'] && ! $found['wordfence'] && ! $found['cloudflare'] && array() === $found['others'] ) {
+			$html .= '<p>' . esc_html__( 'Bilinen bir güvenlik yazılımı bulunamadı.', 'ai-hazir-site' ) . '</p>';
+		}
+
+		if ( $found['imunify'] ) {
+			$preset = SecuritySoftware::imunify_preset();
+			$html  .= '<h3>Imunify Security – AI Bot Management</h3>'
+				. '<p>' . esc_html__( 'Dakikada izin verilen istek (Imunify belgesi): doğrulanmış arama motorları / doğrulanmış AI tarayıcıları / bilinmeyen otomatik istemciler / doğrulanamayan botlar. İnsan ziyaretçiler hiç sınırlanmaz.', 'ai-hazir-site' ) . '</p><table class="widefat striped" style="max-width:640px"><tbody>';
+			foreach ( SecuritySoftware::PRESETS as $name => $limits ) {
+				$html .= '<tr><th>' . esc_html( ucfirst( $name ) ) . '</th><td>' . esc_html( null === $limits ? __( 'sınır yok (yalnızca izler; kötü niyetli botlar da sınırsız)', 'ai-hazir-site' ) : implode( ' / ', $limits ) ) . '</td></tr>';
+			}
+			$html .= '</tbody></table><p>' . esc_html(
+				'' === $preset
+					? __( 'Ayar wp-config.php\'de sabitlenmemiş; geçerli hazır ayarı WordPress panosundaki Imunify Security kutusunun "Bot Protection" satırından görün.', 'ai-hazir-site' )
+					: sprintf( /* translators: %s: preset. */ __( 'wp-config.php\'de sabitlenmiş hazır ayar: %s', 'ai-hazir-site' ), $preset )
+			) . '</p>';
+			$html .= '<p>' . esc_html__( '"Balanced\'ı sabitle", Imunify\'ın belgelediği IMUNIFY_AI_BOT_PROTECTION_PRESET sabitini wp-config.php\'ye "balanced" olarak yazar: kimse yanlışlıkla "Strict"e (AI botlarına dakikada 3) çekemez. "Monitor" ya da "kapalı" asla yazılmaz.', 'ai-hazir-site' ) . '</p>';
+			if ( '' !== $state['imunify_error'] ) {
+				$html .= '<div class="notice notice-warning inline"><p>' . esc_html( $state['imunify_error'] ) . ' ' . esc_html__( 'Elle eklemek için wp-config.php\'de "<?php" satırının hemen altına:', 'ai-hazir-site' ) . '</p><pre>' . esc_html( SecuritySoftware::imunify_line() ) . '</pre></div>';
+			}
+			$html .= self::toggle( self::IMUNIFY, $state['imunify_locked'] );
+		}
+
+		if ( $found['wordfence'] ) {
+			$ips   = SecuritySoftware::network_ips();
+			$html .= '<h3>Wordfence</h3>'
+				. '<p>' . esc_html__( 'AI botlarının IP aralıkları izin listesine eklenmez: izin listesindeki bir adres bütün güvenlik kurallarını atlar. Wordfence\'in "Rate Limiting" ayarlarında tarayıcı sınırlarını "Unlimited" (varsayılan) bırakın.', 'ai-hazir-site' ) . '</p>';
+			if ( array() === $ips ) {
+				$html .= '<p><em>' . esc_html__( 'Portal ağından henüz bilinen bir sunucu adresi yok (ağ açık ve doğrulanmış bir kardeş bu siteyi en az bir kez okumuş olmalı).', 'ai-hazir-site' ) . '</em></p>';
+			} else {
+				$html .= '<p>' . esc_html__( 'Ağdaki sitelerin sunucuları:', 'ai-hazir-site' ) . ' ' . esc_html( implode( ', ', $ips ) ) . '</p>'
+					. '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="' . esc_attr( self::ACTION ) . '"><input type="hidden" name="integration" value="' . esc_attr( self::WORDFENCE ) . '"><input type="hidden" name="state" value="on">'
+					. wp_nonce_field( self::ACTION, '_wpnonce', true, false ) . get_submit_button( __( 'Ağ üyelerinin sunucularını Wordfence izin listesine ekle', 'ai-hazir-site' ), 'secondary', 'submit', false ) . '</form>';
+			}
+			if ( array() !== $state['wordfence'] ) {
+				$html .= '<p>' . esc_html__( 'Bizim eklediğimiz adresler (Wordfence\'in silme için herkese açık bir işlevi olmadığından gerekirse Wordfence → Firewall → Allowlisted IP addresses ekranından elle silin):', 'ai-hazir-site' ) . ' ' . esc_html( implode( ', ', $state['wordfence'] ) ) . '</p>';
+			}
+		}
+
+		if ( $found['cloudflare'] ) {
+			$html .= '<h3>Cloudflare</h3><p>' . esc_html__( 'Site Cloudflare arkasında. Cloudflare panelinde "AI botlarını engelle" ve AI Crawl Control ayarlarının istediğiniz AI tarayıcılarını engellemediğini kontrol edin; "Bot Fight Mode" sunucudan sunucuya isteklerimizi de engelleyebilir.', 'ai-hazir-site' ) . '</p>';
+		}
+
+		foreach ( $found['others'] as $name ) {
+			$html .= '<h3>' . esc_html( $name ) . '</h3><p>' . esc_html__( 'Kötü bot / tarayıcı engelleme listelerinde GPTBot, ChatGPT-User, OAI-SearchBot, ClaudeBot, PerplexityBot gibi AI tarayıcılarının bulunmadığını; hız sınırlarının doğrulanmış tarayıcıları kısmadığını kontrol edin.', 'ai-hazir-site' ) . '</p>';
+		}
+
+		return $html . '<h3>' . esc_html__( 'Barındırma firmasına iletilecek metin', 'ai-hazir-site' ) . '</h3><p class="description">' . esc_html__( 'Sunucu düzeyindeki güvenlik (Imunify360, WAF, IP listeleri) yalnızca barındırma firmasında değiştirilebilir.', 'ai-hazir-site' ) . '</p>'
+			. '<textarea class="large-text code" rows="10" readonly id="aihs-host-text">' . esc_textarea( SecuritySoftware::host_text() ) . '</textarea>';
 	}
 
 	/**
@@ -230,6 +298,12 @@ final class IntegrationsPage {
 			if ( ! $on || array() === $missing['any'] ) {
 				IndexNowModule::enable( $on );
 			}
+		} elseif ( self::IMUNIFY === $id && Features::is_enabled( Features::SECURITY_INTEGRATIONS ) ) {
+			$error = SecuritySoftware::set_imunify_lock( $on );
+			return AdminMenu::url( self::SLUG, array( 'message' => '' !== $error ? 'security_manual' : ( $on ? 'on' : 'off' ) ) ) . '#aihs-security';
+		} elseif ( self::WORDFENCE === $id && Features::is_enabled( Features::SECURITY_INTEGRATIONS ) ) {
+			$added = SecuritySoftware::allow_network_in_wordfence();
+			return AdminMenu::url( self::SLUG, array( 'message' => array() === $added ? 'wordfence_none' : 'wordfence_added' ) ) . '#aihs-security';
 		} elseif ( self::INDEXNOW_NOW === $id ) {
 			$result = IndexNowModule::submit();
 			return AdminMenu::url( self::SLUG, array( 'message' => null === $result ? 'not_sent' : 'sent' ) );

@@ -55,3 +55,23 @@ haritası).
   modülü açıksa ikisi birlikte çalışır (her istekte anahtar dosyasının yeri verilir).
 - Son bildirimin yanıtı ekranda Türkçe açıklanır. **403** görürseniz arama motoru anahtar dosyasına ulaşamamıştır:
   barındırma firmanızın bot korumasının `/{anahtar}.txt` adresini engelleyip engellemediğini kontrol edin.
+
+## Güvenlik yazılımları (`security_integrations`, 1.21.0)
+
+Güvenlik katmanları AI botlarını ve portal ağımızın sunucudan sunucuya isteklerini yavaşlatabilir ya da engelleyebilir.
+Bu bölüm yalnızca yazılımların belgelediği yolları kullanır; hiçbir işlem kendiliğinden yapılmaz.
+
+| Yazılım | Ne görürsünüz | Tek tıkla işlem |
+| --- | --- | --- |
+| **Imunify Security** (AI Bot Management) | Hazır ayarların AI botlarına dakikada kaç istek verdiği (Balanced: doğrulanmış AI tarayıcısına 10, Strict: 3, Monitor: sınırsız); `wp-config.php`'de sabitlenmiş ayar | **Balanced'ı sabitle**: belgelenmiş `IMUNIFY_AI_BOT_PROTECTION_PRESET` sabiti `wp-config.php`'ye "balanced" olarak yazılır (kimse yanlışlıkla Strict'e çekemez). "Monitor" ya da "kapalı" asla yazılmaz. Sabit sitede zaten tanımlıysa dosyaya dokunulmaz. |
+| **Wordfence** | Portal ağındaki doğrulanmış sitelerin sunucu adresleri | **Ağ üyelerinin sunucularını izin listesine ekle** (Wordfence'in herkese açık `wordfence::whitelistIP()` işlevi). AI botlarının IP'leri eklenmez: izin listesi bütün güvenlik kurallarını atlatır. Wordfence'te silme için herkese açık işlev olmadığından eklenenler listelenir; gerekirse Wordfence ekranından elle silinir. |
+| **Cloudflare** | Sitenin Cloudflare arkasında olduğu | Yok (panelde "AI botlarını engelle", AI Crawl Control ve Bot Fight Mode'u kontrol edin) |
+| Solid Security, All-In-One Security, NinjaFirewall, Sucuri | Kurulu olduğu | Yok (kötü bot listelerini ve hız sınırlarını kontrol edin) |
+
+**Barındırma firmasına iletilecek metin:** sunucu düzeyindeki Imunify360, WAF ve IP listeleri yalnızca barındırma firmasında
+değiştirilebilir. Ekran, AI tarayıcılarının resmi IP listesi adreslerini ve ağ üyelerinin sunucu adreslerini içeren hazır
+bir metin verir.
+
+**wp-config.php nasıl yazılır:** yalnızca `# BEGIN AI Hazir Site` / `# END AI Hazir Site` arasındaki kendi bloğumuz,
+`<?php` satırının hemen altına; sonuç PHP olarak denetlenir, dosya geçici dosya + taşıma ile tek seferde değişir, kopya
+bırakılmaz. Dosya doğrudan yazılamıyorsa eklenecek satır gösterilir. Anahtar kapatılınca ve eklenti silinince blok kaldırılır.
