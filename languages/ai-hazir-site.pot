@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: AI Hazır Site 1.24.1\n"
+"Project-Id-Version: AI Hazır Site 1.25.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ai-hazir-site\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-04T19:46:30+00:00\n"
+"POT-Creation-Date: 2026-10-04T21:01:54+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: ai-hazir-site\n"
@@ -17,7 +17,7 @@ msgstr ""
 #. Plugin Name of the plugin
 #: ai-hazir-site.php
 #: src/WordPress/Settings/SettingsPage.php:53
-#: src/WordPress/Settings/SettingsPage.php:158
+#: src/WordPress/Settings/SettingsPage.php:159
 msgid "AI Hazır Site"
 msgstr ""
 
@@ -279,7 +279,7 @@ msgstr ""
 #: src/WordPress/Measurement/Admin/ReportPage.php:113
 #: src/WordPress/Network/NetworkPage.php:104
 #: src/WordPress/Portal/BusinessAdmin.php:162
-#: src/WordPress/Settings/SettingsPage.php:258
+#: src/WordPress/Settings/SettingsPage.php:260
 #: src/WordPress/Updates/UpdatesAdmin.php:91
 msgid "Kaydet"
 msgstr ""
@@ -308,7 +308,8 @@ msgstr ""
 #: src/WordPress/Network/NetworkReportPage.php:352
 #: src/WordPress/Portal/BusinessAdmin.php:231
 #: src/WordPress/Report/ReportModule.php:83
-#: src/WordPress/Settings/SettingsPage.php:423
+#: src/WordPress/Settings/BoosterModule.php:287
+#: src/WordPress/Settings/SettingsPage.php:425
 #: src/WordPress/Updates/UpdatesAdmin.php:198
 msgid "Bu işlem için yetkiniz yok."
 msgstr ""
@@ -811,7 +812,7 @@ msgid "Hazır ayar"
 msgstr ""
 
 #: src/WordPress/Compliance/Wizard/WizardPage.php:193
-#: src/WordPress/Settings/SettingsPage.php:371
+#: src/WordPress/Settings/SettingsPage.php:373
 msgid "Uygula"
 msgstr ""
 
@@ -1208,7 +1209,7 @@ msgstr ""
 
 #: src/WordPress/Inquiry/Admin/InquiryAdmin.php:305
 #: src/WordPress/Integrations/IntegrationsPage.php:268
-#: src/WordPress/Settings/SettingsPage.php:242
+#: src/WordPress/Settings/SettingsPage.php:244
 msgid "Kapat"
 msgstr ""
 
@@ -1495,17 +1496,17 @@ msgid "Durum:"
 msgstr ""
 
 #: src/WordPress/Integrations/IntegrationsPage.php:267
-#: src/WordPress/Settings/SettingsPage.php:217
+#: src/WordPress/Settings/SettingsPage.php:219
 msgid "Açık"
 msgstr ""
 
 #: src/WordPress/Integrations/IntegrationsPage.php:267
-#: src/WordPress/Settings/SettingsPage.php:217
+#: src/WordPress/Settings/SettingsPage.php:219
 msgid "Kapalı"
 msgstr ""
 
 #: src/WordPress/Integrations/IntegrationsPage.php:268
-#: src/WordPress/Settings/SettingsPage.php:242
+#: src/WordPress/Settings/SettingsPage.php:244
 msgid "Aç"
 msgstr ""
 
@@ -2576,6 +2577,72 @@ msgstr ""
 msgid "AI Hazır Site: %s zaten Organization şeması üretiyor; çakışmayı önlemek için AI Hazır Site kendi Organization çıktısını eklemiyor. AI katalog ilanları yayınlanmaya devam ediyor."
 msgstr ""
 
+#: src/WordPress/Settings/BoosterModule.php:73
+msgid "Booster AI"
+msgstr ""
+
+#: src/WordPress/Settings/BoosterModule.php:74
+msgid "Bu siteye uygun bütün özellikleri tek seferde, doğru sırayla açar; otomatik güncellemeyi kurar ve ilk işleri (AI bot IP listeleri, uyum taraması, ağ kontrolü) arka planda başlatır. Hiçbir özelliği kapatmaz; istediğinizde önceki duruma dönülür."
+msgstr ""
+
+#: src/WordPress/Settings/BoosterModule.php:80
+msgid "Booster AI çalıştı."
+msgstr ""
+
+#: src/WordPress/Settings/BoosterModule.php:81
+msgid "Açılanlar:"
+msgstr ""
+
+#: src/WordPress/Settings/BoosterModule.php:82
+msgid "Zaten açıktı:"
+msgstr ""
+
+#. translators: 1: feature, 2: features it needs.
+#: src/WordPress/Settings/BoosterModule.php:87
+#, php-format
+msgid "Açılamadı: %1$s (önce gerekli: %2$s)"
+msgstr ""
+
+#: src/WordPress/Settings/BoosterModule.php:93
+msgid "Otomatik güncelleme açık: yeni sürümler WordPress tarafından kendiliğinden kurulur."
+msgstr ""
+
+#: src/WordPress/Settings/BoosterModule.php:93
+msgid "Otomatik güncelleme kurulmadı (Merkezi güncelleme seçilmedi)."
+msgstr ""
+
+#: src/WordPress/Settings/BoosterModule.php:95
+msgid "Portal ağı açık; bu sitenin rolünü (anne / üye) Portal Ağı ekranında seçin."
+msgstr ""
+
+#: src/WordPress/Settings/BoosterModule.php:101
+msgid "Açılacak özellikleri göster / değiştir"
+msgstr ""
+
+#: src/WordPress/Settings/BoosterModule.php:105
+msgid "(siteyi çok işletmeli portala çevirir; firma sitesinde işaretlemeyin)"
+msgstr ""
+
+#: src/WordPress/Settings/BoosterModule.php:106
+msgid "(Polylang veya WPML gerekir)"
+msgstr ""
+
+#: src/WordPress/Settings/BoosterModule.php:109
+msgid "açık"
+msgstr ""
+
+#: src/WordPress/Settings/BoosterModule.php:111
+msgid "Booster'ın açmadıkları: teklif kutusu (kişisel veri toplar; KVKK uyarısıyla kendi ekranından) ve telemetri (veri gönderir; yalnızca ayrı onayla)."
+msgstr ""
+
+#: src/WordPress/Settings/BoosterModule.php:112
+msgid "Booster AI'ı çalıştır"
+msgstr ""
+
+#: src/WordPress/Settings/BoosterModule.php:116
+msgid "Booster'dan önceki duruma dön"
+msgstr ""
+
 #: src/WordPress/Settings/SettingsPage.php:73
 msgid "Ölçüm ve uyum"
 msgstr ""
@@ -2838,101 +2905,105 @@ msgstr ""
 msgid "Ayar kaydedildi."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:162
+#: src/WordPress/Settings/SettingsPage.php:157
+msgid "Booster'dan önceki duruma dönüldü."
+msgstr ""
+
+#: src/WordPress/Settings/SettingsPage.php:163
 msgid "Her özellik ayrı açılır ve kapanır; varsayılan olarak yalnızca AI ölçümü açıktır. Bir özelliğin önkoşulu kapalıysa ya da açık başka bir özellik ona bağlıysa satırında yazar."
 msgstr ""
 
 #. translators: %s: feature names.
-#: src/WordPress/Settings/SettingsPage.php:190
+#: src/WordPress/Settings/SettingsPage.php:192
 #, php-format
 msgid "Önce şunu kapatın: %s"
 msgstr ""
 
 #. translators: %s: feature names.
-#: src/WordPress/Settings/SettingsPage.php:200
+#: src/WordPress/Settings/SettingsPage.php:202
 #, php-format
 msgid "şunlardan biri: %s"
 msgstr ""
 
 #. translators: %s: feature names.
-#: src/WordPress/Settings/SettingsPage.php:204
+#: src/WordPress/Settings/SettingsPage.php:206
 #, php-format
 msgid "Önce şunu açın: %s"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:211
+#: src/WordPress/Settings/SettingsPage.php:213
 msgid "Teklif Kutusu ekranında açın"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:218
+#: src/WordPress/Settings/SettingsPage.php:220
 msgid "Ekrana git"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:251
+#: src/WordPress/Settings/SettingsPage.php:253
 msgid "Eklentiyi silme"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:256
+#: src/WordPress/Settings/SettingsPage.php:258
 msgid "Eklentiyi silerken tüm verilerini de sil (tablolar, ayarlar, ilanlar, talepler). Geri alınamaz."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:257
+#: src/WordPress/Settings/SettingsPage.php:259
 msgid "İşaretli değilse eklenti silinse bile verileriniz korunur."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:289
+#: src/WordPress/Settings/SettingsPage.php:291
 msgid "Bilinmeyen özellik."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:331
+#: src/WordPress/Settings/SettingsPage.php:333
 msgid "Ürün satıcısı, üretici ya da dağıtıcı"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:332
+#: src/WordPress/Settings/SettingsPage.php:334
 msgid "İhracatçı (çoklu dil ile)"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:333
+#: src/WordPress/Settings/SettingsPage.php:335
 msgid "Tur operatörü"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:334
+#: src/WordPress/Settings/SettingsPage.php:336
 msgid "Portal (birçok işletme)"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:335
+#: src/WordPress/Settings/SettingsPage.php:337
 msgid "Hizmet, yalnızca okuma (ör. hukuk bürosu: A2A ve teklif kutusu yok)"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:346
+#: src/WordPress/Settings/SettingsPage.php:348
 msgid "— Site türü seçin —"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:350
+#: src/WordPress/Settings/SettingsPage.php:352
 msgid "Önerilen kurulum"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:351
+#: src/WordPress/Settings/SettingsPage.php:353
 msgid "Site türünüze uygun özellikleri tek seferde açar. Hiçbir özelliği kapatmaz. Önce neyin açılacağını gösterir."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:354
+#: src/WordPress/Settings/SettingsPage.php:356
 msgid "Önizle"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:363
+#: src/WordPress/Settings/SettingsPage.php:365
 msgid "Açılacaklar:"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:364
+#: src/WordPress/Settings/SettingsPage.php:366
 msgid "Zaten açık:"
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:365
+#: src/WordPress/Settings/SettingsPage.php:367
 msgid "Ayrıca elle: teklif kutusu (KVKK uyarısıyla kendi ekranından), aranan ilanınız varsa eşleştirme, firma profilinde sektör şablonu."
 msgstr ""
 
-#: src/WordPress/Settings/SettingsPage.php:394
+#: src/WordPress/Settings/SettingsPage.php:396
 msgid "Bilinmeyen site türü."
 msgstr ""
 

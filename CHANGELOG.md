@@ -3,6 +3,29 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.25.0] - 2026-10-05
+
+### Eklendi
+- **Booster AI** (plan onaylı: `docs/planlar/1.25.0-booster-ai-ve-otomatik-guncelleme.md`). Ayarlar ekranının en
+  üstünde tek düğme: bu siteye uygun bütün özellikler önkoşul sırasıyla açılır (tekli anahtarlarla aynı işler:
+  önbellek kuralları, site haritası, IndexNow anahtarı, güvenlik yazılımları), otomatik güncelleme kurulur, ilk işler
+  (AI bot IP listeleri, uyum taraması, ağ kontrolü ve kardeş katalogları, güncelleme denetimi) arka planda tek seferlik
+  WP-Cron işiyle başlar. Hiçbir şeyi kapatmaz; önceki durum kaydedilir ve "Booster'dan önceki duruma dön" ile geri
+  alınır (yalnızca Booster'ın açtıkları kapanır; sahibin güncelleme sunucusu korunur).
+  - Ön seçim: portal modu yalnızca site zaten portalsa, çoklu dil yalnızca Polylang/WPML varsa işaretli.
+  - Booster'ın hiç açmadıkları: telemetri (ayrı onay) ve **teklif kutusu** (kişisel veri; mevcut kural gereği yalnızca
+    KVKK uyarısıyla kendi ekranından). Plandan sapma: planda yalnızca telemetri sayılmıştı; teklif kutusu, ayarlar
+    ekranının 1.9.0'dan beri süren kuralına uyması için eklendi.
+  - **Onaylı istisna:** Booster'ın kendi özellik anahtarı yok. Bir ayar aracıdır, yalnızca anahtarları açar; anahtarla
+    gizlenen bir "anahtarları aç" düğmesi anlamsız olurdu.
+- **Otomatik güncelleme yayını:** `v*` etiketi gönderilince GitHub Actions (`.github/workflows/release.yml`) testleri
+  yeniden çalıştırır, `bin/paketle` ile zip'i üretir, `bin/manifest` ile güncelleme bildirimini (yeni sürüm + önceki
+  9 sürüm, geri alma için) yazar ve GitHub sürümü olarak yayınlar. `release.json`'daki `download_url` artık gerçek
+  GitHub adresidir. Siteler `releases/latest/download/ai-hazir-site.json` adresini okur; kanarya kanalı (pilot hemen,
+  genel 48 saat sonra) ve tek tık geri alma (1.3.0) aynen geçerli. Plandaki "24 saat" yerine mevcut 48 saatlik genel
+  kanal gecikmesi korundu.
+- Testler: `BoosterTest` (birim), `BoosterFlowTest` (entegrasyon).
+
 ## [1.24.1] - 2026-10-04
 
 ### Güvenlik

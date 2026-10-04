@@ -16,6 +16,36 @@ namespace AIHazirSite\Core\Updates;
  */
 final class ReleaseManifest {
 
+	public const KEEP = 10;
+
+	/**
+	 * The next manifest (1.25.0 release workflow): the new release first, then the previous manifest's releases
+	 * (same version replaced), at most KEEP, so sites can still roll back one step.
+	 *
+	 * @param string               $previous Previous manifest JSON ('' or invalid = none).
+	 * @param array<string, mixed> $release  New release entry (as written by bin/paketle).
+	 * @param string               $slug     Plugin slug.
+	 */
+	public static function merge( string $previous, array $release, string $slug ): string {
+		$old      = json_decode( $previous, true );
+		$releases = array( $release );
+		if ( is_array( $old ) && ( $old['slug'] ?? null ) === $slug && is_array( $old['releases'] ?? null ) ) {
+			foreach ( $old['releases'] as $item ) {
+				if ( is_array( $item ) && ( $item['version'] ?? null ) !== ( $release['version'] ?? null ) && null !== self::release( $item ) ) {
+					$releases[] = $item;
+				}
+			}
+		}
+		usort( $releases, static fn( array $a, array $b ): int => version_compare( (string) $b['version'], (string) $a['version'] ) );
+		return (string) json_encode( // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Platform-neutral core.
+			array(
+				'slug'     => $slug,
+				'releases' => array_slice( $releases, 0, self::KEEP ),
+			),
+			JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+		) . "\n";
+	}
+
 	/**
 	 * Releases, newest first.
 	 *
