@@ -164,6 +164,16 @@ final class Features {
 	public const NETWORK_SUGGESTIONS = 'network_suggestions';
 
 	/**
+	 * "Komşu ülkelerde" block and shortcode: sibling portals' listings with UTM-tagged links (1.23.0).
+	 */
+	public const NETWORK_BLOCK = 'network_block';
+
+	/**
+	 * Network referrals in the measurement: human visits from verified sibling portals (1.23.0).
+	 */
+	public const NETWORK_REFERRALS = 'network_referrals';
+
+	/**
 	 * Sector templates (0.8.0).
 	 */
 	public const TEMPLATES = 'templates';
@@ -197,6 +207,8 @@ final class Features {
 		self::MCP                 => array( self::ABILITIES ),
 		self::PORTAL_NETWORK      => array( self::REST_API ),
 		self::NETWORK_SUGGESTIONS => array( self::PORTAL_NETWORK ),
+		self::NETWORK_BLOCK       => array( self::PORTAL_NETWORK ),
+		self::NETWORK_REFERRALS   => array( self::MEASUREMENT, self::PORTAL_NETWORK ),
 		self::COMPLIANCE_REPORT   => array( self::COMPLIANCE_SCAN ),
 	);
 
@@ -260,6 +272,8 @@ final class Features {
 			self::PORTAL_NETWORK          => false,
 			self::SECURITY_INTEGRATIONS   => false,
 			self::NETWORK_SUGGESTIONS     => false,
+			self::NETWORK_BLOCK           => false,
+			self::NETWORK_REFERRALS       => false,
 		);
 	}
 

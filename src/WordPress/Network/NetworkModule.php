@@ -49,7 +49,7 @@ final class NetworkModule implements Module {
 		}
 		add_action( 'rest_api_init', array( self::class, 'routes' ) );
 		add_action( self::HOOK, array( self::class, 'check' ) );
-		if ( Features::is_enabled( Features::NETWORK_SUGGESTIONS ) ) {
+		if ( NetworkCatalog::collecting() ) {
 			// After the consent check, so only siblings verified this hour are read.
 			add_action( self::HOOK, array( NetworkCatalog::class, 'refresh' ), 20 );
 		}

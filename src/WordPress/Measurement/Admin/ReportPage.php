@@ -162,6 +162,24 @@ final class ReportPage {
 			array_map( static fn( array $r ): array => array( $r['source'], $r['total'] ), Report::section( $rows, Report::SECTION_MCP ) )
 		);
 
+		// 1.23.0: only on sites that received visits from sibling portals.
+		$network = Report::section( $rows, Report::SECTION_NETWORK );
+		if ( array() !== $network ) {
+			$html .= self::table(
+				'network',
+				__( 'Ağ yönlendirmeleri: kardeş portallardan gelen insan ziyaretleri', 'ai-hazir-site' ),
+				array( __( 'Kardeş portal', 'ai-hazir-site' ), __( 'Ziyaret', 'ai-hazir-site' ) ),
+				array_map( static fn( array $r ): array => array( $r['source'], $r['total'] ), $network )
+			);
+			$html .= self::table(
+				'network-pages',
+				/* translators: %d: number of pages. */
+				sprintf( __( 'Kardeş portallardan gelenlerin en çok açtığı %d sayfa', 'ai-hazir-site' ), Report::TOP_PAGES ),
+				array( __( 'Sayfa', 'ai-hazir-site' ), __( 'Ziyaret', 'ai-hazir-site' ) ),
+				array_map( static fn( array $r ): array => array( $r['path'], $r['total'] ), Report::section( $rows, Report::SECTION_NET_PAGES ) )
+			);
+		}
+
 		// 1.17.0: only when there were test requests; they are not in any table above.
 		$tests = Report::section( $rows, Report::SECTION_TEST );
 		if ( array() !== $tests ) {
@@ -243,6 +261,8 @@ final class ReportPage {
 			Report::SECTION_AI_FILES  => __( 'AI dosyası', 'ai-hazir-site' ),
 			Report::SECTION_MCP       => __( 'MCP', 'ai-hazir-site' ),
 			Report::SECTION_TEST      => __( 'Test (hariç tutuldu)', 'ai-hazir-site' ),
+			Report::SECTION_NETWORK   => __( 'Ağ yönlendirmesi', 'ai-hazir-site' ),
+			Report::SECTION_NET_PAGES => __( 'Ağ yönlendirmesi sayfası', 'ai-hazir-site' ),
 		);
 	}
 

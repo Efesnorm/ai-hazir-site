@@ -25,6 +25,7 @@ use AIHazirSite\WordPress\Discovery\DiscoveryModule;
 use AIHazirSite\WordPress\Integrations\IntegrationsModule;
 use AIHazirSite\WordPress\Settings\SettingsModule;
 use AIHazirSite\WordPress\IndexNow\IndexNowModule;
+use AIHazirSite\WordPress\Network\NetworkBlock;
 use AIHazirSite\WordPress\Network\NetworkModule;
 use AIHazirSite\WordPress\Access\AccessModule;
 use AIHazirSite\WordPress\Catalog\CatalogModule;
@@ -100,6 +101,7 @@ final class Plugin {
 			new SettingsModule(),
 			new IndexNowModule(),
 			new NetworkModule(),
+			new NetworkBlock(),
 		);
 	}
 

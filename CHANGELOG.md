@@ -3,6 +3,36 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.23.0] - 2026-10-04
+
+### Eklendi
+- **"Komşu ülkelerde" bloğu ve `[aihs_komsu_ulkeler]` kısa kodu** (`network_block`, varsayılan kapalı, önkoşul
+  `portal_network`; plan onaylı: `docs/planlar/1.23.0-komsu-ulkeler-ve-ag-yonlendirmeleri.md`).
+  - Doğrulanmış kardeş portalların ilanları 1.22.0 kardeş katalog önbelleğinden gelir; sayfa açılırken kardeşe istek
+    gitmez. Önbelleği dolduran saatlik okuma artık `network_suggestions` veya `network_block` açıksa çalışır.
+  - Ayarlar: başlık, adet (varsayılan 6, en çok 12), tür, kategori, bölge, faaliyet alanı (NACE), tek kardeş site.
+    Sıra: kardeşler arasında dönüşümlü, her kardeşte en yeni önce.
+  - Anlamsal HTML (`section` + `h2` + `ul`), anlamlı bağlantı metni. Uygun ilan yoksa hiçbir şey çizilmez; anahtar
+    kapalıyken kısa kod etiketi de görünmez.
+  - Bağlantılar standart kampanya parametreleriyle (GA4 ve öteki analitik araçları okur):
+    `utm_source=<bu sitenin alan adı>&utm_medium=portal-agi&utm_campaign=komsu-ulkeler`, `#ilan-` çapası korunur.
+  - AI cevaplarındaki önerilere (1.22.0) bilerek UTM eklenmedi: AI platformundan gelen ziyaret "AI yönlendirmesi"
+    sayılmalı.
+  - Blok derleme gerektirmez (rozet bloğu gibi); düzenleyicide NACE ve kardeş listesi seçilebilir.
+- **AI Ölçüm'de "Ağ yönlendirmeleri"** (`network_referrals`, varsayılan kapalı, önkoşul `measurement` ve
+  `portal_network`).
+  - Bir insan ziyareti, `Referer` doğrulanmış bir kardeşin alan adındaysa ya da `utm_medium=portal-agi` ve
+    `utm_source` doğrulanmış bir kardeşse sayılır. Sıra: test → AI botu → AI platformu → ağ.
+  - Ölçüm tablosuna yeni tür `network` (şema değişmedi). Kaynak, gelen değer değil, doğrulanmış kardeş listemizdeki alan
+    adıdır (`www.` olmadan). IP, çerez, ziyaretçi bilgisi yok.
+  - Rapor ekranında, yalnızca ağ ziyareti olan sitelerde, kardeş başına ve sayfa başına iki tablo; CSV'de "Ağ
+    yönlendirmesi" ve "Ağ yönlendirmesi sayfası" satırları.
+  - Kardeş listesi yalnızca `Referer` veya `utm_source` taşıyan insan ziyaretlerinde okunur.
+- Testler: `NetworkLinkTest`, `NetworkBlockTest`.
+
+### Test güncellemesi (onaylı)
+- `FeaturesTest`: anahtar listesine `network_block` ve `network_referrals` (varsayılan kapalı).
+
 ## [1.22.0] - 2026-10-04
 
 ### Eklendi

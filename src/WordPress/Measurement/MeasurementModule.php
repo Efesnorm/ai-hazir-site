@@ -18,6 +18,7 @@ use AIHazirSite\WordPress\Module;
 use AIHazirSite\WordPress\Storage\WpdbHitRepository;
 use AIHazirSite\WordPress\Measurement\Admin\ReportPage;
 use AIHazirSite\WordPress\Measurement\Cli\HitsCommand;
+use AIHazirSite\WordPress\Network\NetworkModule;
 use AIHazirSite\WordPress\Platform\WpCache;
 use AIHazirSite\WordPress\Platform\WpClock;
 use AIHazirSite\WordPress\Platform\WpHttpClient;
@@ -70,7 +71,10 @@ final class MeasurementModule implements Module {
 			new WpdbHitRepository(),
 			new WpClock(),
 			null,
-			new Verifier( self::ip_ranges(), new WpCache(), new WpSecret() )
+			new Verifier( self::ip_ranges(), new WpCache(), new WpSecret() ),
+			Features::is_enabled( Features::NETWORK_REFERRALS ) && Features::is_enabled( Features::PORTAL_NETWORK )
+				? static fn(): array => array_column( NetworkModule::view()->siblings(), 'url' )
+				: null
 		);
 	}
 

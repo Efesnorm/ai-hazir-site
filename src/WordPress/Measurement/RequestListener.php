@@ -36,7 +36,7 @@ final class RequestListener {
 		if ( ! self::is_countable() || self::is_scan_request( $_SERVER ) ) {
 			return;
 		}
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only analytics; utm_source is only compared, never stored.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only analytics; utm_source / utm_medium are only compared, never stored.
 		$this->tracker->capture( self::request_from( $_SERVER, $_GET ) );
 	}
 
@@ -77,7 +77,8 @@ final class RequestListener {
 			self::field( $server, 'REQUEST_URI' ),
 			false === filter_var( $ip, FILTER_VALIDATE_IP ) ? '' : $ip,
 			self::field( $server, 'HTTP_REFERER' ),
-			sanitize_text_field( self::field( $query, 'utm_source' ) )
+			sanitize_text_field( self::field( $query, 'utm_source' ) ),
+			sanitize_text_field( self::field( $query, 'utm_medium' ) )
 		);
 	}
 

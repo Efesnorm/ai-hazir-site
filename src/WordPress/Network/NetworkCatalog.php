@@ -18,6 +18,8 @@ use AIHazirSite\Core\Network\SiblingCatalog;
  * /listings (paged, at most SiblingCatalog::MAX_ITEMS) and /businesses are read and kept as a compact transient per
  * sibling (at most MAX_BYTES). A 429 is respected (Retry-After); an unreachable sibling's old copy is dropped.
  * Searches that found nothing here (or ask with network=true) get up to three suggestions from these copies.
+ *
+ * @phpstan-import-type Catalog from SiblingCatalog
  */
 final class NetworkCatalog {
 
@@ -34,10 +36,35 @@ final class NetworkCatalog {
 	}
 
 	/**
+	 * Whether sibling catalogs are read: for suggestions or for the "Komşu ülkelerde" block (1.23.0).
+	 */
+	public static function collecting(): bool {
+		return Features::is_enabled( Features::PORTAL_NETWORK ) && ( Features::is_enabled( Features::NETWORK_SUGGESTIONS ) || Features::is_enabled( Features::NETWORK_BLOCK ) );
+	}
+
+	/**
+	 * Copies of the verified siblings' catalogs (freshness is checked by SiblingCatalog).
+	 *
+	 * @return list<array<string, mixed>>
+	 *
+	 * @phpstan-return list<Catalog>
+	 */
+	public static function catalogs(): array {
+		$catalogs = array();
+		foreach ( NetworkModule::view()->siblings() as $site ) {
+			$catalog = SiblingCatalog::from_array( get_transient( self::PREFIX . md5( $site['url'] ) ) );
+			if ( null !== $catalog && $catalog['site'] === $site['url'] ) {
+				$catalogs[] = $catalog;
+			}
+		}
+		return $catalogs;
+	}
+
+	/**
 	 * Re-reads every verified sibling (hooked after NetworkModule::check()).
 	 */
 	public static function refresh(): void {
-		if ( ! self::enabled() ) {
+		if ( ! self::collecting() ) {
 			return;
 		}
 		foreach ( NetworkModule::view()->siblings() as $site ) {
@@ -64,14 +91,7 @@ final class NetworkCatalog {
 	 * @return list<array<string, mixed>>
 	 */
 	public static function suggestions( ListingSearch $search, string $sector ): array {
-		$catalogs = array();
-		foreach ( NetworkModule::view()->siblings() as $site ) {
-			$catalog = SiblingCatalog::from_array( get_transient( self::PREFIX . md5( $site['url'] ) ) );
-			if ( null !== $catalog && $catalog['site'] === $site['url'] ) {
-				$catalogs[] = $catalog;
-			}
-		}
-		return SiblingCatalog::suggest( $catalogs, $search, $sector, time() );
+		return SiblingCatalog::suggest( self::catalogs(), $search, $sector, time() );
 	}
 
 	/**

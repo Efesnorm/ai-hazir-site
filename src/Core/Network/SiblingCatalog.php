@@ -21,12 +21,14 @@ use AIHazirSite\Core\Catalog\Query\ListingSearch;
  * @phpstan-type Entry array{title: string, type: string, category: string, region: string, url: string, business: string, nace: string, updated_at: string}
  * @phpstan-type Catalog array{site: string, name: string, country: string, retrieved_at: int, items: list<Entry>}
  * @phpstan-type Suggestion array{site: string, site_name: string, country: string, business: string|null, title: string, type: string, category: string, region: string, url: string, nace: string|null, retrieved_at: string}
+ * @phpstan-type Found array{site: string, site_name: string, country: string, business: string|null, title: string, type: string, category: string, region: string, url: string, nace: string|null, retrieved_at: string, updated_at: string}
  */
 final class SiblingCatalog {
 
 	public const MAX_ITEMS   = 500;
 	public const MAX_AGE     = 7200;
 	public const LIMIT       = 3;
+	public const BLOCK_MAX   = 12;
 	public const PER_PAGE    = 50;
 	public const MAX_PAGES   = 10;
 	public const TITLE_MAX   = 200;
@@ -142,6 +144,65 @@ final class SiblingCatalog {
 	 * @phpstan-return list<Suggestion>
 	 */
 	public static function suggest( array $catalogs, ListingSearch $search, string $sector, int $now ): array {
+		$found = self::matching( $catalogs, $search, $sector, $now );
+		usort( $found, static fn( array $a, array $b ): int => strcmp( $b['updated_at'], $a['updated_at'] ) );
+		return self::without_updated( array_slice( $found, 0, self::LIMIT ) );
+	}
+
+	/**
+	 * Listings for the "Komşu ülkelerde" block (1.23.0): the same matching as suggest(), optionally one sibling only;
+	 * newest first within each sibling and taken from the siblings in turn, so one portal does not fill the block.
+	 * Siblings are ordered by their newest matching listing.
+	 *
+	 * @param array<mixed>  $catalogs Catalogs (compact()).
+	 * @param ListingSearch $search   Search (type, category, region, keyword).
+	 * @param string        $sector   NACE section letter or ''.
+	 * @param string        $site     Only this sibling (its URL), or ''.
+	 * @param int           $count    Number of listings (1…BLOCK_MAX).
+	 * @param int           $now      Unix time.
+	 * @return list<array<string, mixed>>
+	 *
+	 * @phpstan-param list<Catalog> $catalogs
+	 * @phpstan-return list<Suggestion>
+	 */
+	public static function pick( array $catalogs, ListingSearch $search, string $sector, string $site, int $count, int $now ): array {
+		$count  = max( 1, min( self::BLOCK_MAX, $count ) );
+		$groups = array();
+		foreach ( self::matching( $catalogs, $search, $sector, $now ) as $item ) {
+			if ( '' === $site || $site === $item['site'] ) {
+				$groups[ $item['site'] ][] = $item;
+			}
+		}
+		foreach ( $groups as $key => $items ) {
+			usort( $items, static fn( array $a, array $b ): int => strcmp( $b['updated_at'], $a['updated_at'] ) );
+			$groups[ $key ] = $items;
+		}
+		uasort( $groups, static fn( array $a, array $b ): int => strcmp( $b[0]['updated_at'], $a[0]['updated_at'] ) );
+		$rounds = array() === $groups ? 0 : max( array_map( 'count', $groups ) );
+		$picked = array();
+		for ( $round = 0; $round < $rounds; $round++ ) {
+			foreach ( $groups as $items ) {
+				if ( isset( $items[ $round ] ) ) {
+					$picked[] = $items[ $round ];
+				}
+			}
+		}
+		return self::without_updated( array_slice( $picked, 0, $count ) );
+	}
+
+	/**
+	 * Every listing of the fresh catalogs that matches, as suggestions with their update time.
+	 *
+	 * @param array<mixed>  $catalogs Catalogs.
+	 * @param ListingSearch $search   Search.
+	 * @param string        $sector   NACE section letter or ''.
+	 * @param int           $now      Unix time.
+	 * @return list<array<string, mixed>>
+	 *
+	 * @phpstan-param list<Catalog> $catalogs
+	 * @phpstan-return list<Found>
+	 */
+	private static function matching( array $catalogs, ListingSearch $search, string $sector, int $now ): array {
 		if ( array() !== $search->attributes ) {
 			return array();
 		}
@@ -176,13 +237,25 @@ final class SiblingCatalog {
 				);
 			}
 		}
-		usort( $found, static fn( array $a, array $b ): int => strcmp( $b['updated_at'], $a['updated_at'] ) );
+		return $found;
+	}
+
+	/**
+	 * Drops the internal update time.
+	 *
+	 * @param list<array<string, mixed>> $items Items.
+	 * @return list<array<string, mixed>>
+	 *
+	 * @phpstan-param list<Found> $items
+	 * @phpstan-return list<Suggestion>
+	 */
+	private static function without_updated( array $items ): array {
 		return array_map(
 			static function ( array $s ): array {
 				unset( $s['updated_at'] );
 				return $s;
 			},
-			array_slice( $found, 0, self::LIMIT )
+			$items
 		);
 	}
 

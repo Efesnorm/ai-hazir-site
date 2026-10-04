@@ -26,13 +26,15 @@ final class Request {
 	 * @param string $ip         Client IP ('' when unknown or invalid).
 	 * @param string $referer    Referer header.
 	 * @param string $utm_source Value of the utm_source query parameter.
+	 * @param string $utm_medium Value of the utm_medium query parameter (1.23.0).
 	 */
 	public function __construct(
 		public readonly string $user_agent = '',
 		public readonly string $uri = '/',
 		public readonly string $ip = '',
 		public readonly string $referer = '',
-		public readonly string $utm_source = ''
+		public readonly string $utm_source = '',
+		public readonly string $utm_medium = ''
 	) {
 	}
 }
