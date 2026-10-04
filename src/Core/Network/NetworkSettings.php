@@ -86,7 +86,7 @@ final class NetworkSettings {
 		if ( self::ROLE_MOTHER === $role ) {
 			$name = mb_substr( trim( (string) preg_replace( '/[\s\x00-\x1F\x7F]+/u', ' ', is_scalar( $input['name'] ?? null ) ? (string) $input['name'] : '' ) ), 0, self::NAME_MAX );
 			if ( '' === $name ) {
-				$errors[] = 'Ağ adı gerekli.';
+				$errors[] = 'Ağ adı gerekli (yalnızca anne site için). Bu site bir anneye bağlanacaksa rolü "Üye" seçin.';
 			}
 			$lines   = is_array( $input['members'] ?? null ) ? $input['members'] : preg_split( '/[\r\n,]+/', is_scalar( $input['members'] ?? null ) ? (string) $input['members'] : '' );
 			$members = array();

@@ -84,18 +84,22 @@ final class NetworkPage {
 			$html .= '<div class="notice notice-error inline"><ul>' . implode( '', array_map( static fn( $e ): string => '<li>' . esc_html( (string) $e ) . '</li>', $errors ) ) . '</ul></div>';
 		}
 
-		$role  = static fn( string $value, string $label ) => '<label style="display:block"><input type="radio" name="role" value="' . esc_attr( $value ) . '"' . checked( $settings->role, $value, false ) . '> ' . esc_html( $label ) . '</label>';
-		$html .= '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" id="aihs-network-form">'
+		$role = static fn( string $value, string $label ) => '<label style="display:block"><input type="radio" name="role" value="' . esc_attr( $value ) . '"' . checked( $settings->role, $value, false ) . '> ' . esc_html( $label ) . '</label>';
+		// 1.23.1: only the chosen role's fields (CSS :has(); without support every field stays visible, as before).
+		$html  .= '<style>#aihs-network-form:has(input[name="role"]:not([value="mother"]):checked) .aihs-for-mother,#aihs-network-form:has(input[name="role"]:not([value="member"]):checked) .aihs-for-member{display:none}</style>';
+		$joined = NetworkSettings::ROLE_MEMBER === $settings->role ? $view->network_name() : '';
+		$html  .= '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" id="aihs-network-form">'
 			. '<input type="hidden" name="action" value="' . esc_attr( self::SAVE ) . '">' . wp_nonce_field( self::SAVE, '_wpnonce', true, false )
 			. '<h2>' . esc_html__( 'Bu sitenin rolü', 'ai-hazir-site' ) . '</h2>'
 			. $role( NetworkSettings::ROLE_NONE, __( 'Ağda değil', 'ai-hazir-site' ) )
 			. $role( NetworkSettings::ROLE_MOTHER, __( 'Anne site (ağı buradan yönetirim, veriyi buradan izlerim)', 'ai-hazir-site' ) )
 			. $role( NetworkSettings::ROLE_MEMBER, __( 'Üye (bir anne siteye bağlıyım)', 'ai-hazir-site' ) )
 			. '<table class="form-table"><tbody>'
-			. '<tr><th><label for="aihs-network-name">' . esc_html__( 'Ağ adı (anne)', 'ai-hazir-site' ) . '</label></th><td><input type="text" class="regular-text" id="aihs-network-name" name="name" maxlength="' . (int) NetworkSettings::NAME_MAX . '" value="' . esc_attr( $settings->name ) . '"></td></tr>'
-			. '<tr><th><label for="aihs-network-members">' . esc_html__( 'Üye siteler (anne)', 'ai-hazir-site' ) . '</label></th><td><textarea class="large-text code" rows="8" id="aihs-network-members" name="members" placeholder="https://www.ornek.org.tr/">' . esc_textarea( implode( "\n", $settings->members ) ) . '</textarea>'
+			. '<tr class="aihs-for-mother"><th><label for="aihs-network-name">' . esc_html__( 'Ağ adı (anne)', 'ai-hazir-site' ) . '</label></th><td><input type="text" class="regular-text" id="aihs-network-name" name="name" maxlength="' . (int) NetworkSettings::NAME_MAX . '" value="' . esc_attr( $settings->name ) . '"></td></tr>'
+			. '<tr class="aihs-for-mother"><th><label for="aihs-network-members">' . esc_html__( 'Üye siteler (anne)', 'ai-hazir-site' ) . '</label></th><td><textarea class="large-text code" rows="8" id="aihs-network-members" name="members" placeholder="https://www.ornek.org.tr/">' . esc_textarea( implode( "\n", $settings->members ) ) . '</textarea>'
 			. '<p class="description">' . esc_html( sprintf( /* translators: %d: maximum members. */ __( 'Her satıra bir site adresi (https). En çok %d üye.', 'ai-hazir-site' ), NetworkSettings::MAX_MEMBERS ) ) . '</p></td></tr>'
-			. '<tr><th><label for="aihs-network-mother">' . esc_html__( 'Anne site adresi (üye)', 'ai-hazir-site' ) . '</label></th><td><input type="url" class="regular-text" id="aihs-network-mother" name="mother" value="' . esc_attr( NetworkSettings::ROLE_MEMBER === $settings->role ? $settings->mother : '' ) . '" placeholder="https://"></td></tr>'
+			. ( '' === $joined ? '' : '<tr class="aihs-for-member" id="aihs-network-joined"><th>' . esc_html__( 'Ağ adı', 'ai-hazir-site' ) . '</th><td><strong>' . esc_html( $joined ) . '</strong> <span class="description">' . esc_html__( '(anne siteden)', 'ai-hazir-site' ) . '</span></td></tr>' )
+			. '<tr class="aihs-for-member"><th><label for="aihs-network-mother">' . esc_html__( 'Anne site adresi (üye)', 'ai-hazir-site' ) . '</label></th><td><input type="url" class="regular-text" id="aihs-network-mother" name="mother" value="' . esc_attr( NetworkSettings::ROLE_MEMBER === $settings->role ? $settings->mother : '' ) . '" placeholder="https://"></td></tr>'
 			. '</tbody></table>'
 			. get_submit_button( __( 'Kaydet', 'ai-hazir-site' ) )
 			. '</form>';
@@ -109,7 +113,9 @@ final class NetworkPage {
 		if ( NetworkSettings::ROLE_MOTHER === $settings->role ) {
 			foreach ( $settings->members as $url ) {
 				$row    = is_array( $state['members'][ $url ] ?? null ) ? $state['members'][ $url ] : array();
-				$rows[] = array( $url . ( '' !== (string) ( $row['name'] ?? '' ) ? ' – ' . $row['name'] : '' ), $view->member_status( $url ), (int) ( $row['checked_at'] ?? 0 ) );
+				$status = $view->member_status( $url );
+				$note   = NetworkCheck::VERIFIED === $status && '' === (string) ( $row['country'] ?? '' ) ? ' (' . __( 'profilde ülke yok', 'ai-hazir-site' ) . ')' : '';
+				$rows[] = array( $url . ( '' !== (string) ( $row['name'] ?? '' ) ? ' – ' . $row['name'] : '' ) . $note, $status, (int) ( $row['checked_at'] ?? 0 ) );
 			}
 		} else {
 			$row    = is_array( $state['self'] ?? null ) ? $state['self'] : array();

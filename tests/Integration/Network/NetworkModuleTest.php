@@ -255,7 +255,7 @@ final class NetworkModuleTest extends WP_UnitTestCase {
 			)
 		);
 		$html = NetworkPage::render_html();
-		$this->assertStringContainsString( 'Ağ adı gerekli.', $html );
+		$this->assertStringContainsString( 'Ağ adı gerekli (yalnızca anne site için). Bu site bir anneye bağlanacaksa rolü &quot;Üye&quot; seçin.', $html );
 		$this->assertStringContainsString( 'id="aihs-network-form"', $html );
 
 		wp_set_current_user( self::factory()->user->create( array( 'role' => 'editor' ) ) );
