@@ -12,6 +12,7 @@ namespace AIHazirSite\Core\Measurement;
 use AIHazirSite\Core\Contracts\Clock;
 use AIHazirSite\Core\Contracts\HitRepository;
 use AIHazirSite\Core\Features;
+use AIHazirSite\Core\Network\NetworkLink;
 use Throwable;
 
 /**
@@ -39,22 +40,33 @@ final class Tracker {
 	private $verifier;
 
 	/**
+	 * Verified sibling portals' URLs (1.23.0): fn(): list<string>; null = network referrals are not counted.
+	 *
+	 * @var (callable(): list<string>)|null
+	 */
+	private $network;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param HitRepository   $hits       Counter storage.
 	 * @param Clock           $clock      Provides the day.
 	 * @param Classifier|null $classifier Classifier; loaded from data/ on first use when null.
 	 * @param callable|null   $verifier   fn( Bot, string $ip ): bool. Null means "not verified".
+	 * @param callable|null   $network    fn(): list<string>, verified sibling portals (1.23.0); null = not counted.
 	 *
 	 * @phpstan-param (callable(Bot, string): bool)|null $verifier
+	 * @phpstan-param (callable(): list<string>)|null $network
 	 */
 	public function __construct(
 		private readonly HitRepository $hits,
 		private readonly Clock $clock,
 		private ?Classifier $classifier = null,
-		?callable $verifier = null
+		?callable $verifier = null,
+		?callable $network = null
 	) {
 		$this->verifier = $verifier;
+		$this->network  = $network;
 	}
 
 	/**
@@ -103,6 +115,21 @@ final class Tracker {
 				'bot'       => null,
 				'ip'        => '',
 			);
+			return;
+		}
+
+		// 1.23.0: a human visit from a verified sibling portal (the sibling list is read only when it may matter).
+		if ( null !== $this->network && ( '' !== $request->referer || '' !== $request->utm_source ) ) {
+			$sibling = NetworkLink::referral( $request->referer, $request->utm_source, $request->utm_medium, ( $this->network )() );
+			if ( null !== $sibling ) {
+				$this->pending = array(
+					'kind'      => Hit::KIND_NETWORK,
+					'source_id' => $sibling,
+					'path'      => $path,
+					'bot'       => null,
+					'ip'        => '',
+				);
+			}
 		}
 	}
 

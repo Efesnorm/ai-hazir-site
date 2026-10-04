@@ -28,6 +28,8 @@ final class Report {
 	public const SECTION_AI_FILES  = 'ai_files';
 	public const SECTION_MCP       = 'mcp';
 	public const SECTION_TEST      = 'test';
+	public const SECTION_NETWORK   = 'network';
+	public const SECTION_NET_PAGES = 'network_pages';
 
 	public const TOP_PAGES = 10;
 
@@ -89,6 +91,13 @@ final class Report {
 		}
 		foreach ( $this->hits->totals( Hit::KIND_MCP, $since, HitRepository::GROUP_SOURCE ) as $totals ) {
 			$rows[] = $this->row( self::SECTION_MCP, $totals['key'], '', $totals );
+		}
+		// 1.23.0: human visits from verified sibling portals (source: the sibling's host), and the pages they reached.
+		foreach ( $this->hits->totals( Hit::KIND_NETWORK, $since, HitRepository::GROUP_SOURCE ) as $totals ) {
+			$rows[] = $this->row( self::SECTION_NETWORK, $totals['key'], '', $totals );
+		}
+		foreach ( $this->hits->totals( Hit::KIND_NETWORK, $since, HitRepository::GROUP_PATH, self::TOP_PAGES ) as $totals ) {
+			$rows[] = $this->row( self::SECTION_NET_PAGES, '', $totals['key'], $totals );
 		}
 		// 1.17.0: our own test requests, excluded from everything above (source: bot id, MCP tool or "test").
 		foreach ( $this->hits->totals( Hit::KIND_TEST, $since, HitRepository::GROUP_SOURCE ) as $totals ) {

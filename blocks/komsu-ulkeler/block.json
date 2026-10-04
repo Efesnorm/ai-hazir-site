@@ -1,0 +1,25 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "ai-hazir-site/komsu-ulkeler",
+	"version": "1.0.0",
+	"title": "Komşu ülkelerde",
+	"category": "widgets",
+	"icon": "networking",
+	"description": "Portal ağındaki doğrulanmış kardeş portalların uygun ilanlarını gösterir; bağlantılar UTM etiketlidir. Uygun ilan yoksa hiçbir şey göstermez.",
+	"keywords": [ "portal", "ağ", "kardeş", "komşu" ],
+	"textdomain": "ai-hazir-site",
+	"attributes": {
+		"title": { "type": "string", "default": "" },
+		"count": { "type": "number", "default": 6 },
+		"type": { "type": "string", "default": "" },
+		"category": { "type": "string", "default": "" },
+		"region": { "type": "string", "default": "" },
+		"sector": { "type": "string", "default": "" },
+		"site": { "type": "string", "default": "" }
+	},
+	"supports": {
+		"html": false
+	},
+	"editorScript": "file:./editor.js"
+}

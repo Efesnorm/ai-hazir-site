@@ -133,6 +133,8 @@ final class FeaturesTest extends UnitTestCase {
 				'portal_network'          => false,
 				'security_integrations'   => false,
 				'network_suggestions'     => false,
+				'network_block'           => false,
+				'network_referrals'       => false,
 			),
 			Features::defaults()
 		);

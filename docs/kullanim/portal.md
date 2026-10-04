@@ -82,3 +82,24 @@ kardeş portallardaki en çok 3 uygun ilan `network_suggestions` olarak gelir (s
 alındığı an). AI isterse `network=true` ile sonuç olsa da öneri ister. Kardeş katalogları saatlik ağ kontrolünden sonra
 okunur (kardeş başına en çok 500 ilan); öneri en çok ~2 saat eskidir. Kardeş sitelerin hız sınırları için gerekirse
 Entegrasyonlar → Güvenlik yazılımları (Wordfence izin listesi, barındırma firmasına metin) kullanılır.
+
+## "Komşu ülkelerde" bloğu (1.23.0)
+
+Anahtar: `network_block` (önkoşul: Portal ağı). Sayfa düzenleyicide **Komşu ülkelerde** bloğunu ekleyin ya da
+klasik düzenleyicide/araç bileşeninde kısa kodu kullanın:
+
+```
+[aihs_komsu_ulkeler count="6" category="Tur" sector="I" title="Komşu ülkelerde"]
+```
+
+Ayarlar (hepsi isteğe bağlı): `title`, `count` (1–12), `type` (offer / demand / supply), `category`, `region`,
+`sector` (NACE bölüm harfi), `site` (yalnızca bu kardeş portalın adresi). Blok doğrulanmış kardeşlerin ilanlarını
+gösterir; uygun ilan yoksa hiçbir şey göstermez. Bağlantılar `utm_source=<siteniz>&utm_medium=portal-agi&utm_campaign=komsu-ulkeler`
+ile etiketlidir; Google Analytics'te "Kampanyalar" altında görünür.
+
+## Ağ yönlendirmeleri (1.23.0)
+
+Anahtar: `network_referrals` (önkoşul: AI ölçümü ve Portal ağı). Doğrulanmış bir kardeş portaldan gelen insan
+ziyaretleri **AI Ölçüm** raporunda "Ağ yönlendirmeleri" tablosunda, kardeş başına ve açılan sayfaya göre sayılır.
+Kardeş, tarayıcının bildirdiği önceki sayfadan (Referer) ya da bloktaki UTM etiketinden tanınır. Kişisel veri
+saklanmaz. Sayfa önbelleğinden (ör. LiteSpeed) dönen ziyaretler sayılmayabilir.
