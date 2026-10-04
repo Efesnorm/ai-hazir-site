@@ -3,6 +3,34 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.24.0] - 2026-10-04
+
+### Eklendi
+- **Ağ raporu** (`network_report`, varsayılan kapalı, önkoşul `portal_network`; plan onaylı:
+  `docs/planlar/1.24.0-ag-raporu.md`). Yol haritasındaki "işletmeye talep bildirimi" onayla 1.25.0'a ayrıldı.
+  - **Üye:** `GET /wp-json/aihs/v1/network/stats?days=7|28|90` yalnızca toplamları döner: sürüm, açık anahtarlar, AI bot
+    ziyaretleri (doğrulanmış, bota göre), AI ve ağ yönlendirmeleri, MCP çağrıları, türe göre talep sayısı, geçerli ilan
+    sayısı, son uyum puanı. Ham ölçüm satırı, sayfa yolu, talep metni veya iletişim bilgisi dönmez; `Cache-Control:
+    private, no-store`.
+  - **Kimlik doğrulama: WordPress Uygulama Parolaları** (çekirdek, HTTPS üzerinden HTTP Basic, RFC 7617). Ağ Raporu
+    ekranında "Anne site için rapor anahtarı oluştur": yalnızca `aihs_network_stats` yetkisi olan, yönetim paneline
+    giremeyen ayrı bir kullanıcı (`aihs-ag-raporu`) ve uygulama parolası; parola bir kez gösterilir, site kendi uç
+    noktasını bu parolayla dener ("Authorization" başlığı sunucuya ulaşmıyorsa barındırma firmasına hazır metin).
+    "Anahtarı iptal et" parolayı siler. Anahtarsız istek 401, başka kullanıcı 403.
+  - **Anne:** üyelerin kullanıcı adı ve parolası libsodium ile şifreli saklanır (yalnızca doğrulanmış üyeler). Günde bir
+    (WP-Cron `aihs_network_report_fetch`) ve "Şimdi yenile" ile 7/28/90 günlük toplamlar okunur; 10 sn, 1 MB, 429'da
+    `Retry-After`, yönlendirme izlenmez (parola başka adrese gitmesin). Uzak yanıt veri olarak temizlenir.
+  - **Ekran:** site başına özet (sürüm, uyum puanı, bot, doğrulanmış, AI yönlendirmesi, gelen ağ yönlendirmesi, MCP,
+    talep, ilan, durum, son okuma) ve ağ toplamı; "kim kime ziyaretçi gönderdi" tablosu; dönem seçimi; CSV (UTF-8 BOM,
+    formül enjeksiyonuna karşı kaçış). 2 günden eski okuma "eski veri" olarak işaretlenir.
+  - Güvenlik yazılımları sekmesi: uygulama parolaları kapalıysa (ör. Wordfence) uyarı.
+  - Kaldırmada (veri silme seçiliyse) okuyucu kullanıcı, rolü, anahtarlar ve veriler silinir.
+  - Talep deposuna dönem sayımı (`count_by_kind`, yalnızca sayı) eklendi; CSV'ye genel tablo yazımı (`CsvExport::table`).
+  - Testler: `NetworkReportTest` (birim), `NetworkReportFlowTest` (entegrasyon).
+
+### Test güncellemesi (onaylı)
+- `FeaturesTest`: anahtar listesine `network_report` (varsayılan kapalı).
+
 ## [1.23.1] - 2026-10-04
 
 ### Düzeltildi (portal ağı canlı denemesi; plan onaylı: `docs/planlar/1.23.1-ag-duzeltmeleri.md`)

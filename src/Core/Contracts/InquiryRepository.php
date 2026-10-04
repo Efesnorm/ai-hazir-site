@@ -71,4 +71,12 @@ interface InquiryRepository {
 	 * @param string $since       ISO 8601 UTC.
 	 */
 	public function count_recent( string $client_hash, string $since ): int;
+
+	/**
+	 * Number of inquiries created since a time, by kind (1.24.0 network report; counts only).
+	 *
+	 * @param string $since ISO 8601 UTC.
+	 * @return array<string, int> Kind → count.
+	 */
+	public function count_by_kind( string $since ): array;
 }

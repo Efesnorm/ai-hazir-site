@@ -137,6 +137,23 @@ final class WpInquiryRepository implements InquiryRepository {
 	}
 
 	/**
+	 * Number of inquiries since a time, by kind (no contact data is read).
+	 *
+	 * @param string $since ISO 8601 UTC.
+	 * @return array<string, int>
+	 */
+	public function count_by_kind( string $since ): array {
+		global $wpdb;
+		$rows   = $wpdb->get_results( $wpdb->prepare( 'SELECT kind, COUNT(*) AS n FROM %i WHERE created_at >= %s GROUP BY kind', self::table(), self::to_db( $since ) ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$counts = array();
+		foreach ( is_array( $rows ) ? $rows : array() as $row ) {
+			$counts[ (string) $row['kind'] ] = (int) $row['n'];
+		}
+		ksort( $counts );
+		return $counts;
+	}
+
+	/**
 	 * Row → Inquiry (contact decrypted; empty contact when it cannot be decrypted).
 	 *
 	 * @param array<string, mixed> $row Row.

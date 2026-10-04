@@ -27,6 +27,7 @@ use AIHazirSite\WordPress\Settings\SettingsModule;
 use AIHazirSite\WordPress\IndexNow\IndexNowModule;
 use AIHazirSite\WordPress\Network\NetworkBlock;
 use AIHazirSite\WordPress\Network\NetworkModule;
+use AIHazirSite\WordPress\Network\NetworkReportModule;
 use AIHazirSite\WordPress\Access\AccessModule;
 use AIHazirSite\WordPress\Catalog\CatalogModule;
 use AIHazirSite\WordPress\Compliance\ComplianceModule;
@@ -102,6 +103,7 @@ final class Plugin {
 			new IndexNowModule(),
 			new NetworkModule(),
 			new NetworkBlock(),
+			new NetworkReportModule(),
 		);
 	}
 

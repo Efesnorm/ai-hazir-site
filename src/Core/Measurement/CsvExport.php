@@ -44,16 +44,32 @@ final class CsvExport {
 	 */
 	public static function to_csv( array $rows, ?array $headers = null, ?array $labels = null ): string {
 		$labels = $labels ?? self::SECTION_LABELS;
-		$lines  = array( array_values( $headers ?? self::HEADERS ) );
+		$lines  = array();
 		foreach ( $rows as $row ) {
 			$lines[] = array(
 				$labels[ $row['section'] ] ?? $row['section'],
-				self::cell( $row['source'] ),
-				self::cell( $row['path'] ),
+				$row['source'],
+				$row['path'],
 				(string) $row['verified'],
 				(string) $row['unverified'],
 				(string) $row['total'],
 			);
+		}
+		return self::table( $headers ?? self::HEADERS, $lines );
+	}
+
+	/**
+	 * Any table as CSV (1.24.0 network report): UTF-8 BOM, every cell escaped against formula injection.
+	 *
+	 * @param string[]   $headers Header row.
+	 * @param string[][] $rows    Rows.
+	 *
+	 * @phpstan-param list<string[]> $rows
+	 */
+	public static function table( array $headers, array $rows ): string {
+		$lines = array( array_values( $headers ) );
+		foreach ( $rows as $row ) {
+			$lines[] = array_map( array( self::class, 'cell' ), array_values( $row ) );
 		}
 
 		$handle = fopen( 'php://temp', 'r+' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- In-memory buffer.
