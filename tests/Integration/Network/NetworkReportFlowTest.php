@@ -138,6 +138,24 @@ final class NetworkReportFlowTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Authorization headers sent to a member's stats for a period (1.24.1: the address also carries a one-time
+	 * `_aihs` value, so requests are matched by site and period).
+	 *
+	 * @param string $site Member URL.
+	 * @param int    $days Period.
+	 * @return list<string>
+	 */
+	private function sent( string $site, int $days ): array {
+		$sent = array();
+		foreach ( $this->requests as $url => $authorization ) {
+			if ( 1 === preg_match( '#^' . preg_quote( $site . 'wp-json/aihs/v1/network/stats?days=' . $days, '#' ) . '&_aihs=[0-9a-f]{32}$#', $url ) ) {
+				$sent[] = $authorization;
+			}
+		}
+		return $sent;
+	}
+
+	/**
 	 * Network state: this site as mother of three verified members.
 	 */
 	private static function as_mother(): void {
@@ -258,8 +276,8 @@ final class NetworkReportFlowTest extends WP_UnitTestCase {
 		$stored = (string) wp_json_encode( get_option( NetworkReportModule::CREDS ) );
 		$this->assertStringNotContainsString( 'abcd efgh', $stored, 'Encrypted at rest.' );
 		$this->assertSame( array( self::KOSOVA, self::YUNAN ), array_keys( NetworkReportModule::credentials() ), 'Only verified members.' );
-		$this->assertSame( 'Basic ' . base64_encode( 'aihs-ag-raporu:abcd efgh ijkl mnop qrst uvwx' ), $this->requests[ self::KOSOVA . 'wp-json/aihs/v1/network/stats?days=28' ] ?? '' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Expected Basic header.
-		$this->assertArrayNotHasKey( self::ARNAVUT . 'wp-json/aihs/v1/network/stats?days=28', $this->requests, 'No key, no request.' );
+		$this->assertSame( array( 'Basic ' . base64_encode( 'aihs-ag-raporu:abcd efgh ijkl mnop qrst uvwx' ) ), $this->sent( self::KOSOVA, 28 ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Expected Basic header.
+		$this->assertSame( array(), $this->sent( self::ARNAVUT, 28 ), 'No key, no request.' );
 
 		$sites  = array_column( NetworkReportModule::sites( 28 ), null, 'url' );
 		$status = array_map( static fn( array $s ): string => $s['status'], $sites );
@@ -275,7 +293,7 @@ final class NetworkReportFlowTest extends WP_UnitTestCase {
 		$this->assertSame( NetworkReport::LIMITED, array_column( NetworkReportModule::sites( 28 ), 'status', 'url' )[ self::ARNAVUT ] );
 		$this->requests = array();
 		NetworkReportModule::fetch_all();
-		$this->assertArrayNotHasKey( self::ARNAVUT . 'wp-json/aihs/v1/network/stats?days=7', $this->requests );
+		$this->assertSame( array(), $this->sent( self::ARNAVUT, 7 ) );
 
 		$html = NetworkReportPage::render_html( 28 );
 		$this->assertStringContainsString( 'id="aihs-network-report-summary"', $html );
@@ -289,6 +307,51 @@ final class NetworkReportFlowTest extends WP_UnitTestCase {
 		$csv = NetworkReportPage::csv( 28 );
 		$this->assertStringContainsString( 'Kosova,1.24.0,81,40,10,2,5,1,1,7,güncel,', $csv );
 		$this->assertStringContainsString( '"Ağ toplamı"', $csv );
+	}
+
+	/**
+	 * 1.24.1: no cache may keep the answer (200, 401 or 403); the mother never asks the same address twice.
+	 */
+	public function test_never_cached(): void {
+		self::as_member();
+		( new NetworkReportModule() )->register();
+		do_action( 'rest_api_init' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core hook.
+		self::post( NetworkReportPage::CREATE );
+		$nocache = 0;
+		add_action(
+			'litespeed_control_set_nocache',
+			static function () use ( &$nocache ): void {
+				++$nocache;
+			}
+		);
+		$admin  = get_current_user_id();
+		$reader = get_user_by( 'login', NetworkReportModule::USER_LOGIN );
+		$this->assertInstanceOf( WP_User::class, $reader );
+		foreach ( array(
+			0           => 401,
+			$admin      => 403,
+			$reader->ID => 200,
+		) as $user => $code ) {
+			wp_set_current_user( $user );
+			$request  = new WP_REST_Request( 'GET', '/aihs/v1/network/stats' );
+			$response = apply_filters( 'rest_post_dispatch', rest_ensure_response( rest_get_server()->dispatch( $request ) ), rest_get_server(), $request ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core hook.
+			$this->assertSame( $code, $response->get_status() );
+			$this->assertSame( 'private, no-store', $response->get_headers()['Cache-Control'] ?? null, (string) $code );
+			$this->assertSame( 'no-cache', $response->get_headers()['X-LiteSpeed-Cache-Control'] ?? null, (string) $code );
+		}
+		$this->assertSame( 3, $nocache );
+		$this->assertTrue( defined( 'DONOTCACHEPAGE' ) );
+
+		$other = apply_filters( 'rest_post_dispatch', new \WP_REST_Response( array() ), rest_get_server(), new WP_REST_Request( 'GET', '/aihs/v1/profile' ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core hook.
+		$this->assertArrayNotHasKey( 'X-LiteSpeed-Cache-Control', $other->get_headers(), 'Other routes untouched.' );
+
+		// Mother side: two readings use two different one-time addresses.
+		self::as_mother();
+		NetworkReportModule::save_credentials( self::KOSOVA, 'aihs-ag-raporu', 'abcd efgh ijkl mnop qrst uvwx' );
+		NetworkReportModule::fetch_all();
+		NetworkReportModule::fetch_all();
+		$urls = array_filter( array_keys( $this->requests ), static fn( string $u ): bool => str_starts_with( $u, self::KOSOVA . 'wp-json/aihs/v1/network/stats?days=28&_aihs=' ) );
+		$this->assertCount( 2, $urls );
 	}
 
 	/**

@@ -19,12 +19,14 @@ use AIHazirSite\WordPress\Catalog\CatalogReader;
 use AIHazirSite\WordPress\Compliance\ComplianceModule;
 use AIHazirSite\WordPress\Inquiry\WpInquiryRepository;
 use AIHazirSite\WordPress\Module;
+use AIHazirSite\WordPress\Platform\PageCache;
 use AIHazirSite\WordPress\Platform\SodiumCipher;
 use AIHazirSite\WordPress\Platform\WpClock;
 use AIHazirSite\WordPress\Rest\RestModule;
 use AIHazirSite\WordPress\Storage\WpdbHitRepository;
 use WP_Application_Passwords;
 use WP_Error;
+use WP_HTTP_Response;
 use WP_REST_Request;
 use WP_REST_Response;
 
@@ -62,6 +64,7 @@ final class NetworkReportModule implements Module {
 			return;
 		}
 		add_action( 'rest_api_init', array( self::class, 'routes' ) );
+		add_filter( 'rest_post_dispatch', array( self::class, 'no_cache' ), 10, 3 );
 		add_action( self::HOOK, array( self::class, 'fetch_all' ) );
 		if ( false === wp_next_scheduled( self::HOOK ) ) {
 			wp_schedule_event( time() + 300, 'daily', self::HOOK );
@@ -117,6 +120,28 @@ final class NetworkReportModule implements Module {
 		$response = new WP_REST_Response( self::stats( NetworkStats::period( $request->get_param( 'days' ) ) ) );
 		$response->header( 'Cache-Control', 'private, no-store' );
 		return $response;
+	}
+
+	/**
+	 * `rest_post_dispatch`: the stats answer (200, and the 401/403 refusals) must never be stored by a cache
+	 * (1.24.1: a LiteSpeed server cache ignored `Cache-Control: private` and served the mother's copy to any request
+	 * carrying an Authorization header). LiteSpeed's documented response header and LiteSpeed Cache's documented
+	 * no-cache action, plus the shared DONOTCACHEPAGE convention.
+	 *
+	 * @param mixed           $result  Response.
+	 * @param mixed           $server  Server.
+	 * @param WP_REST_Request $request Request.
+	 * @return mixed
+	 */
+	public static function no_cache( mixed $result, mixed $server, WP_REST_Request $request ): mixed {
+		if ( '/' . RestModule::NAMESPACE . self::ROUTE !== $request->get_route() || ! $result instanceof WP_HTTP_Response ) {
+			return $result;
+		}
+		PageCache::exclude();
+		do_action( 'litespeed_control_set_nocache', 'aihs network stats' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- LiteSpeed Cache's documented API.
+		$result->header( 'Cache-Control', 'private, no-store' );
+		$result->header( 'X-LiteSpeed-Cache-Control', 'no-cache' );
+		return $result;
 	}
 
 	/**
@@ -389,7 +414,9 @@ final class NetworkReportModule implements Module {
 	 * @return array{0: string, 1: array<string, mixed>|null, 2: int|null}
 	 */
 	private static function read( string $url, string $user, string $password, int $days ): array {
-		$response = wp_remote_get( $url . 'wp-json/aihs/v1/network/stats?days=' . $days, self::request_args( $user, $password ) );
+		// 1.24.1: a one-time address, so a cache that ignores the rules can neither serve this copy to anyone else
+		// (the address is never asked again and cannot be guessed) nor give us stale numbers.
+		$response = wp_remote_get( $url . 'wp-json/aihs/v1/network/stats?days=' . $days . '&_aihs=' . bin2hex( random_bytes( 16 ) ), self::request_args( $user, $password ) );
 		if ( is_wp_error( $response ) ) {
 			return array( NetworkReport::UNREACHABLE, null, null );
 		}
