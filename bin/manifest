@@ -1,0 +1,26 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Writes the update manifest for a release (1.25.0, used by .github/workflows/release.yml).
+ *
+ * Usage: php bin/manifest <release.json> [previous-manifest.json] > dist/ai-hazir-site.json
+ *
+ * The new release comes first, the previous manifest's releases follow (at most ReleaseManifest::KEEP), so a site can
+ * roll back one step. A missing or invalid previous manifest starts a new list.
+ *
+ * @package AIHazirSite
+ */
+
+declare(strict_types=1);
+
+// phpcs:disable WordPress -- Command-line build tool, runs outside WordPress.
+
+require dirname( __DIR__ ) . '/vendor/autoload.php';
+
+$release = json_decode( (string) @file_get_contents( $argv[1] ?? '' ), true );
+if ( ! is_array( $release ) || ! isset( $release['version'], $release['download_url'] ) ) {
+	fwrite( STDERR, "Geçersiz sürüm kaydı: " . ( $argv[1] ?? '(yok)' ) . "\n" );
+	exit( 1 );
+}
+$previous = isset( $argv[2] ) && is_file( $argv[2] ) ? (string) file_get_contents( $argv[2] ) : '';
+echo \AIHazirSite\Core\Updates\ReleaseManifest::merge( $previous, $release, 'ai-hazir-site' );

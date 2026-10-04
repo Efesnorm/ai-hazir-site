@@ -149,17 +149,19 @@ final class SettingsPage {
 	 */
 	public static function render_html( string $message = '', string $profile = '' ): string {
 		$notices = array(
-			'preset'  => array( 'success', __( 'Önerilen kurulum uygulandı. Aşağıda her özelliğin durumu görünür.', 'ai-hazir-site' ) ),
-			'on'      => array( 'success', __( 'Özellik açıldı.', 'ai-hazir-site' ) ),
-			'off'     => array( 'success', __( 'Özellik kapatıldı.', 'ai-hazir-site' ) ),
-			'blocked' => array( 'error', __( 'İşlem yapılmadı: önce satırda yazan özellikleri açın ya da kapatın.', 'ai-hazir-site' ) ),
-			'saved'   => array( 'success', __( 'Ayar kaydedildi.', 'ai-hazir-site' ) ),
+			'preset'           => array( 'success', __( 'Önerilen kurulum uygulandı. Aşağıda her özelliğin durumu görünür.', 'ai-hazir-site' ) ),
+			'on'               => array( 'success', __( 'Özellik açıldı.', 'ai-hazir-site' ) ),
+			'off'              => array( 'success', __( 'Özellik kapatıldı.', 'ai-hazir-site' ) ),
+			'blocked'          => array( 'error', __( 'İşlem yapılmadı: önce satırda yazan özellikleri açın ya da kapatın.', 'ai-hazir-site' ) ),
+			'saved'            => array( 'success', __( 'Ayar kaydedildi.', 'ai-hazir-site' ) ),
+			'booster_reverted' => array( 'success', __( 'Booster\'dan önceki duruma dönüldü.', 'ai-hazir-site' ) ),
 		);
 		$html    = '<h1>' . esc_html__( 'AI Hazır Site', 'ai-hazir-site' ) . '</h1>';
 		if ( isset( $notices[ $message ] ) ) {
 			$html .= '<div class="notice notice-' . esc_attr( $notices[ $message ][0] ) . '"><p>' . esc_html( $notices[ $message ][1] ) . '</p></div>';
 		}
 		$html .= '<p class="description">' . esc_html__( 'Her özellik ayrı açılır ve kapanır; varsayılan olarak yalnızca AI ölçümü açıktır. Bir özelliğin önkoşulu kapalıysa ya da açık başka bir özellik ona bağlıysa satırında yazar.', 'ai-hazir-site' ) . '</p>'
+			. BoosterModule::box_html()
 			. self::preset_section( $profile );
 
 		$features = self::features();
@@ -223,7 +225,7 @@ final class SettingsPage {
 	 *
 	 * @return array<string, string>
 	 */
-	private static function names(): array {
+	public static function names(): array {
 		return array_map( static fn( array $info ): string => $info[0], self::features() );
 	}
 
@@ -305,7 +307,7 @@ final class SettingsPage {
 	 * @param string $key Feature key.
 	 * @param bool   $on  New state.
 	 */
-	private static function set_feature( string $key, bool $on ): void {
+	public static function set_feature( string $key, bool $on ): void {
 		if ( Features::BOT_CACHE_BYPASS === $key ) {
 			IntegrationsModule::set_bypass( $on );
 		} elseif ( Features::CATALOG_SITEMAP === $key ) {

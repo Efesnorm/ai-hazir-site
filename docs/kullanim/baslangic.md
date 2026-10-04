@@ -16,6 +16,20 @@ Veriler ve ayarlar korunur; veritabanı değişiklikleri yalnızca ekleme şekli
 Bir sayfa önbelleği eklentisi kullanıyorsanız (WP Rocket, LiteSpeed Cache vb.) güncellemeden sonra önbelleği bir kez
 temizleyin. 1.6.1'den beri `/ai-katalog/` ve `/llms.txt` önbelleğe alınmaz; eski kopyalar ise temizlenene kadar kalır.
 
+## Booster AI (1.25.0)
+
+**AI Hazır Site → Ayarlar** ekranının en üstündeki **Booster AI** kutusu, bu siteye uygun bütün özellikleri tek
+düğmeyle ve doğru sırayla açar; ardından otomatik güncellemeyi kurar ve ilk işleri (AI bot IP listeleri, uyum taraması,
+ağ kontrolü) arka planda başlatır. Hiçbir özelliği kapatmaz.
+
+- "Açılacak özellikleri göster / değiştir" ile seçim değiştirilebilir. **Portal modu** yalnızca site zaten portalsa,
+  **Çoklu dil** yalnızca Polylang veya WPML kuruluysa işaretli gelir.
+- Booster'ın açmadıkları: **teklif kutusu** (kişisel veri toplar; KVKK uyarısıyla kendi ekranından) ve **telemetri**
+  (veri gönderir; yalnızca ayrı onayla).
+- Sonuç kutusu neyin açıldığını, neyin açılamadığını (ve nedenini) gösterir. Portal ağı açıldıysa rolü (anne/üye) Portal
+  Ağı ekranında seçin.
+- **Booster'dan önceki duruma dön** düğmesi, Booster'ın açtıklarını kapatır ve güncelleme ayarlarını eski haline getirir.
+
 ## Özellik anahtarları
 
 Tüm özellikler **AI Hazır Site → Ayarlar** ekranından açılıp kapatılır (1.9.0; Eklentiler listesinde eklentinin

@@ -1,0 +1,84 @@
+name: Sürüm yayını
+
+# 1.25.0: a pushed version tag (v1.2.3) is tested again, packaged and published as a GitHub release with the plugin
+# zip and the update manifest (ai-hazir-site.json). Sites with automatic updates read
+# https://github.com/Efesnorm/ai-hazir-site/releases/latest/download/ai-hazir-site.json
+on:
+  push:
+    tags: [ 'v*.*.*' ]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Test, paketle, yayınla
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer:v2
+          extensions: zip
+          coverage: none
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Bağımlılıklar
+        run: |
+          composer install --no-interaction --no-progress
+          npm ci --no-audit --no-fund
+
+      - name: Etiket ve eklenti sürümü aynı mı
+        shell: bash
+        run: |
+          version=$(sed -n "s/^define( 'AIHS_VERSION', '\([0-9.]*\)' );/\1/p" ai-hazir-site.php)
+          [ "v$version" = "$GITHUB_REF_NAME" ] || { echo "::error::Etiket $GITHUB_REF_NAME, eklenti $version"; exit 1; }
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+
+      - name: Kod stili, statik analiz, birim testleri
+        run: |
+          composer phpcs
+          composer phpstan
+          composer test:unit
+
+      - name: Entegrasyon testleri
+        run: |
+          npx wp-env start
+          composer test:integration
+
+      - name: Paketle
+        run: php bin/paketle
+
+      - name: Güncelleme bildirimi
+        shell: bash
+        run: |
+          curl -fsSL "https://github.com/${GITHUB_REPOSITORY}/releases/latest/download/ai-hazir-site.json" -o previous.json || rm -f previous.json
+          php bin/manifest "dist/ai-hazir-site-${VERSION}.release.json" previous.json > dist/ai-hazir-site.json
+          cat dist/ai-hazir-site.json
+
+      - name: Sürüm notu (CHANGELOG)
+        shell: bash
+        run: |
+          awk -v v="$VERSION" '$0 ~ "^## \\[" v "\\]" {p=1; next} /^## \[/ {p=0} p' CHANGELOG.md > notes.md
+          [ -s notes.md ] || echo "Sürüm $VERSION" > notes.md
+
+      - name: GitHub sürümü
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            "dist/ai-hazir-site-${VERSION}.zip" \
+            "dist/ai-hazir-site.json" \
+            --title "AI Hazır Site ${VERSION}" \
+            --notes-file notes.md \
+            --latest

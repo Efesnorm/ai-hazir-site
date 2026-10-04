@@ -117,7 +117,8 @@ aihs_remove( $build );
 
 $release = array(
 	'version'      => $version,
-	'download_url' => 'https://SUNUCU/' . basename( $target ),
+	// 1.25.0: the GitHub release of this version (built and published by .github/workflows/release.yml).
+	'download_url' => 'https://github.com/Efesnorm/ai-hazir-site/releases/download/v' . $version . '/' . basename( $target ),
 	'released_at'  => gmdate( 'Y-m-d\TH:i:s\Z' ),
 	'db_version'   => $db_version,
 	'requires'     => '6.9',
@@ -126,4 +127,4 @@ $release = array(
 file_put_contents( $root . '/dist/' . AIHS_SLUG . '-' . $version . '.release.json', json_encode( $release, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) . "\n" );
 
 printf( "Paket: %s (%d dosya, %.1f MB)\n", $target, $count, filesize( $target ) / 1048576 );
-printf( "Bildirim kaydı: dist/%s-%s.release.json (download_url ve released_at'i yayında düzeltin)\n", AIHS_SLUG, $version );
+printf( "Bildirim kaydı: dist/%s-%s.release.json (GitHub sürümü v%s)\n", AIHS_SLUG, $version, $version );

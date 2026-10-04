@@ -23,6 +23,7 @@ use AIHazirSite\WordPress\Matching\MatchingModule;
 use AIHazirSite\WordPress\A2A\A2AModule;
 use AIHazirSite\WordPress\Discovery\DiscoveryModule;
 use AIHazirSite\WordPress\Integrations\IntegrationsModule;
+use AIHazirSite\WordPress\Settings\BoosterModule;
 use AIHazirSite\WordPress\Settings\SettingsModule;
 use AIHazirSite\WordPress\IndexNow\IndexNowModule;
 use AIHazirSite\WordPress\Network\NetworkBlock;
@@ -100,6 +101,7 @@ final class Plugin {
 			new DiscoveryModule(),
 			new IntegrationsModule(),
 			new SettingsModule(),
+			new BoosterModule(),
 			new IndexNowModule(),
 			new NetworkModule(),
 			new NetworkBlock(),

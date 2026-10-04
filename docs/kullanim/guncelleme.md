@@ -1,5 +1,20 @@
 # Merkezi güncelleme ve rapor paneli (1.3.0)
 
+## Otomatik güncelleme (1.25.0)
+
+En kolay yol: **Booster AI** (Ayarlar ekranı) güncelleme sunucusu olarak eklentinin GitHub sürümlerini yazar ve
+WordPress'in kendi **eklenti otomatik güncellemesini** bu eklenti için açar. Her yeni sürüm etiketlendiğinde GitHub
+Actions testleri yeniden çalıştırır, zip'i ve güncelleme bildirimini yayınlar:
+
+```
+https://github.com/Efesnorm/ai-hazir-site/releases/latest/download/ai-hazir-site.json
+```
+
+WordPress günde iki kez denetler ve yeni sürümü kendisi kurar. **Güncelleme** ekranında kanal seçilebilir: *pilot*
+yeni sürümü hemen, *genel* 48 saat sonra alır (önerim: bir site pilot, diğerleri genel). Bir önceki sürüme dönmek
+aynı ekrandan tek tıkla yapılır. Otomatik güncellemeyi kapatmak için Eklentiler ekranında "Otomatik güncellemeyi
+devre dışı bırak" bağlantısını kullanın.
+
 ## Güncelleme sunucusu
 
 `remote_updates` anahtarı açıkken eklenti, güncellemeleri kendi sunucumuzdan alır ve WordPress'in standart
