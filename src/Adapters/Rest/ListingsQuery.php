@@ -11,12 +11,14 @@ namespace AIHazirSite\Adapters\Rest;
 
 use AIHazirSite\Core\Catalog\Listing;
 use AIHazirSite\Core\Catalog\ListingType;
+use AIHazirSite\Core\Catalog\Nace;
 use AIHazirSite\Core\Catalog\Query\ListingSearch;
 
 /**
  * Filters: type (offer | demand | supply), category and region (exact, case-insensitive,
  * Turkish dotted/dotless i treated alike),
- * page (1…), per_page (1…50, default 20). Invalid input is reported, never guessed.
+ * page (1…), per_page (1…50, default 20), sector (NACE Rev. 2.1 section letter, 1.22.0; applied by the
+ * caller, which knows each listing's business). Invalid input is reported, never guessed.
  * The selection itself is the core's ListingSearch, shared with the abilities / MCP channel.
  */
 final class ListingsQuery {
@@ -32,13 +34,15 @@ final class ListingsQuery {
 	 * @param string $region   '' or a region.
 	 * @param int    $page     Page, from 1.
 	 * @param int    $per_page Items per page, 1…MAX_PER_PAGE.
+	 * @param string $sector   '' or a NACE Rev. 2.1 section letter.
 	 */
 	public function __construct(
 		public readonly string $type = '',
 		public readonly string $category = '',
 		public readonly string $region = '',
 		public readonly int $page = 1,
-		public readonly int $per_page = self::DEFAULT_PER_PAGE
+		public readonly int $per_page = self::DEFAULT_PER_PAGE,
+		public readonly string $sector = ''
 	) {
 	}
 
@@ -65,10 +69,15 @@ final class ListingsQuery {
 			$errors['per_page'] = sprintf( 'per_page 1 ile %d arasında bir tam sayı olmalı.', self::MAX_PER_PAGE );
 		}
 
+		$sector = Nace::section( $text( 'sector' ) );
+		if ( '' === $sector && '' !== $text( 'sector' ) ) {
+			$errors['sector'] = 'sector bir NACE Rev. 2.1 bölüm harfi (A–V) olmalı.';
+		}
+
 		if ( array() !== $errors ) {
 			return array( null, $errors );
 		}
-		return array( new self( $type, $text( 'category' ), $text( 'region' ), (int) $page, (int) $per_page ), array() );
+		return array( new self( $type, $text( 'category' ), $text( 'region' ), (int) $page, (int) $per_page, $sector ), array() );
 	}
 
 	/**

@@ -49,6 +49,10 @@ final class NetworkModule implements Module {
 		}
 		add_action( 'rest_api_init', array( self::class, 'routes' ) );
 		add_action( self::HOOK, array( self::class, 'check' ) );
+		if ( Features::is_enabled( Features::NETWORK_SUGGESTIONS ) ) {
+			// After the consent check, so only siblings verified this hour are read.
+			add_action( self::HOOK, array( NetworkCatalog::class, 'refresh' ), 20 );
+		}
 		if ( false === wp_next_scheduled( self::HOOK ) ) {
 			wp_schedule_event( time() + 60, 'hourly', self::HOOK );
 		}
@@ -212,6 +216,16 @@ final class NetworkModule implements Module {
 		}
 
 		update_option( self::STATE, $state, false );
+	}
+
+	/**
+	 * GET a JSON answer of another site (1.22.0, sibling catalogs): [decoded body, retry seconds after a 429].
+	 *
+	 * @param string $url URL.
+	 * @return array{0: array<string, mixed>|null, 1: int|null}
+	 */
+	public static function fetch_json( string $url ): array {
+		return self::fetch( $url, false );
 	}
 
 	/**

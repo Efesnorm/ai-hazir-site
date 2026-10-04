@@ -42,7 +42,8 @@ final class AbilitySchemasTest extends TestCase {
 		$this->assertArrayNotHasKey( 'properties', $all['aihs/get-profile']['input'], 'Empty properties would encode as [].' );
 		$this->assertSame( array( 'id' ), $all['aihs/get-listing']['input']['required'] );
 		$this->assertSame( array( 'id' ), $all['aihs/check-availability']['input']['required'] );
-		$this->assertSame( array( 'type', 'category', 'region', 'keyword', 'attributes', 'page', 'per_page' ), array_keys( $all['aihs/search-listings']['input']['properties'] ) );
+		$this->assertSame( array( 'type', 'category', 'region', 'keyword', 'attributes', 'page', 'per_page', 'sector' ), array_keys( $all['aihs/search-listings']['input']['properties'] ) );
+		$this->assertSame( 'network', array_key_last( AbilitySchemas::with_suggestions( $all )['aihs/search-listings']['input']['properties'] ) );
 	}
 
 	/**

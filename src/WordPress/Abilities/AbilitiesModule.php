@@ -12,6 +12,7 @@ namespace AIHazirSite\WordPress\Abilities;
 use AIHazirSite\Adapters\Abilities\AbilitySchemas;
 use AIHazirSite\Adapters\Rest\RestResponder;
 use AIHazirSite\Core\Catalog\CompanyProfile;
+use AIHazirSite\Core\Catalog\Nace;
 use AIHazirSite\Core\Catalog\Query\Availability;
 use AIHazirSite\Core\Catalog\Query\ListingSearch;
 use AIHazirSite\Core\Features;
@@ -21,6 +22,7 @@ use AIHazirSite\WordPress\Catalog\CatalogReader;
 use AIHazirSite\WordPress\Catalog\WpProfileRepository;
 use AIHazirSite\WordPress\I18n\Multilingual;
 use AIHazirSite\WordPress\Module;
+use AIHazirSite\WordPress\Network\NetworkCatalog;
 use AIHazirSite\WordPress\Platform\WpCache;
 use AIHazirSite\WordPress\Platform\WpClock;
 use AIHazirSite\WordPress\Platform\WpSecret;
@@ -114,10 +116,11 @@ final class AbilitiesModule implements Module {
 	 * @return array<string, array{input: array<string, mixed>, output: array<string, mixed>}>
 	 */
 	public static function schemas(): array {
-		return AbilitySchemas::all(
+		$all = AbilitySchemas::all(
 			Multilingual::active() ? Multilingual::settings()->languages : array(),
 			Portal::active() ? array_map( static fn( $b ): string => $b->slug, Portal::businesses()->businesses() ) : null
 		);
+		return NetworkCatalog::enabled() ? AbilitySchemas::with_suggestions( $all ) : $all;
 	}
 
 	/**
@@ -220,6 +223,7 @@ final class AbilitiesModule implements Module {
 			min( ListingSearch::MAX_PER_PAGE, max( 1, (int) ( $input['per_page'] ?? ListingSearch::DEFAULT_PER_PAGE ) ) )
 		);
 		$language = self::language( $input );
+		$sector   = Nace::section( $text( 'sector' ) );
 		$all      = CatalogReader::query()->all();
 		$listings = $all;
 		$markers  = array();
@@ -232,11 +236,16 @@ final class AbilitiesModule implements Module {
 				return new WP_Error( 'aihs_business_not_found', __( 'İşletme bulunamadı.', 'ai-hazir-site' ), array( 'status' => 404 ) );
 			}
 		}
-		$body = CatalogReader::responder()->listings( $listings, $search, ( new WpClock() )->today(), TemplatesModule::now() );
+		$listings = CatalogReader::by_sector( $listings, $sector );
+		$body     = CatalogReader::responder()->listings( $listings, $search, ( new WpClock() )->today(), TemplatesModule::now() );
 		if ( null !== $language ) {
 			$body = RestResponder::translated( $body, $language, $markers );
 		}
-		return Portal::active() ? RestResponder::with_business( $body, Portal::references( $all ) ) : $body;
+		if ( Portal::active() ) {
+			$body = RestResponder::with_business( $body, Portal::references( $all ) );
+		}
+		$network = $input['network'] ?? false;
+		return NetworkCatalog::decorate( $body, $search, $sector, true === $network );
 	}
 
 	/**

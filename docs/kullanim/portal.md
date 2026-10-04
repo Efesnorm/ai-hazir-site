@@ -66,3 +66,19 @@ erişilemedi.
 
 Kardeş sitelerden gelen bilgiler (ad, ülke) temizlenir ve yalnızca veri olarak kullanılır. Bir kardeş geçici olarak
 erişilemezse doğrulaması 24 saat korunur. Kapatınca bütün çıktılar kalkar, ayarlar korunur.
+
+## Faaliyet alanı: NACE Rev. 2.1 (1.22.0)
+
+Portallar her sektöre açık olduğundan sektör serbest metinle karşılaştırılamaz ("Nakliye", "Lojistik", "Transport").
+Firma Profili ve her işletmenin formunda **Faaliyet alanı (NACE Rev. 2.1)** seçilebilir: AB'nin ortak sınıflandırması,
+22 bölüm (ör. H = ulaştırma ve depolama, I = konaklama ve yiyecek hizmetleri, N = mesleki, bilimsel ve teknik
+faaliyetler). İsteğe bağlıdır. Seçilirse REST, MCP ve llms.txt'de görünür ve AI'lar `sector=H` ile arar: portalda ilan
+işletmesinin bölümüyle, portalın kendi ilanları sitenin bölümüyle eşleşir.
+
+## Kardeş portal önerisi (1.22.0)
+
+Anahtar: `network_suggestions` (önkoşul: Portal ağı). Bir AI bu sitede arar ve sonuç bulamazsa, yanıtta doğrulanmış
+kardeş portallardaki en çok 3 uygun ilan `network_suggestions` olarak gelir (site, ülke, işletme, ilan adresi ve verinin
+alındığı an). AI isterse `network=true` ile sonuç olsa da öneri ister. Kardeş katalogları saatlik ağ kontrolünden sonra
+okunur (kardeş başına en çok 500 ilan); öneri en çok ~2 saat eskidir. Kardeş sitelerin hız sınırları için gerekirse
+Entegrasyonlar → Güvenlik yazılımları (Wordfence izin listesi, barındırma firmasına metin) kullanılır.

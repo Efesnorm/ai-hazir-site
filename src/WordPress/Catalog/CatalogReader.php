@@ -12,8 +12,10 @@ namespace AIHazirSite\WordPress\Catalog;
 use AIHazirSite\Adapters\Rest\RestResponder;
 use AIHazirSite\Core\Catalog\Listing;
 use AIHazirSite\Core\Catalog\Query\CatalogQuery;
+use AIHazirSite\Core\Catalog\Query\SectorFilter;
 use AIHazirSite\WordPress\I18n\Multilingual;
 use AIHazirSite\WordPress\Platform\WpClock;
+use AIHazirSite\WordPress\Portal\Portal;
 use AIHazirSite\WordPress\Schema\SchemaModule;
 use AIHazirSite\WordPress\Templates\TemplatesModule;
 
@@ -57,5 +59,28 @@ final class CatalogReader {
 			}
 		}
 		return array( array_values( array_filter( $records ) ), $markers );
+	}
+
+	/**
+	 * Listings of one NACE Rev. 2.1 section (1.22.0): by business in portal mode, otherwise by the
+	 * site profile.
+	 *
+	 * @param Listing[] $listings Listings.
+	 * @param string    $sector   Section letter ('' = all).
+	 * @return list<Listing>
+	 *
+	 * @phpstan-param list<Listing> $listings
+	 */
+	public static function by_sector( array $listings, string $sector ): array {
+		if ( '' === $sector ) {
+			return $listings;
+		}
+		$owned = array();
+		if ( Portal::active() ) {
+			foreach ( Portal::owners( $listings ) as $id => $business ) {
+				$owned[ $id ] = $business->profile->nace;
+			}
+		}
+		return SectorFilter::apply( $listings, $sector, ( new WpProfileRepository() )->get()->nace, $owned );
 	}
 }

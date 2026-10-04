@@ -89,12 +89,18 @@ final class ProfileValidator {
 			$errors['template'] = 'Bilinmeyen sektör şablonu.';
 		}
 
+		// 1.22.0: optional NACE Rev. 2.1 section.
+		$nace = Nace::section( $input['nace'] ?? '' );
+		if ( '' === $nace && '' !== $text( 'nace' ) ) {
+			$errors['nace'] = 'Bilinmeyen faaliyet alanı (NACE Rev. 2.1 bölüm harfi A–V).';
+		}
+
 		if ( array() !== $errors ) {
 			return new ValidationResult( null, $errors, $warnings );
 		}
 
 		return new ValidationResult(
-			new CompanyProfile( $name, $text( 'sector' ), $country, array_values( array_unique( $languages ) ), $email, $phone, $certifications, $template ),
+			new CompanyProfile( $name, $text( 'sector' ), $country, array_values( array_unique( $languages ) ), $email, $phone, $certifications, $template, $nace ),
 			array(),
 			$warnings
 		);

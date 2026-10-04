@@ -11,6 +11,7 @@ namespace AIHazirSite\Adapters\Abilities;
 
 use AIHazirSite\Adapters\Rest\RestSchemas;
 use AIHazirSite\Core\Catalog\ListingType;
+use AIHazirSite\Core\Catalog\Nace;
 use AIHazirSite\Core\Catalog\Query\Availability;
 use AIHazirSite\Core\Catalog\Query\ListingSearch;
 
@@ -53,6 +54,22 @@ final class AbilitySchemas {
 			'input'  => self::input( array() ),
 			'output' => self::strip( RestSchemas::with_portal( 'businesses', array() ) ),
 		);
+		return $all;
+	}
+
+	/**
+	 * Sibling suggestions (1.22.0): the search takes `network` and may answer with `network_suggestions`.
+	 *
+	 * @param array<string, array{input: array<string, mixed>, output: array<string, mixed>}> $all Schemas from all().
+	 * @return array<string, array{input: array<string, mixed>, output: array<string, mixed>}>
+	 */
+	public static function with_suggestions( array $all ): array {
+		$all['aihs/search-listings']['input']['properties']['network'] = array(
+			'type'        => 'boolean',
+			'default'     => false,
+			'description' => 'true: bu sitede sonuç olsa da doğrulanmış kardeş portallardan öneri (network_suggestions) iste. Sonuç yoksa öneriler kendiliğinden gelir.',
+		);
+		$all['aihs/search-listings']['output']                         = RestSchemas::with_suggestions( $all['aihs/search-listings']['output'] );
 		return $all;
 	}
 
@@ -130,6 +147,11 @@ final class AbilitySchemas {
 							'minimum' => 1,
 							'maximum' => ListingSearch::MAX_PER_PAGE,
 							'default' => ListingSearch::DEFAULT_PER_PAGE,
+						),
+						'sector'     => array(
+							'type'        => 'string',
+							'enum'        => array_keys( Nace::SECTIONS ),
+							'description' => 'Faaliyet alanı: NACE Rev. 2.1 bölüm harfi (ör. H = ulaştırma ve depolama, I = konaklama ve yiyecek hizmetleri). İşletmenin (portalda) veya firmanın bölümüne göre süzer.',
 						),
 					)
 				),

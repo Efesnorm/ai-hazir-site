@@ -176,6 +176,7 @@ final class PortalAdmin {
 		foreach ( $fields as $name => $label ) {
 			$html .= '<tr><th><label for="aihs-business-' . esc_attr( $name ) . '">' . esc_html( $label ) . '</label></th><td><input id="aihs-business-' . esc_attr( $name ) . '" name="' . esc_attr( $name ) . '" class="regular-text" value="' . esc_attr( $value( $name ) ) . '"></td></tr>';
 		}
+		$html .= CatalogAdmin::nace_row( $value( 'nace' ), '' );
 		$html .= '</tbody></table>' . get_submit_button( __( 'İşletmeyi kaydet', 'ai-hazir-site' ) ) . '</form>';
 		if ( null !== $business ) {
 			$html .= '<p><a href="' . esc_url( Portal::page_url( $business ) ) . '">' . esc_html( Portal::page_url( $business ) ) . '</a></p>'
@@ -280,6 +281,7 @@ final class PortalAdmin {
 		}
 		$input['slug']          = sanitize_title( $input['slug'] );
 		$input['contact_email'] = sanitize_email( self::text( $post, 'contact_email' ) );
+		$input['nace']          = strtoupper( sanitize_key( self::text( $post, 'nace' ) ) );
 		$id                     = absint( self::text( $post, 'id' ) );
 		$saved                  = Portal::service()->save_business( $input, $id > 0 ? $id : null );
 		if ( null === $saved['business'] ) {
