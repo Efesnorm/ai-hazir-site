@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-04T21:01:54+00:00\n"
+"POT-Creation-Date: 2026-10-04T21:11:09+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: ai-hazir-site\n"
@@ -308,7 +308,7 @@ msgstr ""
 #: src/WordPress/Network/NetworkReportPage.php:352
 #: src/WordPress/Portal/BusinessAdmin.php:231
 #: src/WordPress/Report/ReportModule.php:83
-#: src/WordPress/Settings/BoosterModule.php:287
+#: src/WordPress/Settings/BoosterModule.php:288
 #: src/WordPress/Settings/SettingsPage.php:425
 #: src/WordPress/Updates/UpdatesAdmin.php:198
 msgid "Bu işlem için yetkiniz yok."
@@ -2616,7 +2616,7 @@ msgid "Portal ağı açık; bu sitenin rolünü (anne / üye) Portal Ağı ekran
 msgstr ""
 
 #: src/WordPress/Settings/BoosterModule.php:101
-msgid "Açılacak özellikleri göster / değiştir"
+msgid "Açılacak özellikler (işaretini kaldırdığınız açılmaz):"
 msgstr ""
 
 #: src/WordPress/Settings/BoosterModule.php:105
@@ -2627,19 +2627,23 @@ msgstr ""
 msgid "(Polylang veya WPML gerekir)"
 msgstr ""
 
-#: src/WordPress/Settings/BoosterModule.php:109
+#: src/WordPress/Settings/BoosterModule.php:107
+msgid "(yalnızca portal ağındaki siteler için)"
+msgstr ""
+
+#: src/WordPress/Settings/BoosterModule.php:110
 msgid "açık"
 msgstr ""
 
-#: src/WordPress/Settings/BoosterModule.php:111
+#: src/WordPress/Settings/BoosterModule.php:112
 msgid "Booster'ın açmadıkları: teklif kutusu (kişisel veri toplar; KVKK uyarısıyla kendi ekranından) ve telemetri (veri gönderir; yalnızca ayrı onayla)."
 msgstr ""
 
-#: src/WordPress/Settings/BoosterModule.php:112
+#: src/WordPress/Settings/BoosterModule.php:113
 msgid "Booster AI'ı çalıştır"
 msgstr ""
 
-#: src/WordPress/Settings/BoosterModule.php:116
+#: src/WordPress/Settings/BoosterModule.php:117
 msgid "Booster'dan önceki duruma dön"
 msgstr ""
 

@@ -66,6 +66,9 @@ final class BoosterFlowTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( 'id="aihs-booster"', $html );
 		$this->assertStringContainsString( 'name="features[]" value="mcp" checked=\'checked\'', $html );
 		$this->assertStringNotContainsString( 'name="features[]" value="portal_mode" checked', $html, 'A company site is not turned into a portal.' );
+		$this->assertStringNotContainsString( 'name="features[]" value="portal_network" checked', $html, 'No network features on a site outside a network.' );
+		$this->assertStringContainsString( 'Açılacak özellikler (işaretini kaldırdığınız açılmaz):', $html );
+		$this->assertStringNotContainsString( '<details>', $html, 'The list is visible.' );
 		$this->assertStringNotContainsString( 'name="features[]" value="inquiries"', $html );
 		$this->assertStringNotContainsString( 'name="features[]" value="telemetry"', $html );
 
@@ -76,6 +79,7 @@ final class BoosterFlowTest extends WP_UnitTestCase {
 			$this->assertTrue( Features::is_enabled( $key ), $key );
 		}
 		$this->assertFalse( Features::is_enabled( Features::PORTAL_MODE ) );
+		$this->assertFalse( Features::is_enabled( Features::PORTAL_NETWORK ) );
 		$this->assertFalse( Features::is_enabled( Features::INQUIRIES ) );
 		$this->assertFalse( Features::is_enabled( Features::TELEMETRY ) );
 
@@ -86,7 +90,6 @@ final class BoosterFlowTest extends WP_UnitTestCase {
 		$result = SettingsPage::render_html( 'booster' );
 		$this->assertStringContainsString( 'id="aihs-booster-result"', $result );
 		$this->assertStringContainsString( 'Otomatik güncelleme açık', $result );
-		$this->assertStringContainsString( 'Portal ağı açık; bu sitenin rolünü', $result );
 		$this->assertStringNotContainsString( 'id="aihs-booster-result"', SettingsPage::render_html(), 'Shown once.' );
 		$this->assertStringContainsString( 'Booster&#039;dan önceki duruma dön', SettingsPage::render_html() );
 

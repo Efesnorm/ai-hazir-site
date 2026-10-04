@@ -12,7 +12,9 @@ Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, 
   (AI bot IP listeleri, uyum taraması, ağ kontrolü ve kardeş katalogları, güncelleme denetimi) arka planda tek seferlik
   WP-Cron işiyle başlar. Hiçbir şeyi kapatmaz; önceki durum kaydedilir ve "Booster'dan önceki duruma dön" ile geri
   alınır (yalnızca Booster'ın açtıkları kapanır; sahibin güncelleme sunucusu korunur).
-  - Ön seçim: portal modu yalnızca site zaten portalsa, çoklu dil yalnızca Polylang/WPML varsa işaretli.
+  - Ön seçim: portal modu yalnızca site zaten portalsa, çoklu dil yalnızca Polylang/WPML varsa, portal ağı ve ağ
+    özellikleri yalnızca site ağda (anne/üye) ya da portalsa işaretli. Liste açıkça görünür; işareti kaldırılan
+    özellik açılmaz (kullanıcı isteği, birleştirme onayıyla birlikte).
   - Booster'ın hiç açmadıkları: telemetri (ayrı onay) ve **teklif kutusu** (kişisel veri; mevcut kural gereği yalnızca
     KVKK uyarısıyla kendi ekranından). Plandan sapma: planda yalnızca telemetri sayılmıştı; teklif kutusu, ayarlar
     ekranının 1.9.0'dan beri süren kuralına uyması için eklendi.

@@ -61,7 +61,7 @@ final class BoosterModule implements Module {
 	 * @return list<string>
 	 */
 	public static function preselected(): array {
-		return Booster::preselected( Features::is_enabled( Features::PORTAL_MODE ) || Portal::active(), null !== LanguageSource::plugin() );
+		return Booster::preselected( Features::is_enabled( Features::PORTAL_MODE ) || Portal::active(), null !== LanguageSource::plugin(), NetworkSettings::ROLE_NONE !== NetworkModule::settings()->role );
 	}
 
 	/**
@@ -98,17 +98,18 @@ final class BoosterModule implements Module {
 		}
 
 		$html .= '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" id="aihs-booster-form"><input type="hidden" name="action" value="' . esc_attr( self::RUN ) . '">' . wp_nonce_field( self::RUN, '_wpnonce', true, false )
-			. '<details><summary>' . esc_html__( 'Açılacak özellikleri göster / değiştir', 'ai-hazir-site' ) . '</summary><ul style="columns:2">';
+			. '<p><strong>' . esc_html__( 'Açılacak özellikler (işaretini kaldırdığınız açılmaz):', 'ai-hazir-site' ) . '</strong></p><ul style="columns:2">';
 		foreach ( Booster::candidates() as $key ) {
 			$on   = Features::is_enabled( $key );
 			$note = match ( $key ) {
 				Features::PORTAL_MODE  => ' ' . __( '(siteyi çok işletmeli portala çevirir; firma sitesinde işaretlemeyin)', 'ai-hazir-site' ),
 				Features::MULTILINGUAL => ' ' . __( '(Polylang veya WPML gerekir)', 'ai-hazir-site' ),
+				Features::PORTAL_NETWORK, Features::NETWORK_SUGGESTIONS, Features::NETWORK_BLOCK, Features::NETWORK_REFERRALS, Features::NETWORK_REPORT => ' ' . __( '(yalnızca portal ağındaki siteler için)', 'ai-hazir-site' ),
 				default                => '',
 			};
 			$html .= '<li><label><input type="checkbox" name="features[]" value="' . esc_attr( $key ) . '"' . checked( $on || in_array( $key, $chosen, true ), true, false ) . disabled( $on, true, false ) . '> ' . esc_html( ( $names[ $key ] ?? $key ) . $note ) . ( $on ? ' – ' . esc_html__( 'açık', 'ai-hazir-site' ) : '' ) . '</label></li>';
 		}
-		$html .= '</ul><p class="description">' . esc_html__( 'Booster\'ın açmadıkları: teklif kutusu (kişisel veri toplar; KVKK uyarısıyla kendi ekranından) ve telemetri (veri gönderir; yalnızca ayrı onayla).', 'ai-hazir-site' ) . '</p></details>'
+		$html .= '</ul><p class="description">' . esc_html__( 'Booster\'ın açmadıkları: teklif kutusu (kişisel veri toplar; KVKK uyarısıyla kendi ekranından) ve telemetri (veri gönderir; yalnızca ayrı onayla).', 'ai-hazir-site' ) . '</p>'
 			. get_submit_button( __( 'Booster AI\'ı çalıştır', 'ai-hazir-site' ), 'primary hero', 'submit', false ) . '</form>';
 
 		if ( is_array( get_option( self::SNAPSHOT ) ) ) {

@@ -17,6 +17,8 @@ use AIHazirSite\Core\Features;
  *   personal data and has its own screen with the KVKK notice).
  * - OPTIONAL: features that change what the site is (portal mode) or need another plugin (multilingual); offered, but
  *   pre-ticked only when they fit the site.
+ * - NETWORK: the portal network and its features; pre-ticked only on a site that is already in a network or a portal
+ *   (a company site does not get them unasked).
  * - everything else is pre-ticked.
  * The order follows Features::REQUIRES and REQUIRES_ANY, so each feature comes after what it needs.
  */
@@ -24,6 +26,7 @@ final class Booster {
 
 	public const NEVER    = array( Features::TELEMETRY, Features::INQUIRIES );
 	public const OPTIONAL = array( Features::PORTAL_MODE, Features::MULTILINGUAL );
+	public const NETWORK  = array( Features::PORTAL_NETWORK, Features::NETWORK_SUGGESTIONS, Features::NETWORK_BLOCK, Features::NETWORK_REFERRALS, Features::NETWORK_REPORT );
 
 	/**
 	 * Features Booster may turn on (all except NEVER), in requirement order.
@@ -39,15 +42,17 @@ final class Booster {
 	 *
 	 * @param bool $is_portal          The site already runs in portal mode.
 	 * @param bool $multilingual_ready Polylang or WPML is active.
+	 * @param bool $in_network         The site already has a network role (mother or member).
 	 * @return list<string>
 	 */
-	public static function preselected( bool $is_portal, bool $multilingual_ready ): array {
+	public static function preselected( bool $is_portal, bool $multilingual_ready, bool $in_network = false ): array {
 		return array_values(
 			array_filter(
 				self::candidates(),
-				static fn( string $key ): bool => ! in_array( $key, self::OPTIONAL, true )
+				static fn( string $key ): bool => ( ! in_array( $key, self::OPTIONAL, true ) && ! in_array( $key, self::NETWORK, true ) )
 					|| ( Features::PORTAL_MODE === $key && $is_portal )
 					|| ( Features::MULTILINGUAL === $key && $multilingual_ready )
+					|| ( in_array( $key, self::NETWORK, true ) && ( $in_network || $is_portal ) )
 			)
 		);
 	}

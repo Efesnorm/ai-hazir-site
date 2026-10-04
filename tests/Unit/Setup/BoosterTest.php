@@ -66,10 +66,15 @@ final class BoosterTest extends UnitTestCase {
 		$this->assertNotContains( Features::MULTILINGUAL, $company );
 		$this->assertContains( Features::MCP, $company );
 		$this->assertContains( Features::REMOTE_UPDATES, $company );
+		foreach ( Booster::NETWORK as $network ) {
+			$this->assertNotContains( $network, $company, 'A company site does not get network features unasked.' );
+			$this->assertContains( $network, Booster::preselected( false, false, true ), 'A site with a network role does.' );
+		}
 
 		$portal = Booster::preselected( true, true );
 		$this->assertContains( Features::PORTAL_MODE, $portal );
 		$this->assertContains( Features::MULTILINGUAL, $portal );
+		$this->assertContains( Features::PORTAL_NETWORK, $portal );
 	}
 
 	/**
