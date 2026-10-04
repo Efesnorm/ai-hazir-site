@@ -3,6 +3,31 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.21.0] - 2026-10-04
+
+### Eklendi
+- **Entegrasyonlar → Güvenlik yazılımları** (`security_integrations`, varsayılan kapalı; plan onaylı:
+  `docs/planlar/1.21.0-guvenlik-sekmesi.md`). AI botlarının ve portal ağının engellenmemesi için:
+  - **Imunify Security:** tespit (eklenti `imunify-wp-security` ya da sabitler), hazır ayarların AI botlarına etkisi;
+    isteğe bağlı **"Balanced'ı sabitle"**: belgelenmiş `IMUNIFY_AI_BOT_PROTECTION_PRESET` sabiti `wp-config.php`'ye
+    yalnızca "balanced" olarak yazılır (monitor/kapalı asla). Sitenin kendi sabiti varsa dosyaya dokunulmaz.
+  - **Wordfence:** isteğe bağlı, portal ağındaki doğrulanmış sitelerin gözlenen sunucu IP'leri (1.20.0) Wordfence'in
+    herkese açık `wordfence::whitelistIP()` işleviyle izin listesine; eklenenler kaydedilir ve listelenir (silme için
+    herkese açık işlev yok). AI botlarının IP'leri bilerek eklenmez.
+  - **Cloudflare** (CF-Ray başlığı) ve Solid Security, All-In-One Security, NinjaFirewall, Sucuri: tespit + öneri.
+  - **Barındırma firmasına hazır metin:** AI tarayıcılarının resmi IP listesi adresleri (`data/ai-bots.json`) ve ağ
+    üyelerinin sunucu adresleri.
+  - `wp-config.php` yazımı: çekirdekte saf metin dönüşümü (`WpConfigBlock`; yalnızca işaretli blok, `<?php`'nin hemen
+    altı, PHP ayrıştırıcısıyla denetim) + WordPress dosya sistemi API'siyle geçici dosya ve taşıma; yedek dosya
+    bırakılmaz (yedek kopyası web'den okunabilir olabilir, veritabanı parolası içerir). Anahtar kapatılınca ve
+    kaldırmada (veri silme seçili olmasa da) blok silinir.
+  - Plandan sapma: plandaki "yazmadan önce yedek" yerine yedek dosyası bırakılmıyor (güvenlik gerekçesi yukarıda);
+    değişiklik tek seferde (atomik) yapılıyor, başarısız olursa dosya olduğu gibi kalıyor.
+  - Testler: `WpConfigBlockTest`, `SecuritySoftwareTest`.
+
+### Test güncellemesi (onaylı)
+- `FeaturesTest`: anahtar listesine `security_integrations` (varsayılan kapalı).
+
 ## [1.20.0] - 2026-10-04
 
 ### Eklendi

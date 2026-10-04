@@ -16,6 +16,7 @@ use AIHazirSite\Core\Setup\SetupProfiles;
 use AIHazirSite\WordPress\IndexNow\IndexNowModule;
 use AIHazirSite\WordPress\Inquiry\Admin\InquiryAdmin;
 use AIHazirSite\WordPress\Integrations\IntegrationsModule;
+use AIHazirSite\WordPress\Integrations\SecuritySoftware;
 use AIHazirSite\WordPress\Uninstaller;
 use AIHazirSite\WordPress\Updates\UpdateModule;
 
@@ -73,7 +74,7 @@ final class SettingsPage {
 			__( 'AI Katalog', 'ai-hazir-site' )        => array( Features::CATALOG, Features::TEMPLATES, Features::SCHEMA_OUTPUT, Features::LLMS_TXT, Features::MULTILINGUAL ),
 			__( 'AI kanalları', 'ai-hazir-site' )      => array( Features::REST_API, Features::ABILITIES, Features::MCP, Features::A2A, Features::DISCOVERY ),
 			__( 'Etkileşim', 'ai-hazir-site' )         => array( Features::INQUIRIES, Features::MATCHING, Features::PORTAL_MODE, Features::PORTAL_NETWORK ),
-			__( 'Entegrasyonlar', 'ai-hazir-site' )    => array( Features::BOT_CACHE_BYPASS, Features::LITESPEED_SERVER_BYPASS, Features::CATALOG_SITEMAP, Features::INDEXNOW ),
+			__( 'Entegrasyonlar', 'ai-hazir-site' )    => array( Features::BOT_CACHE_BYPASS, Features::LITESPEED_SERVER_BYPASS, Features::SECURITY_INTEGRATIONS, Features::CATALOG_SITEMAP, Features::INDEXNOW ),
 			__( 'Merkezi hizmetler', 'ai-hazir-site' ) => array( Features::REMOTE_UPDATES, Features::TELEMETRY ),
 		);
 	}
@@ -114,6 +115,7 @@ final class SettingsPage {
 			Features::PORTAL_MODE             => array( __( 'Portal modu', 'ai-hazir-site' ), __( 'Birçok işletmenin ilanları tek sitede, işletme yetkilileriyle.', 'ai-hazir-site' ), $admin( 'aihs-portal' ) ),
 			Features::BOT_CACHE_BYPASS        => array( __( 'AI botlarına önbellekten sayfa sunma', 'ai-hazir-site' ), __( 'WP Rocket ve LiteSpeed Cache AI botlarına kayıtlı kopya sunmaz; botlar ölçülür ve güncel içerik görür.', 'ai-hazir-site' ), $tools( 'aihs-integrations' ) ),
 			Features::CATALOG_SITEMAP         => array( __( 'AI Katalog site haritasında', 'ai-hazir-site' ), __( '/ai-katalog/ sayfası sitenin site haritasına eklenir.', 'ai-hazir-site' ), $tools( 'aihs-integrations' ) ),
+			Features::SECURITY_INTEGRATIONS   => array( __( 'Güvenlik yazılımları', 'ai-hazir-site' ), __( 'Imunify, Wordfence, Cloudflare gibi katmanların AI botlarını ve portal ağını engellememesi için tespit, öneri ve isteğe bağlı tek tıkla işlem.', 'ai-hazir-site' ), $tools( 'aihs-integrations' ) ),
 			Features::LITESPEED_SERVER_BYPASS => array( __( 'LiteSpeed sunucu önbelleği', 'ai-hazir-site' ), __( 'LiteSpeed sunucusunun kendi önbelleği AI botlarına kayıtlı kopya sunmaz (.htaccess kuralı).', 'ai-hazir-site' ), $tools( 'aihs-integrations' ) ),
 			Features::INDEXNOW                => array( __( 'IndexNow bildirimi', 'ai-hazir-site' ), __( 'Katalog değişince Bing ve diğer IndexNow arama motorlarına haber verilir (yalnızca herkese açık adresler).', 'ai-hazir-site' ), $tools( 'aihs-integrations' ) ),
 			Features::REMOTE_UPDATES          => array( __( 'Merkezi güncelleme', 'ai-hazir-site' ), __( 'Güncellemeler kendi sunucumuzdan; sunucu adresi girilmedikçe hiçbir istek atılmaz.', 'ai-hazir-site' ), $admin( UpdateModule::PAGE ) ),
@@ -306,6 +308,8 @@ final class SettingsPage {
 			IntegrationsModule::set_sitemap( $on );
 		} elseif ( Features::LITESPEED_SERVER_BYPASS === $key ) {
 			IntegrationsModule::set_server_bypass( $on );
+		} elseif ( Features::SECURITY_INTEGRATIONS === $key ) {
+			SecuritySoftware::enable( $on );
 		} elseif ( Features::INDEXNOW === $key ) {
 			IndexNowModule::enable( $on );
 		} else {

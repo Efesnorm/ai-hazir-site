@@ -131,6 +131,7 @@ final class FeaturesTest extends UnitTestCase {
 				'litespeed_server_bypass' => false,
 				'measurement_test_filter' => true,
 				'portal_network'          => false,
+				'security_integrations'   => false,
 			),
 			Features::defaults()
 		);
