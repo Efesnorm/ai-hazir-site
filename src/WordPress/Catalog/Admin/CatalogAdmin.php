@@ -14,6 +14,7 @@ use AIHazirSite\Core\Catalog\CompanyProfile;
 use AIHazirSite\Core\Catalog\Listing;
 use AIHazirSite\Core\Catalog\ListingType;
 use AIHazirSite\Core\Catalog\Nace;
+use AIHazirSite\WordPress\Network\NetworkSharing;
 use AIHazirSite\Core\Catalog\ProfileValidator;
 use AIHazirSite\Core\Templates\Template;
 use AIHazirSite\Core\Templates\TemplateField;
@@ -171,6 +172,8 @@ final class CatalogAdmin {
 
 			$html .= '<tr data-id="' . esc_attr( (string) $listing->id ) . '">'
 				. '<td><strong><a href="' . esc_url( self::page_url( $type, array( 'edit' => (int) $listing->id ) ) ) . '">' . esc_html( $listing->title ) . '</a></strong>'
+				// 1.26.0: shared in the portal network ("Ağda yayınla").
+				. ( NetworkSharing::enabled() && null !== ( new WpListingRepository() )->network_share( (int) $listing->id ) ? ' <span class="aihs-shared" style="background:#dff0d8;padding:0 6px;border-radius:3px">' . esc_html__( 'Ağda', 'ai-hazir-site' ) . '</span>' : '' )
 				. '<div class="row-actions"><a href="' . esc_url( self::page_url( $type, array( 'edit' => (int) $listing->id ) ) ) . '">' . esc_html__( 'Düzenle', 'ai-hazir-site' ) . '</a> | '
 				. '<a class="submitdelete" href="' . esc_url( $delete ) . '" onclick="return confirm(\'' . esc_js( __( 'Bu ilan kalıcı olarak silinecek. Emin misiniz?', 'ai-hazir-site' ) ) . '\')">' . esc_html__( 'Sil', 'ai-hazir-site' ) . '</a></div></td>'
 				. '<td>' . esc_html( $labels[ $listing->type ] ?? $listing->type ) . '</td>'
@@ -248,6 +251,8 @@ final class CatalogAdmin {
 			$html .= self::field_row( $name, $label, $kind, $values[ $name ] ?? '', $help, $errors[ $name ] ?? '' );
 		}
 
+		// 1.26.0: "Ağda yayınla" (only when sharing is on and the site has verified siblings).
+		$html .= NetworkSharing::form_row( $listing );
 		$html .= '</tbody></table>'
 			. get_submit_button( __( 'Kaydet', 'ai-hazir-site' ) )
 			. '<a href="' . esc_url( self::page_url( $type ) ) . '">' . esc_html__( 'Listeye dön', 'ai-hazir-site' ) . '</a>'
@@ -390,6 +395,7 @@ final class CatalogAdmin {
 
 		$result = CatalogModule::service()->save_listing( $save, $id > 0 ? $id : null );
 		if ( $result->is_valid() ) {
+			NetworkSharing::save( (int) $result->listing()?->id, $post );
 			return self::page_url( $type, array( 'message' => 'saved' ) );
 		}
 

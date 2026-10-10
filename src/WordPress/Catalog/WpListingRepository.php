@@ -13,6 +13,7 @@ use AIHazirSite\Core\Catalog\Listing;
 use AIHazirSite\Core\Contracts\ListingBusinessRepository;
 use AIHazirSite\Core\Contracts\ListingRepository;
 use AIHazirSite\Core\Contracts\ListingTranslationRepository;
+use AIHazirSite\Core\Network\NetworkShare;
 use RuntimeException;
 use WP_Post;
 
@@ -30,6 +31,11 @@ final class WpListingRepository implements ListingRepository, ListingTranslation
 	 * Post meta holding the entered translations (1.1.0); removed with the listing.
 	 */
 	public const TRANSLATIONS_META = '_aihs_translations';
+
+	/**
+	 * Post meta holding where a listing is shared in the portal network (1.26.0); removed with the listing.
+	 */
+	public const NETWORK_SHARE_META = '_aihs_network_share';
 
 	/**
 	 * Listing by id (null for other post types).
@@ -241,6 +247,30 @@ final class WpListingRepository implements ListingRepository, ListingTranslation
 			delete_post_meta( $id, self::TRANSLATIONS_META );
 		} else {
 			update_post_meta( $id, self::TRANSLATIONS_META, wp_slash( $translations ) );
+		}
+	}
+
+	/**
+	 * Where a listing is shared in the portal network, or null (1.26.0).
+	 *
+	 * @param int $id Listing id.
+	 * @return array{all: bool, sites: list<string>}|null
+	 */
+	public function network_share( int $id ): ?array {
+		return NetworkShare::from_stored( get_post_meta( $id, self::NETWORK_SHARE_META, true ) );
+	}
+
+	/**
+	 * Stores where a listing is shared (null = not shared).
+	 *
+	 * @param int                                        $id    Listing id.
+	 * @param array{all: bool, sites: list<string>}|null $share Share.
+	 */
+	public function store_network_share( int $id, ?array $share ): void {
+		if ( null === $share ) {
+			delete_post_meta( $id, self::NETWORK_SHARE_META );
+		} else {
+			update_post_meta( $id, self::NETWORK_SHARE_META, wp_slash( $share ) );
 		}
 	}
 }

@@ -74,6 +74,8 @@ final class LlmsTxtBuilder {
 		'network'           => 'Kardeş portallar',
 		'nace'              => 'Faaliyet alanı (NACE Rev. 2.1)',
 		'network_api'       => 'AI Katalog API',
+		'shared'            => 'Ağdaki ilanlar',
+		'shared_source'     => 'Kaynak',
 	);
 
 	/**
@@ -110,6 +112,8 @@ final class LlmsTxtBuilder {
 	 *                                                                 (1.16.0: inquiry, A2A, MCP), only the open ones; empty = no section.
 	 * @param array{name?: string, sites?: list<array{url: string, name: string, country: string}>} $network Verified
 	 *                                      sibling sites of the portal network (1.20.0); empty = no section.
+	 * @param array<int, array<string, mixed>>                                                      $shared  Listings that sibling portals
+	 *                                      share with this site (1.26.0, "Ağda yayınla"); empty = no section.
 	 */
 	public function __construct(
 		private readonly string $site_url,
@@ -119,7 +123,8 @@ final class LlmsTxtBuilder {
 		private readonly ?TemplateRegistry $templates = null,
 		private readonly string $api_url = '',
 		private readonly array $agents = array(),
-		private readonly array $network = array()
+		private readonly array $network = array(),
+		private readonly array $shared = array()
 	) {
 		$this->labels = array_merge( self::LABELS, $labels );
 	}
@@ -203,6 +208,22 @@ final class LlmsTxtBuilder {
 			}
 			$title    = $this->labels['network'] . ( '' !== ( $this->network['name'] ?? '' ) ? ' – ' . self::inline( (string) $this->network['name'] ) : '' );
 			$blocks[] = '## ' . $title . "\n\n" . implode( "\n", $lines );
+		}
+		// 1.26.0: listings sibling portals share here; each links to its original page (nothing is copied).
+		if ( array() !== $this->shared ) {
+			$lines = array();
+			foreach ( $this->shared as $item ) {
+				$source  = (string) ( $item['site_name'] ?? '' ) . ( '' !== (string) ( $item['country'] ?? '' ) ? ' (' . (string) $item['country'] . ')' : '' );
+				$notes   = array_filter(
+					array(
+						'' === trim( $source ) ? '' : $this->labels['shared_source'] . ': ' . self::inline( $source ),
+						'' === (string) ( $item['business'] ?? '' ) ? '' : $this->labels['business'] . ': ' . self::inline( (string) $item['business'] ),
+						'' === (string) ( $item['region'] ?? '' ) ? '' : $this->labels['region'] . ': ' . self::inline( (string) $item['region'] ),
+					)
+				);
+				$lines[] = self::link( (string) ( $item['title'] ?? '' ), (string) ( $item['url'] ?? '' ), implode( '; ', $notes ) );
+			}
+			$blocks[] = '## ' . $this->labels['shared'] . "\n\n" . implode( "\n", $lines );
 		}
 		$optional = array( self::link( $this->labels['catalog'], $this->catalog_url, $this->labels['catalog_note'] ) );
 		if ( '' !== $this->api_url ) {

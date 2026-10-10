@@ -127,3 +127,12 @@ Sorun çıkarsa: "anahtar geçersiz" görünüyorsa üyede yeni anahtar oluştur
 parolalarını kapatmışsa Wordfence → Login Security → Settings → "Disable WordPress application passwords" seçeneğini
 kaldırın. Üyede anahtar denemesi 401/403 veriyorsa sunucu "Authorization" başlığını iletmiyordur; ekrandaki metni
 barındırma firmasına gönderin. Bir üyede "Anahtarı iptal et" erişimi hemen keser.
+
+## Ağda yayınla (1.26.0)
+
+Anahtar: `network_share` (önkoşul: Portal ağı); **paylaşan sitede ve gösterecek portallarda** açılır. Bir ilanı
+kopyalamadan ağdaki portallarda yayınlar: ilan formunda **Ağda yayınla** bölümünde "Tüm ağda" ya da tek tek portallar
+seçilir. İlan yalnızca bu sitede yaşar; seçilen portallar onu kendi /ai-katalog/ sayfasında, llms.txt'de, AI
+yanıtlarında (REST, MCP) ve "Komşu ülkelerde" bloğunda **asıl ilana bağlantıyla** gösterir. "Son 5 kişi" gibi bir
+değişiklik yalnızca burada yapılır; portallara en geç 1–2 saatte yansır. Paylaşılan ilana gelen talep, ilanın asıl
+sitesine gider.

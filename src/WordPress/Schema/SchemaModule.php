@@ -25,6 +25,7 @@ use AIHazirSite\WordPress\Module;
 use AIHazirSite\WordPress\Platform\RewriteRules;
 use AIHazirSite\WordPress\Platform\WpClock;
 use AIHazirSite\WordPress\Network\NetworkModule;
+use AIHazirSite\WordPress\Network\NetworkSharing;
 use AIHazirSite\WordPress\Portal\Portal;
 use AIHazirSite\WordPress\Platform\WpSettings;
 use AIHazirSite\WordPress\Templates\TemplatesModule;
@@ -177,7 +178,7 @@ final class SchemaModule implements Module {
 		$portal = Portal::active();
 		if ( null === $language && ! $portal ) {
 			$document = self::builder()->catalog( ( new WpProfileRepository() )->get(), self::listings(), ( new WpClock() )->today(), self::catalog_url(), TemplatesModule::now() );
-			return self::cache()->publish( 'catalog', NetworkModule::decorate_catalog( $document ), gmdate( 'Y-m-d\TH:i:s\Z' ) );
+			return self::cache()->publish( 'catalog', NetworkSharing::decorate_catalog( NetworkModule::decorate_catalog( $document ) ), gmdate( 'Y-m-d\TH:i:s\Z' ) );
 		}
 
 		$profile  = ( new WpProfileRepository() )->get();
@@ -207,7 +208,8 @@ final class SchemaModule implements Module {
 			$key                   .= '-' . $language;
 		}
 		// A business's page is not the site's own catalog: it names the network, not its members (1.23.1).
-		return self::cache()->publish( $key, NetworkModule::decorate_catalog( $document, null === $business ), gmdate( 'Y-m-d\TH:i:s\Z' ) );
+		$document = NetworkModule::decorate_catalog( $document, null === $business );
+		return self::cache()->publish( $key, null === $business ? NetworkSharing::decorate_catalog( $document ) : $document, gmdate( 'Y-m-d\TH:i:s\Z' ) );
 	}
 
 	/**

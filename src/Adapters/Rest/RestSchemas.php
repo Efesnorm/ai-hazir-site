@@ -58,40 +58,81 @@ final class RestSchemas {
 	 * @return array<string, mixed>
 	 */
 	public static function with_suggestions( array $schema ): array {
-		$nullable                                    = array( 'type' => array( 'string', 'null' ) );
 		$schema['properties']['network_suggestions'] = array(
 			'type'        => 'array',
 			'maxItems'    => SiblingCatalog::LIMIT,
 			'description' => 'Bu sitede uygun ilan yoksa (veya network=true istendiyse) doğrulanmış kardeş portallardaki uygun ilanlar. Kardeş sitenin herkese açık kataloğundan, retrieved_at anında alınmıştır.',
-			'items'       => self::object(
-				array(
-					'site'         => self::string(),
-					'site_name'    => self::string(),
-					'country'      => array(
-						'type'    => 'string',
-						'pattern' => '^([A-Z]{2})?$',
-					),
-					'business'     => $nullable,
-					'title'        => self::string(),
-					'type'         => array(
-						'type' => 'string',
-						'enum' => ListingType::ALL,
-					),
-					'category'     => self::string(),
-					'region'       => self::string(),
-					'url'          => self::string(),
-					'nace'         => array(
-						'type'    => array( 'string', 'null' ),
-						'pattern' => '^[A-V]$',
-					),
-					'retrieved_at' => array(
-						'type'   => 'string',
-						'format' => 'date-time',
-					),
-				)
-			),
+			'items'       => self::sibling_listing(),
 		);
 		return $schema;
+	}
+
+	/**
+	 * "Ağda yayınla" (1.26.0): a listing may carry where it is shared (`network_share`); a listings answer may carry the
+	 * listings sibling portals share with this site (`network_listings`, each linking to its original page).
+	 *
+	 * @param string               $name   'listing' or 'listings' (others are returned unchanged).
+	 * @param array<string, mixed> $schema Schema.
+	 * @return array<string, mixed>
+	 */
+	public static function with_share( string $name, array $schema ): array {
+		$share = array(
+			'type'                 => 'object',
+			'description'          => 'Bu ilanın ağda paylaşıldığı yer: all = tüm doğrulanmış kardeş portallar, yoksa sites. İlan kopyalanmaz; portallar bu adrese bağlantı verir.',
+			'properties'           => array(
+				'all'   => array( 'type' => 'boolean' ),
+				'sites' => self::strings(),
+			),
+			'required'             => array( 'all', 'sites' ),
+			'additionalProperties' => false,
+		);
+		if ( 'listing' === $name ) {
+			$schema['properties']['network_share'] = $share;
+		} elseif ( 'listings' === $name ) {
+			$schema['properties']['items']['items']['properties']['network_share'] = $share;
+			$schema['properties']['network_listings']                              = array(
+				'type'        => 'array',
+				'maxItems'    => SiblingCatalog::SHARED_MAX,
+				'description' => 'Kardeş portalların bu siteyle paylaştığı ilanlar (Ağda yayınla). Asıl ilan url adresindedir; burada kopya değil, başvurudur.',
+				'items'       => self::sibling_listing(),
+			);
+		}
+		return $schema;
+	}
+
+	/**
+	 * A listing of a sibling portal (suggestions, shared listings).
+	 *
+	 * @return array<string, mixed>
+	 */
+	private static function sibling_listing(): array {
+		return self::object(
+			array(
+				'site'         => self::string(),
+				'site_name'    => self::string(),
+				'country'      => array(
+					'type'    => 'string',
+					'pattern' => '^([A-Z]{2})?$',
+				),
+				'business'     => array( 'type' => array( 'string', 'null' ) ),
+				'title'        => self::string(),
+				'type'         => array(
+					'type' => 'string',
+					'enum' => ListingType::ALL,
+				),
+				'category'     => self::string(),
+				'region'       => self::string(),
+				'url'          => self::string(),
+				'nace'         => array(
+					'type'    => array( 'string', 'null' ),
+					'pattern' => '^[A-V]$',
+				),
+				'retrieved_at' => array(
+					'type'   => 'string',
+					'format' => 'date-time',
+				),
+			)
+		);
 	}
 
 	/**

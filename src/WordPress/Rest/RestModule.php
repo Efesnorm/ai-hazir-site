@@ -26,6 +26,7 @@ use AIHazirSite\WordPress\I18n\Multilingual;
 use AIHazirSite\WordPress\Inquiry\InquiryChannels;
 use AIHazirSite\WordPress\Network\NetworkCatalog;
 use AIHazirSite\WordPress\Network\NetworkModule;
+use AIHazirSite\WordPress\Network\NetworkSharing;
 use AIHazirSite\WordPress\Module;
 use AIHazirSite\WordPress\Platform\WpCache;
 use AIHazirSite\WordPress\Platform\WpClock;
@@ -179,6 +180,7 @@ final class RestModule implements Module {
 			$body = RestResponder::with_business( $body, Portal::references( $all ) );
 		}
 		$body     = NetworkCatalog::decorate( $body, $query->search(), $query->sector, true === $request->get_param( 'network' ) );
+		$body     = NetworkSharing::decorate_listings( $body, $query->search(), $query->sector );
 		$response = self::respond( $request, $body, $body['updated_at'] );
 		$response->header( 'X-WP-Total', (string) $body['total'] );
 		$response->header( 'X-WP-TotalPages', (string) $body['total_pages'] );
@@ -268,7 +270,8 @@ final class RestModule implements Module {
 			$request,
 			$receipt,
 			NetworkModule::enabled(),
-			NetworkCatalog::enabled()
+			NetworkCatalog::enabled(),
+			NetworkSharing::enabled()
 		);
 	}
 
@@ -282,6 +285,9 @@ final class RestModule implements Module {
 		$schema = RestSchemas::get( $name, Multilingual::active() );
 		if ( 'listings' === $name && NetworkCatalog::enabled() ) {
 			$schema = RestSchemas::with_suggestions( $schema );
+		}
+		if ( NetworkSharing::enabled() ) {
+			$schema = RestSchemas::with_share( $name, $schema );
 		}
 		return self::respond( $request, Portal::active() ? RestSchemas::with_portal( $name, $schema ) : $schema, null );
 	}

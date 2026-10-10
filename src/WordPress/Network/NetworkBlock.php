@@ -93,14 +93,16 @@ final class NetworkBlock implements Module {
 		$type       = ListingType::is_valid( $text( 'type' ) ) ? $text( 'type' ) : '';
 		$count      = '' === $text( 'count' ) ? self::DEFAULT_COUNT : absint( $text( 'count' ) );
 		$site       = '' === $text( 'site' ) ? '' : trailingslashit( esc_url_raw( $text( 'site' ) ) );
-		$items      = SiblingCatalog::pick(
-			NetworkCatalog::catalogs(),
-			new ListingSearch( $type, $text( 'category' ), $text( 'region' ) ),
-			Nace::section( $text( 'sector' ) ),
-			$site,
-			$count,
-			time()
+		$search     = new ListingSearch( $type, $text( 'category' ), $text( 'region' ) );
+		$sector     = Nace::section( $text( 'sector' ) );
+		// 1.26.0: listings shared with this site ("Ağda yayınla") come first.
+		$shared = array_values( array_filter( NetworkSharing::shared( $search, $sector ), static fn( array $i ): bool => '' === $site || $site === $i['site'] ) );
+		$seen   = array_column( $shared, 'url' );
+		$others = array_filter(
+			SiblingCatalog::pick( NetworkCatalog::catalogs(), $search, $sector, $site, max( 1, min( SiblingCatalog::BLOCK_MAX, $count ) ), time() ),
+			static fn( array $i ): bool => ! in_array( $i['url'], $seen, true )
 		);
+		$items  = array_slice( array_merge( $shared, array_values( $others ) ), 0, max( 1, min( SiblingCatalog::BLOCK_MAX, $count ) ) );
 		if ( array() === $items ) {
 			return '';
 		}

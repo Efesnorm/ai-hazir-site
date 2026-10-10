@@ -23,6 +23,7 @@ use AIHazirSite\WordPress\Catalog\WpProfileRepository;
 use AIHazirSite\WordPress\I18n\Multilingual;
 use AIHazirSite\WordPress\Module;
 use AIHazirSite\WordPress\Network\NetworkCatalog;
+use AIHazirSite\WordPress\Network\NetworkSharing;
 use AIHazirSite\WordPress\Platform\WpCache;
 use AIHazirSite\WordPress\Platform\WpClock;
 use AIHazirSite\WordPress\Platform\WpSecret;
@@ -120,7 +121,8 @@ final class AbilitiesModule implements Module {
 			Multilingual::active() ? Multilingual::settings()->languages : array(),
 			Portal::active() ? array_map( static fn( $b ): string => $b->slug, Portal::businesses()->businesses() ) : null
 		);
-		return NetworkCatalog::enabled() ? AbilitySchemas::with_suggestions( $all ) : $all;
+		$all = NetworkCatalog::enabled() ? AbilitySchemas::with_suggestions( $all ) : $all;
+		return NetworkSharing::enabled() ? AbilitySchemas::with_share( $all ) : $all;
 	}
 
 	/**
@@ -245,7 +247,7 @@ final class AbilitiesModule implements Module {
 			$body = RestResponder::with_business( $body, Portal::references( $all ) );
 		}
 		$network = $input['network'] ?? false;
-		return NetworkCatalog::decorate( $body, $search, $sector, true === $network );
+		return NetworkSharing::decorate_listings( NetworkCatalog::decorate( $body, $search, $sector, true === $network ), $search, $sector );
 	}
 
 	/**

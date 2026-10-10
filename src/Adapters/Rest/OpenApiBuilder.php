@@ -40,11 +40,13 @@ final class OpenApiBuilder {
 	 * @param array<string, mixed> $inquiry_receipt Its 201 answer schema.
 	 * @param bool                 $network         Portal network (1.20.0): GET /network.
 	 * @param bool                 $suggestions     Sibling suggestions (1.22.0): ?network= and `network_suggestions`.
+	 * @param bool                 $share           "Ağda yayınla" (1.26.0): `network_share`, `network_listings`.
 	 * @return array<string, mixed>
 	 */
-	public static function build( string $title, string $version, string $server, bool $multilingual, bool $portal, array $inquiry_request = array(), array $inquiry_receipt = array(), bool $network = false, bool $suggestions = false ): array {
-		$schema = static function ( string $name ) use ( $multilingual, $portal ): array {
+	public static function build( string $title, string $version, string $server, bool $multilingual, bool $portal, array $inquiry_request = array(), array $inquiry_receipt = array(), bool $network = false, bool $suggestions = false, bool $share = false ): array {
+		$schema = static function ( string $name ) use ( $multilingual, $portal, $share ): array {
 			$schema = RestSchemas::get( $name, $multilingual );
+			$schema = $share ? RestSchemas::with_share( $name, $schema ) : $schema;
 			return self::plain( $portal ? RestSchemas::with_portal( $name, $schema ) : $schema );
 		};
 

@@ -39,7 +39,7 @@ final class NetworkCatalog {
 	 * Whether sibling catalogs are read: for suggestions or for the "Komşu ülkelerde" block (1.23.0).
 	 */
 	public static function collecting(): bool {
-		return Features::is_enabled( Features::PORTAL_NETWORK ) && ( Features::is_enabled( Features::NETWORK_SUGGESTIONS ) || Features::is_enabled( Features::NETWORK_BLOCK ) );
+		return Features::is_enabled( Features::PORTAL_NETWORK ) && ( Features::is_enabled( Features::NETWORK_SUGGESTIONS ) || Features::is_enabled( Features::NETWORK_BLOCK ) || Features::is_enabled( Features::NETWORK_SHARE ) );
 	}
 
 	/**
