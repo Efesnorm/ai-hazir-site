@@ -20,6 +20,7 @@ use AIHazirSite\WordPress\Catalog\CatalogReader;
 use AIHazirSite\WordPress\Catalog\WpProfileRepository;
 use AIHazirSite\WordPress\I18n\Multilingual;
 use AIHazirSite\WordPress\Llms\LlmsModule;
+use AIHazirSite\WordPress\Network\NetworkSharing;
 use AIHazirSite\WordPress\Platform\PageCache;
 use AIHazirSite\WordPress\Platform\WpClock;
 use AIHazirSite\WordPress\Portal\Portal;
@@ -139,6 +140,7 @@ final class CatalogPage {
 			. self::company( $profile, $sector ? $fallback : null )
 			. ( null === $business && Portal::active() ? self::directory() : '' )
 			. ( '' === $sections ? '<p>' . esc_html__( 'Şu anda yayında ilan yok.', 'ai-hazir-site' ) . '</p>' : $sections )
+			. ( null === $business ? NetworkSharing::catalog_html() : '' )
 			. '</main></body></html>';
 	}
 

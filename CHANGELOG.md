@@ -3,6 +3,31 @@
 Bu projedeki önemli değişiklikler bu dosyada tutulur.
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/) esaslıdır, sürümler [SemVer](https://semver.org/lang/tr/) izler.
 
+## [1.26.0] - 2026-10-10
+
+### Eklendi
+- **Ağda yayınla** (`network_share`, varsayılan kapalı, önkoşul `portal_network`; plan onaylı:
+  `docs/planlar/1.26.0-agda-yayinla.md`). Bir ilan kopyalanmadan ağdaki portallarda paylaşılır; ilan tek yerde yaşar,
+  değişiklik ve silme tek yerde yapılır, portallara en geç 1–2 saatte yansır.
+  - **Paylaşan site:** ilan formunda "Ağda yayınla" (tüm ağ ya da doğrulanmış kardeşlerden seçilenler; başka adres
+    kabul edilmez). Seçim ilanın kaydına eklenir (yeni alan; mevcut ilanlar değişmez). İlan listesinde "Ağda"
+    etiketi; REST ve MCP ilan yanıtlarında isteğe bağlı `network_share`.
+  - **Paylaşılan portal:** saatlik kardeş katalog okuması (1.22.0; artık bu anahtar açıkken de çalışır) paylaşım
+    bilgisini de alır, portal yalnızca kendisiyle paylaşılanları gösterir:
+    - /ai-katalog/ sayfasında "Ağdaki ilanlar" bölümü (kaynak portal adıyla, asıl ilana bağlantı);
+    - llms.txt'de "## Ağdaki ilanlar" (Optional'dan önce);
+    - REST `/listings` ve MCP aramasında ayrı `network_listings` alanı (portalın kendi ilanlarıyla karışmaz, toplam
+      sayıya girmez; aynı arama kuralları ve `sector`);
+    - "Komşu ülkelerde" bloğunda en üstte;
+    - katalog JSON-LD'sinde `mentions` (asıl ilanın adresine başvuru; portal bu ilanı kendi teklifi gibi yayınlamaz,
+      arama motorları ve AI'lar tek ilan görür).
+  - Şemalar (REST `/schema`, OpenAPI, MCP) anahtar açıkken yeni isteğe bağlı alanları tanımlar.
+  - Booster AI'ın ağ özellikleri listesine eklendi.
+  - Testler: `NetworkShareTest` (birim), `NetworkSharingTest` (entegrasyon).
+
+### Test güncellemesi (onaylı)
+- `FeaturesTest`: anahtar listesine `network_share` (varsayılan kapalı).
+
 ## [1.25.0] - 2026-10-05
 
 ### Eklendi

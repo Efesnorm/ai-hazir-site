@@ -18,7 +18,7 @@ use AIHazirSite\Core\Catalog\Query\ListingSearch;
  * suggestions for a search that found nothing here. Everything a sibling sends is data, never instructions: texts are
  * stripped of markup and control characters and cut short; links must stay on the sibling's own host.
  *
- * @phpstan-type Entry array{title: string, type: string, category: string, region: string, url: string, business: string, nace: string, updated_at: string}
+ * @phpstan-type Entry array{title: string, type: string, category: string, region: string, url: string, business: string, nace: string, updated_at: string, share?: list<string>}
  * @phpstan-type Catalog array{site: string, name: string, country: string, retrieved_at: int, items: list<Entry>}
  * @phpstan-type Suggestion array{site: string, site_name: string, country: string, business: string|null, title: string, type: string, category: string, region: string, url: string, nace: string|null, retrieved_at: string}
  * @phpstan-type Found array{site: string, site_name: string, country: string, business: string|null, title: string, type: string, category: string, region: string, url: string, nace: string|null, retrieved_at: string, updated_at: string}
@@ -35,6 +35,7 @@ final class SiblingCatalog {
 	public const TEXT_MAX    = 100;
 	public const URL_MAX     = 500;
 	public const UPDATED_MAX = 40;
+	public const SHARED_MAX  = 50;
 
 	/**
 	 * Compact catalog from a sibling's public answers.
@@ -71,9 +72,9 @@ final class SiblingCatalog {
 			if ( ! ListingType::is_valid( $type ) || '' === $title || '' === $host || strlen( $url ) > self::URL_MAX || self::host( $url ) !== $host ) {
 				continue;
 			}
-			$owner   = is_array( $listing['business'] ?? null ) ? $listing['business'] : null;
-			$slug    = is_string( $owner['slug'] ?? null ) ? $owner['slug'] : null;
-			$items[] = array(
+			$owner = is_array( $listing['business'] ?? null ) ? $listing['business'] : null;
+			$slug  = is_string( $owner['slug'] ?? null ) ? $owner['slug'] : null;
+			$entry = array(
 				'title'      => $title,
 				'type'       => $type,
 				'category'   => NetworkCheck::text( $listing['category'] ?? '', self::TEXT_MAX ),
@@ -83,6 +84,12 @@ final class SiblingCatalog {
 				'nace'       => null === $slug ? $site_nace : ( $by_slug[ $slug ] ?? '' ),
 				'updated_at' => NetworkCheck::text( $listing['updated_at'] ?? '', self::UPDATED_MAX ),
 			);
+			// 1.26.0: where the sibling shares this listing ("Ağda yayınla"); only kept when it is shared.
+			$share = NetworkShare::hosts( $listing['network_share'] ?? null );
+			if ( array() !== $share ) {
+				$entry['share'] = $share;
+			}
+			$items[] = $entry;
 		}
 		return array(
 			'site'         => $site['url'],
@@ -108,7 +115,7 @@ final class SiblingCatalog {
 		$items = array();
 		foreach ( $data['items'] as $item ) {
 			if ( is_array( $item ) ) {
-				$items[] = array(
+				$entry = array(
 					'title'      => (string) ( $item['title'] ?? '' ),
 					'type'       => (string) ( $item['type'] ?? '' ),
 					'category'   => (string) ( $item['category'] ?? '' ),
@@ -118,6 +125,11 @@ final class SiblingCatalog {
 					'nace'       => (string) ( $item['nace'] ?? '' ),
 					'updated_at' => (string) ( $item['updated_at'] ?? '' ),
 				);
+				$share = array_values( array_filter( is_array( $item['share'] ?? null ) ? $item['share'] : array(), 'is_string' ) );
+				if ( array() !== $share ) {
+					$entry['share'] = $share;
+				}
+				$items[] = $entry;
 			}
 		}
 		return array(
@@ -147,6 +159,26 @@ final class SiblingCatalog {
 		$found = self::matching( $catalogs, $search, $sector, $now );
 		usort( $found, static fn( array $a, array $b ): int => strcmp( $b['updated_at'], $a['updated_at'] ) );
 		return self::without_updated( array_slice( $found, 0, self::LIMIT ) );
+	}
+
+	/**
+	 * Listings a sibling shared with this site ("Ağda yayınla", 1.26.0) and matching the search, newest first, at most
+	 * SHARED_MAX. Fresh catalogs only.
+	 *
+	 * @param array<mixed>  $catalogs Catalogs (compact()).
+	 * @param string        $own_url  This site's URL.
+	 * @param ListingSearch $search   Search.
+	 * @param string        $sector   NACE section letter or ''.
+	 * @param int           $now      Unix time.
+	 * @return list<array<string, mixed>>
+	 *
+	 * @phpstan-param list<Catalog> $catalogs
+	 * @phpstan-return list<Suggestion>
+	 */
+	public static function shared( array $catalogs, string $own_url, ListingSearch $search, string $sector, int $now ): array {
+		$found = self::matching( $catalogs, $search, $sector, $now, $own_url );
+		usort( $found, static fn( array $a, array $b ): int => strcmp( $b['updated_at'], $a['updated_at'] ) );
+		return self::without_updated( array_slice( $found, 0, self::SHARED_MAX ) );
 	}
 
 	/**
@@ -197,12 +229,13 @@ final class SiblingCatalog {
 	 * @param ListingSearch $search   Search.
 	 * @param string        $sector   NACE section letter or ''.
 	 * @param int           $now      Unix time.
+	 * @param string|null   $shared_with Only listings shared with this site (URL), or null for all.
 	 * @return list<array<string, mixed>>
 	 *
 	 * @phpstan-param list<Catalog> $catalogs
 	 * @phpstan-return list<Found>
 	 */
-	private static function matching( array $catalogs, ListingSearch $search, string $sector, int $now ): array {
+	private static function matching( array $catalogs, ListingSearch $search, string $sector, int $now, ?string $shared_with = null ): array {
 		if ( array() !== $search->attributes ) {
 			return array();
 		}
@@ -214,6 +247,9 @@ final class SiblingCatalog {
 				continue;
 			}
 			foreach ( $catalog['items'] as $item ) {
+				if ( null !== $shared_with && ! NetworkShare::reaches( $item['share'] ?? array(), $shared_with ) ) {
+					continue;
+				}
 				if ( ( '' !== $search->type && $search->type !== $item['type'] )
 					|| ( '' !== $search->category && $fold( $search->category ) !== $fold( $item['category'] ) )
 					|| ( '' !== $search->region && $fold( $search->region ) !== $fold( $item['region'] ) )

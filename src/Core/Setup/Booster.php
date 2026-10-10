@@ -26,7 +26,7 @@ final class Booster {
 
 	public const NEVER    = array( Features::TELEMETRY, Features::INQUIRIES );
 	public const OPTIONAL = array( Features::PORTAL_MODE, Features::MULTILINGUAL );
-	public const NETWORK  = array( Features::PORTAL_NETWORK, Features::NETWORK_SUGGESTIONS, Features::NETWORK_BLOCK, Features::NETWORK_REFERRALS, Features::NETWORK_REPORT );
+	public const NETWORK  = array( Features::PORTAL_NETWORK, Features::NETWORK_SUGGESTIONS, Features::NETWORK_BLOCK, Features::NETWORK_REFERRALS, Features::NETWORK_REPORT, Features::NETWORK_SHARE );
 
 	/**
 	 * Features Booster may turn on (all except NEVER), in requirement order.

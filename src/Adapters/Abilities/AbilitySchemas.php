@@ -74,6 +74,18 @@ final class AbilitySchemas {
 	}
 
 	/**
+	 * "Ağda yayınla" (1.26.0): listings carry `network_share`; the search may answer with `network_listings`.
+	 *
+	 * @param array<string, array{input: array<string, mixed>, output: array<string, mixed>}> $all Schemas from all().
+	 * @return array<string, array{input: array<string, mixed>, output: array<string, mixed>}>
+	 */
+	public static function with_share( array $all ): array {
+		$all['aihs/search-listings']['output'] = RestSchemas::with_share( 'listings', $all['aihs/search-listings']['output'] );
+		$all['aihs/get-listing']['output']     = RestSchemas::with_share( 'listing', $all['aihs/get-listing']['output'] );
+		return $all;
+	}
+
+	/**
 	 * Adds the multilingual input and output keys (1.1.0) when two or more languages are published.
 	 *
 	 * @param array<string, array{input: array<string, mixed>, output: array<string, mixed>}> $all       Schemas.

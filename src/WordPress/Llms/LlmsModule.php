@@ -23,6 +23,7 @@ use AIHazirSite\WordPress\Inquiry\InquiryChannels;
 use AIHazirSite\WordPress\Mcp\McpModule;
 use AIHazirSite\WordPress\Module;
 use AIHazirSite\WordPress\Network\NetworkModule;
+use AIHazirSite\WordPress\Network\NetworkSharing;
 use AIHazirSite\WordPress\Platform\PageCache;
 use AIHazirSite\WordPress\Platform\WpClock;
 use AIHazirSite\WordPress\Platform\WpSettings;
@@ -214,6 +215,7 @@ final class LlmsModule implements Module {
 			'labels'   => self::labels(),
 			'agents'   => self::agent_channels(),
 			'network'  => NetworkModule::llms(),
+			'shared'   => NetworkSharing::shared(),
 		);
 
 		return self::cache()->text( $input, static fn(): string => $builder->build( $profile, $listings, $today, $modified, $now ) );
@@ -225,7 +227,7 @@ final class LlmsModule implements Module {
 	 * @param \AIHazirSite\Core\Templates\TemplateRegistry|null $registry Sector templates.
 	 */
 	private static function builder( ?\AIHazirSite\Core\Templates\TemplateRegistry $registry ): LlmsTxtBuilder {
-		return new LlmsTxtBuilder( home_url( '/' ), SchemaModule::catalog_url(), (string) get_bloginfo( 'name' ), self::labels(), $registry, Features::is_enabled( Features::REST_API ) ? RestModule::url() : '', self::agent_channels(), NetworkModule::llms() );
+		return new LlmsTxtBuilder( home_url( '/' ), SchemaModule::catalog_url(), (string) get_bloginfo( 'name' ), self::labels(), $registry, Features::is_enabled( Features::REST_API ) ? RestModule::url() : '', self::agent_channels(), NetworkModule::llms(), NetworkSharing::shared() );
 	}
 
 	/**
@@ -350,6 +352,8 @@ final class LlmsModule implements Module {
 			'api_templates'     => __( 'Şablon alan tanımları (JSON)', 'ai-hazir-site' ),
 			'api_openapi'       => __( 'AI Katalog API tanımı (OpenAPI 3.1)', 'ai-hazir-site' ),
 			'agents'            => __( 'AI agentlar için', 'ai-hazir-site' ),
+			'shared'            => __( 'Ağdaki ilanlar', 'ai-hazir-site' ),
+			'shared_source'     => __( 'Kaynak', 'ai-hazir-site' ),
 		);
 	}
 }

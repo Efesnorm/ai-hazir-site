@@ -179,6 +179,11 @@ final class Features {
 	public const NETWORK_REPORT = 'network_report';
 
 	/**
+	 * "Ağda yayınla": a listing shared with sibling portals, shown there with a link to the original (1.26.0).
+	 */
+	public const NETWORK_SHARE = 'network_share';
+
+	/**
 	 * Sector templates (0.8.0).
 	 */
 	public const TEMPLATES = 'templates';
@@ -215,6 +220,7 @@ final class Features {
 		self::NETWORK_BLOCK       => array( self::PORTAL_NETWORK ),
 		self::NETWORK_REFERRALS   => array( self::MEASUREMENT, self::PORTAL_NETWORK ),
 		self::NETWORK_REPORT      => array( self::PORTAL_NETWORK ),
+		self::NETWORK_SHARE       => array( self::PORTAL_NETWORK ),
 		self::COMPLIANCE_REPORT   => array( self::COMPLIANCE_SCAN ),
 	);
 
@@ -281,6 +287,7 @@ final class Features {
 			self::NETWORK_BLOCK           => false,
 			self::NETWORK_REFERRALS       => false,
 			self::NETWORK_REPORT          => false,
+			self::NETWORK_SHARE           => false,
 		);
 	}
 
